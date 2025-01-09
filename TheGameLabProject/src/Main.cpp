@@ -107,76 +107,55 @@ int main() {
 
 	// Vertex Input
 	// Normalized vertices input of a 2D triangle. Vertex coordinates (x,y,z) of values in [-1.0, 1.0]
-	//float vertices[] = {
-	//	-0.5f, -0.5f, 0.0f, // left
-	//	 0.5f, -0.5f, 0.0f, // right
-	//	 0.0f,  0.5f, 0.0f  // top
-	//};
-	// Vertices of a 2D Square
-	float vertices[] = {
-		 0.5f,  0.5f, 0.0f,  // top right
-		 0.5f, -0.5f, 0.0f,  // bottom right
-		-0.5f, -0.5f, 0.0f,  // bottom left
-		-0.5f,  0.5f, 0.0f   // top left 
+	float triangleVertices1[] = {
+		-1.0f, -0.5f, 0.0f, // left
+		 0.0f, -0.5f, 0.0f, // right
+		-0.5f,  0.5f, 0.0f  // top
+	};
+	// Vertices of a 2D triangle
+	float triangleVertices2[] = {
+		0.0f, -0.5f, 0.0f, // left
+		1.0f, -0.5f, 0.0f, // right
+		0.5f,  0.5f, 0.0f  // top
 	};
 
-	// Select the drawing order of the vertices
-	// This makes OpenGL know that it has to draw some vertices multiple times instead of adding overlapped vertices to the array
-	unsigned int indices[] = {
-		0, 1, 3,   // first triangle
-		1, 2, 3    // second triangle
-	};
+	// Triangle 1 setup
+	unsigned int VBO1;	// Vertex buffer object VBO
+	unsigned int VAO1;	// Vertex Array Object VAO
 
-	// Vertex buffer object VBO
-	// Is an OpenGL object used to store vertices in the GPU memory 
-	unsigned int VBO;
-	// Vertex Array Object VAO
-	// Is an array of VBO (vertex buffer object) with all the vertex attributes info
-	unsigned int VAO;
-	// Elements Buffer Object
-	unsigned int EBO;
+	glGenVertexArrays(1, &VAO1);	// Generate the VAO
+	glGenBuffers(1, &VBO1);	// Generate the VBO buffer
 
-	// Generate the VAO
-	glGenVertexArrays(1, &VAO);
-	// Generate the VBO buffer
-	glGenBuffers(1, &VBO);
-	// Generate the EBO
-	glGenBuffers(1, &EBO);
+	glBindVertexArray(VAO1);	// Bind the VAO first, then bind and set vertex buffer(s), and then configure vertex attributes(s).
+	glBindBuffer(GL_ARRAY_BUFFER, VBO1);	// Bind the VBO
 
-	// Bind the VAO first, then bind and set vertex buffer(s), and then configure vertex attributes(s).
-	glBindVertexArray(VAO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(triangleVertices1), triangleVertices1, GL_STATIC_DRAW);	// Copy vertex data to the buffer
 
-	// Bind the VBO
-	// Specify the buffer type we want by binding our VBO to an OpenGL vertex buffer type
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	// Copy our vertex data(user defined data) into the bound buffer(GPU buffer) of type GL_ARRAY_BUFFER,
-	// and the buffer usage will be GL_STATIC_DRAW(data is set only once and used many times)
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-	// Bind the EBO
-	// Specify the buffer type we want
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-	// Copy our indices data(user defined data) into the bound buffer(GPU buffer)
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-
-	// Linking Vertex Attributes
-	// Specify what part of our input data goes to which vertex attribute in the vertex shader
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);	// Linking Vertex Attributes
 	glEnableVertexAttribArray(0);
 
-	// Unbind VBO, VAO and EBO
-	// note that this is allowed, the call to glVertexAttribPointer registered VBO as the vertex attribute's bound VBO so afterwards we can safely unbind
-	//glBindBuffer(GL_ARRAY_BUFFER, 0);
-	// You can unbind the VAO afterwards so other VAO calls won't accidentally modify this VAO, but this rarely happens. Modifying other
-	// VAOs requires a call to glBindVertexArray anyways so we generally don't unbind VAOs (nor VBOs) when it's not directly necessary.
-	//glBindVertexArray(0);
-	// After the VAO is unbind we can unbind the EBO, because the VAO registers the EBO calls(unbind included) 
-	// and if we unbind EBO first then VAO has problems unbinding an already unbinded buffer(doesn't have an EBO configured). 
-	//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+	// no need to unbind at all as we directly bind a different VAO the next few lines
+	// glBindBuffer(GL_ARRAY_BUFFER, 0);	// Unbind VBO1
+	// glBindVertexArray(0);				// Unbind VAO1
 
-	// Wireframe mode
-	// Configure how OpenGL draws its primitives, in that case, to draw the primitives as lines
-	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	// Triangle 2 setup
+	unsigned int VBO2;
+	unsigned int VAO2;
+	
+	glGenVertexArrays(1, &VAO2);
+	glGenBuffers(1, &VBO2);
+
+	glBindVertexArray(VAO2);
+	glBindBuffer(GL_ARRAY_BUFFER, VBO2);
+
+	glBufferData(GL_ARRAY_BUFFER, sizeof(triangleVertices2), triangleVertices2, GL_STATIC_DRAW);
+
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);	// Linking Vertex Attributes
+	glEnableVertexAttribArray(0);
+
+	// glBindVertexArray(0); // not really necessary as well, but beware of calls that could affect VAOs while this one is bound
+	// glBindBuffer(GL_ARRAY_BUFFER, 0);	// Unbind VBO2
+	// glBindVertexArray(0);				// Unbind VAO2
 
 	// Render Loop
 	while (!glfwWindowShouldClose(window)) {
@@ -190,10 +169,14 @@ int main() {
 
 		// Rendering commands
 		glUseProgram(shaderProgram);
-		glBindVertexArray(VAO);
-		//glDrawArrays(GL_TRIANGLES, 0, 3);
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-		glBindVertexArray(0); // no need to unbind it every time
+
+		glBindVertexArray(VAO1);
+		glDrawArrays(GL_TRIANGLES, 0, 3);
+		//glBindVertexArray(0);
+
+		glBindVertexArray(VAO2);
+		glDrawArrays(GL_TRIANGLES, 0, 3);
+		//glBindVertexArray(0);
 		
 		// Check and call events and swap the buffers to be rendered
 		glfwSwapBuffers(window);
@@ -201,9 +184,10 @@ int main() {
 	}
 
 	// Release all resources once they've outlived their purpose
-	glDeleteVertexArrays(1, &VAO);
-	glDeleteBuffers(1, &VBO);
-	glDeleteBuffers(1, &EBO);
+	glDeleteVertexArrays(1, &VAO1);
+	glDeleteBuffers(1, &VBO1);
+	glDeleteVertexArrays(1, &VAO2);
+	glDeleteBuffers(1, &VBO2);
 	glDeleteProgram(shaderProgram);
 
 	// Clearing all previously allocated GLFW resources.
