@@ -14,14 +14,15 @@ const char* vertexShaderSource = "#version 330 core\n"
 	"layout (location = 0) in vec3 aPos;\n"
 	"void main()\n"
 	"{\n"
-	"   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
+	"   gl_Position = vec4(aPos, 1.0);\n"
 	"}\0";
 
 const char* fragmentShaderSource = "#version 330 core\n"
 	"out vec4 FragColor;\n"
+	"uniform vec4 ourColor;\n"
 	"void main()\n"
 	"{\n"
-	"   FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
+	"   FragColor = ourColor;\n"
 	"}\n\0";
 
 int main() {
@@ -176,7 +177,7 @@ int main() {
 
 	// Wireframe mode
 	// Configure how OpenGL draws its primitives, in that case, to draw the primitives as lines
-	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
 	// Render Loop
 	while (!glfwWindowShouldClose(window)) {
@@ -189,13 +190,21 @@ int main() {
 		glClear(GL_COLOR_BUFFER_BIT);
 
 		// Rendering commands
-		glUseProgram(shaderProgram);
+		glUseProgram(shaderProgram);	// be sure to activate the shader
+
+		// Set the color of the figure in our program and send it to the shader program
+		// In this case the fragment shader is the one using the "ourColor" shader global variable(uniform)
+		float timeValue = glfwGetTime();
+		float greenValue = (sin(timeValue) / 2.0f) + 0.5f;
+		int vertexColorLocation = glGetUniformLocation(shaderProgram, "ourColor");
+		glUniform4f(vertexColorLocation, 0.0f, greenValue, 0.0f, 1.0f); // sets the uniform variable value of the current used shader program
+
 		glBindVertexArray(VAO);
 		//glDrawArrays(GL_TRIANGLES, 0, 3);
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 		glBindVertexArray(0); // no need to unbind it every time
 		
-		// Check and call events and swap the buffers to be rendered
+		// Check and call IO events and swap the buffers
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 	}
