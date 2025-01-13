@@ -49,7 +49,7 @@ int main() {
 
 	// Vertex Input
 	// Normalized vertices input of a 2D triangle. Vertex coordinates (x,y,z) of values in [-1.0, 1.0]
-	float vertices[] = {
+	float vertices[] = { 
 		// positions         // colors
 		 0.5f, -0.5f, 0.0f,  1.0f, 0.0f, 0.0f,   // bottom right
 		-0.5f, -0.5f, 0.0f,  0.0f, 1.0f, 0.0f,   // bottom left
@@ -104,6 +104,7 @@ int main() {
 
 		// Rendering commands
 		ourShader.use();
+		ourShader.setFloat("xOffset", 0.5);
 		glBindVertexArray(VAO);
 		glDrawArrays(GL_TRIANGLES, 0, 3);
 		
