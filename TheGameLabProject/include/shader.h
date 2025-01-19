@@ -42,7 +42,7 @@ public:
             // convert stream into strings
             vertexShaderCodeString = vertexShaderStream.str();
             fragmentShaderCodeString = fragmentShaderStream.str();
-        } catch (std::ifstream::failure& e) {
+        } catch (std::ifstream::failure e) {
             std::cout << "ERROR::SHADER::FILE_NOT_SUCCESFULLY_READ" << std::endl;
         }
 
@@ -110,7 +110,7 @@ public:
     }
 
     void setFloat(const std::string& name, float value) const {
-        glUniform1i(glGetUniformLocation(ID, name.c_str()), value);
+        glUniform1f(glGetUniformLocation(ID, name.c_str()), value);
     }
 };
 

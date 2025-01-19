@@ -3,6 +3,9 @@
 #include <iostream>
 #include "../include/shader.h"
 #include "../include/stb_image.h"
+#include "../include/glm/glm.hpp"
+#include "../include/glm/gtc/matrix_transform.hpp"
+#include "../include/glm/gtc/type_ptr.hpp"
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void process_input(GLFWwindow* window);
@@ -138,7 +141,32 @@ int main() {
 	}
 	stbi_image_free(containerImageData);	// Free the image memory
 
+	// TRANSFORMATION
+	// Translation
+	//glm::vec4 vec(1.0f, 0.0f, 0.0f, 1.0f);								// The vector(vertex) we want to translate
+	glm::mat4 translation(1.0f);							// Create translation matrix (by default an identity matrix)
+	translation = glm::translate(translation, glm::vec3(0.25f, 0.25f, 0.0f));	// Set translation values for x,y,z into the translation matrix(verticaly)
+	//vec = translation * vec;											// Left dot product translation matrix with the vector we want to translate
 
+	// Scaling
+	//glm::vec4 vec(1.0f, 0.0f, 0.0f, 1.0f);						// The vector(vertex) we want to scale
+	glm::mat4 scaling(1.0f);						// Create the default identity matrix we will use to scale
+	scaling = glm::scale(scaling, glm::vec3(0.5, 0.5, 0.5));	// Set the scaling values for x,y,z into the matrix(diagonaly) 
+	//vec = scaling * vec;										// Left dot product scaling matrix with the vector we want to scale
+
+	// Rotation
+	//glm::vec4 vec(1.0f, 0.0f, 0.0f, 1.0f);												// The vector(vertex) we want to rotate
+	glm::mat4 rotation(1.0f);												// Create the default identity matrix we will use to rotate
+	rotation = glm::rotate(rotation, glm::radians(45.0f), glm::vec3(0.0, 0.0, 1.0));	// Set rotation values 90º(positive: to the left/counter clockwise) in Z axis(0,0,1)
+	//vec = rotation * vec;																// Left dot product rotation matrix with the vector we want to rotate
+
+	/* We can pass the transformation matrix to the vertex shader to let the GPU make the operation faster	*/
+	// unsigned int transformMatrixLocation = glGetUniformLocation(ourShader.ID, "transformMatrix");
+	// glUniformMatrix4fv(transformMatrixLocation, 1, GL_FALSE, glm::value_ptr(trans));
+
+	// Translation, Scaling and Rotation
+	glm::mat4 transformationMatrix = rotation * translation;
+	
 
 	// Render Loop
 	while (!glfwWindowShouldClose(window)) {
@@ -155,6 +183,8 @@ int main() {
 		glBindTexture(GL_TEXTURE_2D, texture);
 
 		ourShader.use();
+		glUniformMatrix4fv(glGetUniformLocation(ourShader.ID, "transformMatrix"), 1, GL_FALSE, glm::value_ptr(transformationMatrix));
+
 		glBindVertexArray(VAO);
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 		
