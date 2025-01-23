@@ -176,7 +176,7 @@ namespace glm
 	GLM_FUNC_QUALIFIER tquat<T, P> rotation(tvec3<T, P> const& orig, tvec3<T, P> const& dest)
 	{
 		T cosTheta = dot(orig, dest);
-		tvec3<T, P> rotationAxis;
+		tvec3<T, P> m_rotationAxis;
 
 		if(cosTheta >= static_cast<T>(1) - epsilon<T>())
 			return quat();
@@ -188,25 +188,25 @@ namespace glm
 			// So guess one; any will do as long as it's perpendicular to start
 			// This implementation favors a rotation around the Up axis (Y),
 			// since it's often what you want to do.
-			rotationAxis = cross(tvec3<T, P>(0, 0, 1), orig);
-			if(length2(rotationAxis) < epsilon<T>()) // bad luck, they were parallel, try again!
-				rotationAxis = cross(tvec3<T, P>(1, 0, 0), orig);
+			m_rotationAxis = cross(tvec3<T, P>(0, 0, 1), orig);
+			if(length2(m_rotationAxis) < epsilon<T>()) // bad luck, they were parallel, try again!
+				m_rotationAxis = cross(tvec3<T, P>(1, 0, 0), orig);
 
-			rotationAxis = normalize(rotationAxis);
-			return angleAxis(pi<T>(), rotationAxis);
+			m_rotationAxis = normalize(m_rotationAxis);
+			return angleAxis(pi<T>(), m_rotationAxis);
 		}
 
 		// Implementation from Stan Melax's Game Programming Gems 1 article
-		rotationAxis = cross(orig, dest);
+		m_rotationAxis = cross(orig, dest);
 
 		T s = sqrt((T(1) + cosTheta) * static_cast<T>(2));
 		T invs = static_cast<T>(1) / s;
 
 		return tquat<T, P>(
 			s * static_cast<T>(0.5f), 
-			rotationAxis.x * invs,
-			rotationAxis.y * invs,
-			rotationAxis.z * invs);
+			m_rotationAxis.x * invs,
+			m_rotationAxis.y * invs,
+			m_rotationAxis.z * invs);
 	}
 
 }//namespace glm

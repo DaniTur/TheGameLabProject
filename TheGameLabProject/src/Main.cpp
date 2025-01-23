@@ -1,3 +1,4 @@
+#define _USE_MATH_DEFINES
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <iostream>
@@ -6,6 +7,10 @@
 #include "../include/glm/glm.hpp"
 #include "../include/glm/gtc/matrix_transform.hpp"
 #include "../include/glm/gtc/type_ptr.hpp"
+#include <math.h>
+#include "../include/Camera.h"
+#include "../include/WorldTransform.h"
+#include "../include/ProjectionTransform.h"
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void process_input(GLFWwindow* window);
@@ -13,6 +18,16 @@ void process_input(GLFWwindow* window);
 // Settings
 const unsigned int SCREEN_WIDTH = 800;
 const unsigned int SCREEN_HEIGHT = 600;
+
+// World transform
+WorldTransform worldTransform;
+
+// Camera
+Camera gameCamera;
+
+// Perspective projection transform
+ProjectionTransform projectionTransform(SCREEN_WIDTH, SCREEN_HEIGHT);
+
 
 int main() {
 
@@ -47,66 +62,80 @@ int main() {
 		return -1;
 	}
 
+	glEnable(GL_DEPTH_TEST);
+
 	// SHADERS
 	// Build and Compile our shader program from files
 	Shader ourShader("src/vertex_shader.vert", "src/fragment_shader.frag");
 
 	// Vertex Input
 	// Normalized vertices input of a 2D triangle. Vertex coordinates (x,y,z) of values in [-1.0, 1.0]
-	float vertices[] = {
-		// positions          // colors           // texture coords
-		 0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f,   // top right
-		 0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f,   // bottom right
-		-0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f,   // bottom left
-		-0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f    // top left 
-	};
-	int indices[] = {
-		2, 3, 0,
-		2, 1, 0
+	float cubeVertices[] = {
+		   // positions         // texture coords
+		   -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+			0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
+			0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+			0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+		   -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+		   -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+
+		   -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+			0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+			0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+			0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+		   -0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
+		   -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+
+		   -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+		   -0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+		   -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+		   -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+		   -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+		   -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+
+			0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+			0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+			0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+			0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+			0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+			0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+
+		   -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+			0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
+			0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+			0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+		   -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+		   -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+
+		   -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+			0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+			0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+			0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+		   -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
+		   -0.5f,  0.5f, -0.5f,  0.0f, 1.0f
 	};
 
-	// Vertex buffer object VBO
-	// Is an OpenGL object used to store vertices in the GPU memory 
+	// Vertex buffer object VBO,  OpenGL object used to store vertices in the GPU memory 
 	unsigned int VBO;
-	// Vertex Array Object VAO
-	// Is an array of VBO (vertex buffer object) with all the vertex attributes info
 	unsigned int VAO;
-	unsigned int EBO;
 
-	// Generate the VAO
+	// Generate the arrays and buffers VAO, VBO, EBO
 	glGenVertexArrays(1, &VAO);
-	// Generate the VBO buffer
 	glGenBuffers(1, &VBO);
-	glGenBuffers(1, &EBO);
 
-	// Bind the VAO first, then bind and set vertex buffer(s), and then configure vertex attributes(s).
 	glBindVertexArray(VAO);
 
-	// Bind the VBO
-	// Specify the buffer type we want by binding our VBO to an OpenGL vertex buffer type
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	// Copy our vertex data(user defined data) into the bound buffer(GPU buffer) of type GL_ARRAY_BUFFER,
-	// and the buffer usage will be GL_STATIC_DRAW(data is set only once and used many times)
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(cubeVertices), cubeVertices, GL_STATIC_DRAW);
 
-	// EBO
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-
-	// LINKING ATTRIBUTES OF THE BUFFER for shaders to use
-	// Specify what part of our input data goes to which vertex attribute in the vertex shader
-	// Vertex position attributes
+	// LINKING ATTRIBUTES OF THE BUFFERS
 	// location, #values per vertex, type of values, normalizing values, stride between vertices attributes, offset since the buffer first position
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
-	// Vertices Color attributes
-	// location, #values per color, type of values, normalizing values, stride between color attributes, offset since the buffer first position
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
-	glEnableVertexAttribArray(1);
+
 	// Texture coordinates attributes
-	// location, #values per texture coordinate, type of values, normalizing values, stride between texture coordinate attributes, offset since the buffer first position
-	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
-	glEnableVertexAttribArray(2);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+	glEnableVertexAttribArray(1);
 
 	// Wireframe mode
 	// Configure how OpenGL draws its primitives, in that case, to draw the primitives as lines
@@ -116,13 +145,12 @@ int main() {
 	// Generate the OpenGL texture object
 	unsigned int texture;
 	glGenTextures(1, &texture);
-	// Bind the texture object so the target of GL_TEXTURE_2D is our texture object
 	glBindTexture(GL_TEXTURE_2D, texture);
 	// Set the texture wrapping parameters (on the currently bound texture object)
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 	// Set texture filtering parameters
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
 	// Load the image data to memory
@@ -141,33 +169,6 @@ int main() {
 	}
 	stbi_image_free(containerImageData);	// Free the image memory
 
-	// TRANSFORMATION
-	// Translation
-	//glm::vec4 vec(1.0f, 0.0f, 0.0f, 1.0f);								// The vector(vertex) we want to translate
-	glm::mat4 translation(1.0f);							// Create translation matrix (by default an identity matrix)
-	translation = glm::translate(translation, glm::vec3(0.25f, 0.25f, 0.0f));	// Set translation values for x,y,z into the translation matrix(verticaly)
-	//vec = translation * vec;											// Left dot product translation matrix with the vector we want to translate
-
-	// Scaling
-	//glm::vec4 vec(1.0f, 0.0f, 0.0f, 1.0f);						// The vector(vertex) we want to scale
-	glm::mat4 scaling(1.0f);						// Create the default identity matrix we will use to scale
-	scaling = glm::scale(scaling, glm::vec3(0.5, 0.5, 0.5));	// Set the scaling values for x,y,z into the matrix(diagonaly) 
-	//vec = scaling * vec;										// Left dot product scaling matrix with the vector we want to scale
-
-	// Rotation
-	//glm::vec4 vec(1.0f, 0.0f, 0.0f, 1.0f);												// The vector(vertex) we want to rotate
-	glm::mat4 rotation(1.0f);												// Create the default identity matrix we will use to rotate
-	rotation = glm::rotate(rotation, glm::radians(45.0f), glm::vec3(0.0, 0.0, 1.0));	// Set rotation values 90º(positive: to the left/counter clockwise) in Z axis(0,0,1)
-	//vec = rotation * vec;																// Left dot product rotation matrix with the vector we want to rotate
-
-	/* We can pass the transformation matrix to the vertex shader to let the GPU make the operation faster	*/
-	// unsigned int transformMatrixLocation = glGetUniformLocation(ourShader.ID, "transformMatrix");
-	// glUniformMatrix4fv(transformMatrixLocation, 1, GL_FALSE, glm::value_ptr(trans));
-
-	// Translation, Scaling and Rotation
-	glm::mat4 transformationMatrix = rotation * translation;
-	
-
 	// Render Loop
 	while (!glfwWindowShouldClose(window)) {
 
@@ -176,18 +177,32 @@ int main() {
 
 		// Render clear
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		// Rendering commands
 		// First we need to pass the texture to the fragment shader via a uniform, this does it automaticaly
+		//glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, texture);
 
 		ourShader.use();
-		glUniformMatrix4fv(glGetUniformLocation(ourShader.ID, "transformMatrix"), 1, GL_FALSE, glm::value_ptr(transformationMatrix));
+		
+		// Model matrix or World Transform Matrix: model or local space to world space
+		worldTransform.setRotation((float)glfwGetTime(), glm::vec3(0.0f, 1.0f, 0.0f));
+		glm::mat4 worldTransformMatrix = worldTransform.getMatrix();
+
+		// View matrix or Camera Transform Matrix: world space to view space
+		glm::mat4 cameraView = gameCamera.getView();
+		
+		// Perspective projection matrix: view space to clip space 
+		glm::mat4 projectionTransformMatrix = projectionTransform.getMatrix();
+
+		glm::mat4 WVPmatrix = projectionTransformMatrix * cameraView * worldTransformMatrix;
+
+		ourShader.setMatrix4("WVPmatrix", WVPmatrix);
 
 		glBindVertexArray(VAO);
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-		
+		glDrawArrays(GL_TRIANGLES, 0, 36);
+
 		// Check and call IO events and swap the buffers
 		glfwSwapBuffers(window);
 		glfwPollEvents();
@@ -196,7 +211,6 @@ int main() {
 	// Release all resources once they've outlived their purpose
 	glDeleteVertexArrays(1, &VAO);
 	glDeleteBuffers(1, &VBO);
-	glDeleteBuffers(1, &EBO);
 
 	// Clearing all previously allocated GLFW resources.
 	glfwTerminate();
@@ -212,5 +226,25 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
 void process_input(GLFWwindow* window) {
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
 		glfwSetWindowShouldClose(window, true);
+	}
+
+	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
+		gameCamera.moveForward();
+	}
+
+	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
+		gameCamera.moveBackward();
+	}
+
+	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
+		gameCamera.moveLeft();
+	}
+
+	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
+		gameCamera.moveRight();
+	}
+
+	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
+		// move up "jump"/"fly"
 	}
 }
