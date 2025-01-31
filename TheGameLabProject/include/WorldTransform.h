@@ -1,8 +1,11 @@
 #pragma once
 
-#include "../include/glm/glm.hpp"
-#include "../include/glm/gtc/matrix_transform.hpp"
-#include "../include/glm/gtc/type_ptr.hpp"
+//#include "../include/glm/glm.hpp"
+//#include "../include/glm/gtc/matrix_transform.hpp"
+//#include "../include/glm/gtc/type_ptr.hpp"
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 class WorldTransform
 {
@@ -18,7 +21,7 @@ public:
 
 	void setRotation(float angle, const glm::vec3& axis);
 
-	glm::mat4& getMatrix() const;
+	glm::mat4 getMatrix() const;
 
 private:
 
@@ -27,7 +30,10 @@ private:
 	float m_scaleFactor = 1.0f;
 	glm::vec3 m_scaleVector;
 
-	float m_rotationAngle = 0.0f;
+	bool m_rotate = false;
+	float m_rotationAngle = 1.0f;
 	glm::vec3 m_rotationAxis;
+
+	glm::mat4 m_worldTransform;
 };
 

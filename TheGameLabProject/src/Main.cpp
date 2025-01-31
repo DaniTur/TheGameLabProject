@@ -11,16 +11,25 @@
 #include "../include/Camera.h"
 #include "../include/WorldTransform.h"
 #include "../include/ProjectionTransform.h"
+#include "../include/Texture.h"
+#include "../include/Cube.h"
+#include <assimp/Importer.hpp>
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void process_input(GLFWwindow* window);
+// Mouse
+void mouse_callback(GLFWwindow* window, double xpos, double ypos);
+void mouse_button_callback(GLFWwindow* window, int button, int action, int mods);
+double lastX = 400.0;
+double lastY = 300.0;
+float yaw = -90.0f;
+float pitch = 0.0f;
+bool firstMouse = true;
+bool zoomEnable = false;
 
 // Settings
 const unsigned int SCREEN_WIDTH = 800;
 const unsigned int SCREEN_HEIGHT = 600;
-
-// World transform
-WorldTransform worldTransform;
 
 // Camera
 Camera gameCamera;
@@ -28,6 +37,8 @@ Camera gameCamera;
 // Perspective projection transform
 ProjectionTransform projectionTransform(SCREEN_WIDTH, SCREEN_HEIGHT);
 
+double deltaTime = 0.0f;	// Time between current frame and last frame
+double lastFrameTime = 0.0f; // Time of last frame
 
 int main() {
 
@@ -45,6 +56,8 @@ int main() {
 		glfwTerminate();
 		return -1;
 	}
+	// Center the window(assuming a 1920x1080 monitor resolution)
+	glfwSetWindowPos(window, (1920/2)-(SCREEN_WIDTH/2), (1080/2)-(SCREEN_HEIGHT/2));
 
 	glfwMakeContextCurrent(window);
 
@@ -68,149 +81,77 @@ int main() {
 	// Build and Compile our shader program from files
 	Shader ourShader("src/vertex_shader.vert", "src/fragment_shader.frag");
 
-	// Vertex Input
-	// Normalized vertices input of a 2D triangle. Vertex coordinates (x,y,z) of values in [-1.0, 1.0]
-	float cubeVertices[] = {
-		   // positions         // texture coords
-		   -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
-			0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
-			0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-			0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-		   -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-		   -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+	// Cube object
+	Cube cube;
+	Cube cubeStatic;
 
-		   -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-			0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-			0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-			0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-		   -0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
-		   -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+	WorldTransform worldTransform;
+	WorldTransform worldTransformStatic;
 
-		   -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-		   -0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-		   -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-		   -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-		   -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-		   -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-
-			0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-			0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-			0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-			0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-			0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-			0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-
-		   -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-			0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
-			0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-			0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-		   -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-		   -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-
-		   -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-			0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-			0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-			0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-		   -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
-		   -0.5f,  0.5f, -0.5f,  0.0f, 1.0f
-	};
-
-	// Vertex buffer object VBO,  OpenGL object used to store vertices in the GPU memory 
-	unsigned int VBO;
-	unsigned int VAO;
-
-	// Generate the arrays and buffers VAO, VBO, EBO
-	glGenVertexArrays(1, &VAO);
-	glGenBuffers(1, &VBO);
-
-	glBindVertexArray(VAO);
-
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(cubeVertices), cubeVertices, GL_STATIC_DRAW);
-
-	// LINKING ATTRIBUTES OF THE BUFFERS
-	// location, #values per vertex, type of values, normalizing values, stride between vertices attributes, offset since the buffer first position
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
-	glEnableVertexAttribArray(0);
-
-	// Texture coordinates attributes
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
-	glEnableVertexAttribArray(1);
-
-	// Wireframe mode
-	// Configure how OpenGL draws its primitives, in that case, to draw the primitives as lines
-	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-
-	// TEXTURES
-	// Generate the OpenGL texture object
-	unsigned int texture;
-	glGenTextures(1, &texture);
-	glBindTexture(GL_TEXTURE_2D, texture);
-	// Set the texture wrapping parameters (on the currently bound texture object)
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	// Set texture filtering parameters
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-	// Load the image data to memory
-	int width;
-	int height;
-	int numColorChannels;
-	unsigned char* containerImageData = stbi_load("resources/container.jpg", &width, &height, &numColorChannels, 0);
-	// Check for data loading errors
-	if (containerImageData) {
-		// Generate the 2D texture from the image data loaded
-		//			target, mipmap level, texture format, texture width, texture height, 0, image format, image datatype, image data
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, containerImageData);
-		glGenerateMipmap(GL_TEXTURE_2D);	// Generate texture copies of different resolutions
-	} else {
-		std::cout << "Failed to load texture" << std::endl;
-	}
-	stbi_image_free(containerImageData);	// Free the image memory
+	// Enable mouse movement inputs capture and the window will capture the mouse cursor
+	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	// Fuction call back for mouse inputs
+	glfwSetCursorPosCallback(window, mouse_callback);
+	// Enable mouse button inputs
+	glfwSetMouseButtonCallback(window, mouse_button_callback);
 
 	// Render Loop
 	while (!glfwWindowShouldClose(window)) {
 
-		// Input
 		process_input(window);
 
 		// Render clear
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		// Rendering commands
-		// First we need to pass the texture to the fragment shader via a uniform, this does it automaticaly
-		//glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, texture);
+		// TODO: Change this to the correct way
+		// Binding all textures to texture_unit0, not the correct way
+		// and passing the sampler uniform to the shader automaticaly
+		cube.bindTexture();
+		cubeStatic.bindTexture();
 
 		ourShader.use();
 		
 		// Model matrix or World Transform Matrix: model or local space to world space
+		// World transform
+		//WorldTransform worldTransform;
 		worldTransform.setRotation((float)glfwGetTime(), glm::vec3(0.0f, 1.0f, 0.0f));
+
 		glm::mat4 worldTransformMatrix = worldTransform.getMatrix();
-
-		// View matrix or Camera Transform Matrix: world space to view space
 		glm::mat4 cameraView = gameCamera.getView();
-		
-		// Perspective projection matrix: view space to clip space 
 		glm::mat4 projectionTransformMatrix = projectionTransform.getMatrix();
-
 		glm::mat4 WVPmatrix = projectionTransformMatrix * cameraView * worldTransformMatrix;
 
 		ourShader.setMatrix4("WVPmatrix", WVPmatrix);
 
-		glBindVertexArray(VAO);
-		glDrawArrays(GL_TRIANGLES, 0, 36);
+		cube.draw();
+
+		// Cube Static
+		worldTransformStatic.setTranslation(glm::vec3(3.0f, 0.0f, 0.0f));
+		worldTransformStatic.setScale(glm::vec3(0.5f, 2.0f, 0.5f));
+		worldTransformMatrix = worldTransformStatic.getMatrix();
+		cameraView = gameCamera.getView();
+		projectionTransformMatrix = projectionTransform.getMatrix();
+		WVPmatrix = projectionTransformMatrix * cameraView * worldTransformMatrix;
+
+		ourShader.setMatrix4("WVPmatrix", WVPmatrix);
+
+		cubeStatic.draw();
 
 		// Check and call IO events and swap the buffers
 		glfwSwapBuffers(window);
 		glfwPollEvents();
+
+		// Delta time calculation for Camera speed
+		/*double currentFrameTime = glfwGetTime();
+		deltaTime = currentFrameTime - lastFrameTime;
+		lastFrameTime = currentFrameTime;
+		gameCamera.setCameraSpeed((float)deltaTime);*/
 	}
 
 	// Release all resources once they've outlived their purpose
-	glDeleteVertexArrays(1, &VAO);
-	glDeleteBuffers(1, &VBO);
+	//glDeleteVertexArrays(1, &VAO);
+	//glDeleteBuffers(1, &VBO);
 
 	// Clearing all previously allocated GLFW resources.
 	glfwTerminate();
@@ -244,7 +185,62 @@ void process_input(GLFWwindow* window) {
 		gameCamera.moveRight();
 	}
 
-	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
+	if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {
 		// move up "jump"/"fly"
+		gameCamera.moveUp();
+	}
+
+
+	if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) {
+		// move up "jump"/"fly"
+		gameCamera.moveDown();
 	}
 }
+
+void mouse_callback(GLFWwindow* window, double xpos, double ypos)
+{
+	if (firstMouse)
+	{
+		lastX = xpos;
+		lastY = ypos;
+		firstMouse = false;
+	}
+
+	double xoffset = xpos - lastX;
+	double yoffset = lastY - ypos;
+	lastX = xpos;
+	lastY = ypos;
+
+	float sensitivity = 0.1f;
+	xoffset *= sensitivity;
+	yoffset *= sensitivity;
+
+	yaw += (float)xoffset;
+	pitch += (float)yoffset;
+
+	if (pitch > 89.0f)
+		pitch = 89.0f;
+	if (pitch < -89.0f)
+		pitch = -89.0f;
+
+	glm::vec3 direction;
+	direction.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
+	direction.y = sin(glm::radians(pitch));
+	direction.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
+	gameCamera.setCameraTarget(glm::normalize(direction));
+}
+
+void mouse_button_callback(GLFWwindow* window, int button, int action, int mods) {
+
+	if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_RELEASE) {
+		if (!zoomEnable) {
+			zoomEnable = true;
+			projectionTransform.setFOV(120.0f);
+		}
+		else {
+			zoomEnable = false;
+			projectionTransform.setFOV(90.0f);
+		}
+	}
+}
+

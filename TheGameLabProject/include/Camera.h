@@ -20,11 +20,22 @@ public:
 
 	void moveRight();
 
+	void moveUp();
+
+	void moveDown();
+
+	void targetCenter();
+
+	void setCameraSpeed(float deltaTime);
+
+	void setCameraTarget(glm::vec3 direction);
+
 private:
 
 	glm::vec3 m_cameraPosition;
 	glm::vec3 m_cameraTarget;
 	glm::mat4 m_view;
-	float m_speed = 0.01f;
+	glm::vec3 m_up;
+	float m_speed = 0.05f;
 };
 

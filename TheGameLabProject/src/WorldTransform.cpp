@@ -1,11 +1,12 @@
 #include "../include/WorldTransform.h"
 
-WorldTransform::WorldTransform() {
-	m_translationVector = glm::vec3(0.0f, 0.0f, 0.0f);
-	m_scaleVector = glm::vec3(1.0f, 1.0f, 1.0f);
-	m_rotationAxis = glm::vec3(0.0f, 0.0f, 0.0f);
+WorldTransform::WorldTransform() 
+	: m_translationVector(0.0f, 0.0f, 0.0f),
+		m_scaleVector(1.0f, 1.0f, 1.0f),
+		m_rotationAxis(0.0f, 0.0f, 0.0f),
+		m_worldTransform(1.0f) {
 }
-
+	
 void WorldTransform::setTranslation(const glm::vec3& translation) {
 	m_translationVector = translation;
 }
@@ -21,21 +22,25 @@ void WorldTransform::setScale(const glm::vec3& scaleVector) {
 void WorldTransform::setRotation(float angle, const glm::vec3& axis) {
 	m_rotationAngle = angle;
 	m_rotationAxis = axis;
+	// Rotation is disables by default to prevent errors, if the rotation axis vector is not like (0,0,0) rotation is allowed to prevent errors
+	if (axis.x > 0.0f || axis.y > 0.0f || axis.z > 0.0f) {
+		m_rotate = true;
+	}
 }
 
-glm::mat4& WorldTransform::getMatrix() const {
+glm::mat4 WorldTransform::getMatrix() const {
 
-	glm::mat4 world(1.0f);
+	glm::mat4 worldTransform(1.0f);
 
-	// Scale
-	world = glm::scale(world, m_scaleVector);
-	world = glm::scale(world, glm::vec3(m_scaleFactor, m_scaleFactor, m_scaleFactor));	// uniform scale
+	worldTransform = glm::scale(worldTransform, m_scaleVector);
+	worldTransform = glm::scale(worldTransform, glm::vec3(m_scaleFactor, m_scaleFactor, m_scaleFactor));
 
-	// Rotation
-	world = glm::rotate(world, m_rotationAngle, m_rotationAxis);
+	if (m_rotate) {
+		worldTransform = glm::rotate(worldTransform, m_rotationAngle, m_rotationAxis);
+	}
 
-	// Translation
-	world = glm::translate(world, m_translationVector);
+	worldTransform = glm::translate(worldTransform, m_translationVector);
 
-	return world;
+
+	return worldTransform;
 }
