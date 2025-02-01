@@ -86,7 +86,7 @@ void Cube::load() {
 	glEnableVertexAttribArray(1);
 	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
 
-	m_texture = Texture(GL_TEXTURE_2D, "resources/container.jpg");
+	m_texture = CTexture(GL_TEXTURE_2D, "resources/container.jpg");
 
 	// Release OpenGL bindings/handles
 	glBindVertexArray(0);

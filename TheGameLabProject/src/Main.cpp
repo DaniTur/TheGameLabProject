@@ -11,9 +11,8 @@
 #include "../include/Camera.h"
 #include "../include/WorldTransform.h"
 #include "../include/ProjectionTransform.h"
-#include "../include/Texture.h"
 #include "../include/Cube.h"
-#include <assimp/Importer.hpp>
+#include <Model.h>
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void process_input(GLFWwindow* window);
@@ -81,6 +80,10 @@ int main() {
 	// Build and Compile our shader program from files
 	Shader ourShader("src/vertex_shader.vert", "src/fragment_shader.frag");
 
+	// load models
+	// -----------
+	Model ourModel("resources/models/backpack.obj");
+
 	// Cube object
 	Cube cube;
 	Cube cubeStatic;
@@ -107,15 +110,15 @@ int main() {
 		// TODO: Change this to the correct way
 		// Binding all textures to texture_unit0, not the correct way
 		// and passing the sampler uniform to the shader automaticaly
-		cube.bindTexture();
-		cubeStatic.bindTexture();
+		//cube.bindTexture();
+		//cubeStatic.bindTexture();
 
 		ourShader.use();
 		
 		// Model matrix or World Transform Matrix: model or local space to world space
 		// World transform
 		//WorldTransform worldTransform;
-		worldTransform.setRotation((float)glfwGetTime(), glm::vec3(0.0f, 1.0f, 0.0f));
+		//worldTransform.setRotation((float)glfwGetTime(), glm::vec3(0.0f, 1.0f, 0.0f));
 
 		glm::mat4 worldTransformMatrix = worldTransform.getMatrix();
 		glm::mat4 cameraView = gameCamera.getView();
@@ -123,20 +126,21 @@ int main() {
 		glm::mat4 WVPmatrix = projectionTransformMatrix * cameraView * worldTransformMatrix;
 
 		ourShader.setMatrix4("WVPmatrix", WVPmatrix);
+		ourModel.Draw(ourShader);
 
-		cube.draw();
+		//cube.draw();
 
-		// Cube Static
-		worldTransformStatic.setTranslation(glm::vec3(3.0f, 0.0f, 0.0f));
-		worldTransformStatic.setScale(glm::vec3(0.5f, 2.0f, 0.5f));
-		worldTransformMatrix = worldTransformStatic.getMatrix();
-		cameraView = gameCamera.getView();
-		projectionTransformMatrix = projectionTransform.getMatrix();
-		WVPmatrix = projectionTransformMatrix * cameraView * worldTransformMatrix;
+		//// Cube Static
+		//worldTransformStatic.setTranslation(glm::vec3(3.0f, 0.0f, 0.0f));
+		//worldTransformStatic.setScale(glm::vec3(0.5f, 2.0f, 0.5f));
+		//worldTransformMatrix = worldTransformStatic.getMatrix();
+		//cameraView = gameCamera.getView();
+		//projectionTransformMatrix = projectionTransform.getMatrix();
+		//WVPmatrix = projectionTransformMatrix * cameraView * worldTransformMatrix;
 
-		ourShader.setMatrix4("WVPmatrix", WVPmatrix);
+		//ourShader.setMatrix4("WVPmatrix", WVPmatrix);
 
-		cubeStatic.draw();
+		//cubeStatic.draw();
 
 		// Check and call IO events and swap the buffers
 		glfwSwapBuffers(window);

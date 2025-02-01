@@ -1,7 +1,7 @@
 #pragma once
 
 #include <vector>
-#include "../include/Texture.h"
+#include "../include/CTexture.h"
 
 class Cube {
 public:
@@ -25,6 +25,6 @@ private:
 	unsigned int m_VBO = -1;
 	unsigned int m_VAO = -1;
 
-	Texture m_texture;
+	CTexture m_texture;
 };
 
