@@ -3,7 +3,7 @@
 #include <assimp/postprocess.h>
 #include <stb_image.h>
 
-#define ASSIMP_IMPORTER_POSTPROCESSING_FLAGS (aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_GenSmoothNormals | aiProcess_CalcTangentSpace)
+#define ASSIMP_IMPORTER_POSTPROCESSING_FLAGS (aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_CalcTangentSpace)
 
 Model::Model(const char* filepath) {
     loadModel(filepath);
@@ -22,7 +22,7 @@ void Model::loadModel(const string &filepath) {
 
     if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
     {
-        cout << "ERROR::ASSIMP::" << importer.GetErrorString() << endl;
+        cerr << "ERROR::ASSIMP::" << importer.GetErrorString() << endl;
         return;
     }
     m_directory = filepath.substr(0, filepath.find_last_of('/'));
@@ -38,7 +38,6 @@ void Model::processNode(const aiNode* node, const aiScene* scene) {
     }
     // process all the child nodes (if any)
     for (unsigned int i = 0; i < node->mNumChildren; i++) {
-        std::cout << "children: " << i << "/" << node->mNumChildren << std::endl;
         processNode(node->mChildren[i], scene);
     }
 }
@@ -46,6 +45,7 @@ void Model::processNode(const aiNode* node, const aiScene* scene) {
 Mesh Model::processMesh(const aiMesh *mesh, const aiScene *scene) {
 
     vector<Vertex> vertices;
+    vertices.reserve(mesh->mNumVertices);
     vector<unsigned int> indices;
     vector<Texture> textures;
 
@@ -67,6 +67,8 @@ Mesh Model::processMesh(const aiMesh *mesh, const aiScene *scene) {
             vector.y = mesh->mNormals[i].y;
             vector.z = mesh->mNormals[i].z;
             vertex.Normal = vector;
+        } else {
+            vertex.Normal = glm::vec3(0.0f, 0.0f, 1.0f);
         }
 
         // Texture coordinates
@@ -77,16 +79,16 @@ Mesh Model::processMesh(const aiMesh *mesh, const aiScene *scene) {
             vector2.x = mesh->mTextureCoords[0][i].x;
             vector2.y = mesh->mTextureCoords[0][i].y;
             vertex.TexCoords = vector2;
-            // tangent
-            vector.x = mesh->mTangents[i].x;
-            vector.y = mesh->mTangents[i].y;
-            vector.z = mesh->mTangents[i].z;
-            vertex.Tangent = vector;
-            // bitangent
-            vector.x = mesh->mBitangents[i].x;
-            vector.y = mesh->mBitangents[i].y;
-            vector.z = mesh->mBitangents[i].z;
-            vertex.Bitangent = vector;
+            //// tangent
+            //vector.x = mesh->mTangents[i].x;
+            //vector.y = mesh->mTangents[i].y;
+            //vector.z = mesh->mTangents[i].z;
+            //vertex.Tangent = vector;
+            //// bitangent
+            //vector.x = mesh->mBitangents[i].x;
+            //vector.y = mesh->mBitangents[i].y;
+            //vector.z = mesh->mBitangents[i].z;
+            //vertex.Bitangent = vector;
         } else {
             vertex.TexCoords = glm::vec2(0.0f, 0.0f);
         }
@@ -168,6 +170,9 @@ unsigned int Model::loadTextureFromFile(const char *file, const string &director
 
     unsigned int textureID;
     glGenTextures(1, &textureID);
+    if (textureID == 0) {
+        std::cerr << "Error: OpenGL no generó un ID de textura válido." << std::endl;
+    }
 
     int width;
     int height;
@@ -176,7 +181,7 @@ unsigned int Model::loadTextureFromFile(const char *file, const string &director
 
     if (!imageData) {
 
-        std::cout << "Texture failed to load at path: " << file << std::endl;
+        std::cerr << "Texture failed to load at path: " << file << std::endl;
         stbi_image_free(imageData);
 
     } else {

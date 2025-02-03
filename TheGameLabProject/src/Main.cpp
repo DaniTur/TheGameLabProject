@@ -39,6 +39,12 @@ ProjectionTransform projectionTransform(SCREEN_WIDTH, SCREEN_HEIGHT);
 double deltaTime = 0.0f;	// Time between current frame and last frame
 double lastFrameTime = 0.0f; // Time of last frame
 
+float m_secondCounter;
+//These are not the real fps, just temporary
+float m_tempFps;
+//This float is the fps we should use
+float fps;
+
 int main() {
 
 	glfwInit();
@@ -60,6 +66,8 @@ int main() {
 
 	glfwMakeContextCurrent(window);
 
+	//glfwSwapInterval(0); // Disable vSync
+
 	// On window resize, call the parameter function
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
@@ -74,6 +82,9 @@ int main() {
 		return -1;
 	}
 
+	// tell stb_image.h to flip loaded texture's on the y-axis (before loading model).
+	//stbi_set_flip_vertically_on_load(true);
+
 	glEnable(GL_DEPTH_TEST);
 
 	// SHADERS
@@ -85,11 +96,11 @@ int main() {
 	Model ourModel("resources/models/backpack.obj");
 
 	// Cube object
-	Cube cube;
-	Cube cubeStatic;
+	//Cube cube;
+	//Cube cubeStatic;
 
 	WorldTransform worldTransform;
-	WorldTransform worldTransformStatic;
+	//WorldTransform worldTransformStatic;
 
 	// Enable mouse movement inputs capture and the window will capture the mouse cursor
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
@@ -100,6 +111,27 @@ int main() {
 
 	// Render Loop
 	while (!glfwWindowShouldClose(window)) {
+
+		// per-frame time logic
+		float currentFrame = static_cast<float>(glfwGetTime());
+		deltaTime = currentFrame - lastFrameTime;
+		lastFrameTime = currentFrame;
+		//cout << "Delta time: " << deltaTime << "\n";
+
+		if (m_secondCounter <= 1) {
+			m_secondCounter += deltaTime;
+			m_tempFps++;
+		}
+		else
+		{
+			//"fps" are the actual fps
+			fps = m_tempFps;
+			m_secondCounter = 0;
+			m_tempFps = 0;
+		}
+
+		//Do something with the fps
+		//std::cout << "FPS: " << fps << std::endl;
 
 		process_input(window);
 
@@ -119,13 +151,13 @@ int main() {
 		// World transform
 		//WorldTransform worldTransform;
 		//worldTransform.setRotation((float)glfwGetTime(), glm::vec3(0.0f, 1.0f, 0.0f));
-
+		worldTransform.setScale(0.5f);
 		glm::mat4 worldTransformMatrix = worldTransform.getMatrix();
 		glm::mat4 cameraView = gameCamera.getView();
 		glm::mat4 projectionTransformMatrix = projectionTransform.getMatrix();
 		glm::mat4 WVPmatrix = projectionTransformMatrix * cameraView * worldTransformMatrix;
-
 		ourShader.setMatrix4("WVPmatrix", WVPmatrix);
+
 		ourModel.Draw(ourShader);
 
 		//cube.draw();

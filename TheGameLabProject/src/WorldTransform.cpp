@@ -41,6 +41,5 @@ glm::mat4 WorldTransform::getMatrix() const {
 
 	worldTransform = glm::translate(worldTransform, m_translationVector);
 
-
 	return worldTransform;
 }
