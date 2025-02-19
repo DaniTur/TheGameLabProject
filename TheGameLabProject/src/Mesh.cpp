@@ -2,7 +2,7 @@
 #include <GLFW/glfw3.h>
 #include "Mesh.h"
 
-Mesh::Mesh(vector<Vertex> vertices, vector<unsigned int> indices, vector<Texture> textures) 
+Mesh::Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, std::vector<Texture> textures)
 	: m_vertices(vertices), 
 	  m_indices(indices),
 	  m_textures(textures)  {
@@ -10,7 +10,7 @@ Mesh::Mesh(vector<Vertex> vertices, vector<unsigned int> indices, vector<Texture
 	setupMesh();
 }
 
-void Mesh::Draw(Shader& shader) {
+void Mesh::Draw(const Shader& shader) {
 	unsigned int diffuseNr = 1;
 	unsigned int specularNr = 1;
 	unsigned int normalNr = 1;
@@ -19,8 +19,8 @@ void Mesh::Draw(Shader& shader) {
 		// activate proper texture unit before binding
 		glActiveTexture(GL_TEXTURE0 + i);
 		// retrieve texture number (the N in diffuse_textureN)
-		string number;
-		string name = m_textures[i].type;
+		std::string number;
+		std::string name = m_textures[i].type;
 		if (name == "texture_diffuse")
 			number = std::to_string(diffuseNr++);
 		else if (name == "texture_specular")
@@ -30,7 +30,7 @@ void Mesh::Draw(Shader& shader) {
 		else if (name == "texture_height")
 			number = std::to_string(heightNr++);
 
-		string uniformName = name + number;
+		std::string uniformName = name + number;
 		glBindTexture(GL_TEXTURE_2D, m_textures[i].id);
 		shader.setInt(uniformName, i);
 	}

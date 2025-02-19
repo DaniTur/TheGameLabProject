@@ -5,8 +5,6 @@
 #include <vector>
 #include <shader.h>
 
-using namespace std;
-
 struct Vertex {
     glm::vec3 Position;
     glm::vec3 Normal;
@@ -17,21 +15,21 @@ struct Vertex {
 
 struct Texture {
     unsigned int id;
-    string type;
-    string path;
+    std::string type;
+    std::string path;
 };
 
 class Mesh {
 public:
     // mesh data
-    vector<Vertex>       m_vertices;
-    vector<unsigned int> m_indices;
-    vector<Texture>      m_textures;
+    std::vector<Vertex>       m_vertices;
+    std::vector<unsigned int> m_indices;
+    std::vector<Texture>      m_textures;
     unsigned int m_VAO;
 
-    Mesh(vector<Vertex> vertices, vector<unsigned int> indices, vector<Texture> textures);
+    Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, std::vector<Texture> textures);
 
-    void Draw(Shader& shader);
+    void Draw(const Shader& shader);
 
 private:
     //  render data

@@ -12,6 +12,8 @@ public:
 
 	glm::mat4& getView();
 
+	glm::vec3& getPosition();
+
 	void moveForward();
 
 	void moveBackward();

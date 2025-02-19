@@ -3,7 +3,9 @@
 #include <assimp/postprocess.h>
 #include <stb_image.h>
 
-#define ASSIMP_IMPORTER_POSTPROCESSING_FLAGS (aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_CalcTangentSpace)
+#define ASSIMP_IMPORTER_POSTPROCESSING_FLAGS_OBJ (aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_CalcTangentSpace)
+#define ASSIMP_IMPORTER_POSTPROCESSING_FLAGS_FBX (aiProcess_FlipUVs | aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_CalcTangentSpace)
+constexpr int STRING_EQUAL = 0;
 
 Model::Model(const char* filepath) {
     loadModel(filepath);
@@ -15,19 +17,39 @@ void Model::Draw(Shader& shader) {
     }
 }
 
-void Model::loadModel(const string &filepath) {
+void Model::loadModel(const std::string &filepath) {
 
 	Assimp::Importer importer;
-	const aiScene* scene = importer.ReadFile(filepath, ASSIMP_IMPORTER_POSTPROCESSING_FLAGS);
+    importer.SetPropertyBool(AI_CONFIG_IMPORT_FBX_PRESERVE_PIVOTS, false);
+    //importer.SetPropertyBool(AI_CONFIG_IMPORT_FBX_SEARCH_TEXTURES, false);
+
+    const aiScene* scene;
+
+    // Model file .obj
+    std::string extension = filepath.substr(filepath.find_last_of('.'));
+    std::cout << "\nLoading model: " << filepath <<  " file extension : " << extension << "\n";
+    if (extension.compare(".obj") == STRING_EQUAL) {
+        scene = importer.ReadFile(filepath, ASSIMP_IMPORTER_POSTPROCESSING_FLAGS_OBJ);
+    }  else {
+        scene = importer.ReadFile(filepath, ASSIMP_IMPORTER_POSTPROCESSING_FLAGS_FBX);
+    }
 
     if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
     {
-        cerr << "ERROR::ASSIMP::" << importer.GetErrorString() << endl;
+        std::cerr << "ERROR::ASSIMP::" << importer.GetErrorString() << std::endl;
         return;
     }
+
+    // Debug ----
+    PrintMaterialInfo(scene);
+    VerifyEmbebedTextures(scene);
+    VerifyTexturesInMaterialProperties(scene);
+    // ----
+   
     m_directory = filepath.substr(0, filepath.find_last_of('/'));
 
     processNode(scene->mRootNode, scene);
+
 }
 
 void Model::processNode(const aiNode* node, const aiScene* scene) {
@@ -44,10 +66,10 @@ void Model::processNode(const aiNode* node, const aiScene* scene) {
 
 Mesh Model::processMesh(const aiMesh *mesh, const aiScene *scene) {
 
-    vector<Vertex> vertices;
+    std::vector<Vertex> vertices;
     vertices.reserve(mesh->mNumVertices);
-    vector<unsigned int> indices;
-    vector<Texture> textures;
+    std::vector<unsigned int> indices;
+    std::vector<Texture> textures;
 
     // Proccess vertices
     for (unsigned int i = 0; i < mesh->mNumVertices; i++) {
@@ -116,13 +138,13 @@ Mesh Model::processMesh(const aiMesh *mesh, const aiScene *scene) {
     */
     aiMaterial *material = scene->mMaterials[mesh->mMaterialIndex];
     // 1. diffuse maps
-    vector<Texture> diffuseMaps = loadMaterialTextures(material, aiTextureType_DIFFUSE, "texture_diffuse");
+    std::vector<Texture> diffuseMaps = loadMaterialTextures(material, aiTextureType_DIFFUSE, "texture_diffuse");
     textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
     // 2. specular maps
-    vector<Texture> specularMaps = loadMaterialTextures(material, aiTextureType_SPECULAR, "texture_specular");
+    std::vector<Texture> specularMaps = loadMaterialTextures(material, aiTextureType_SPECULAR, "texture_specular");
     textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
     // 3. normal maps
-    std::vector<Texture> normalMaps = loadMaterialTextures(material, aiTextureType_HEIGHT, "texture_normal");
+    std::vector<Texture> normalMaps = loadMaterialTextures(material, aiTextureType_NORMALS, "texture_normal");
     textures.insert(textures.end(), normalMaps.begin(), normalMaps.end());
     // 4. height maps
     std::vector<Texture> heightMaps = loadMaterialTextures(material, aiTextureType_AMBIENT, "texture_height");
@@ -131,14 +153,15 @@ Mesh Model::processMesh(const aiMesh *mesh, const aiScene *scene) {
     return Mesh(vertices, indices, textures);
 }
 
-vector<Texture> Model::loadMaterialTextures(const aiMaterial* material, aiTextureType type, string typeName) {
+std::vector<Texture> Model::loadMaterialTextures(const aiMaterial* material, aiTextureType type, std::string typeName) {
 
-    vector<Texture> meshTextures;
+    std::vector<Texture> meshTextures;
     
     for (unsigned int i = 0; i < material->GetTextureCount(type); i++) {
 
         aiString file;
         material->GetTexture(type, i, &file);
+        std::cout << "Ruta de la textura obtenida por Assimp: " << file.C_Str() << std::endl;
         // check if texture was loaded before and if so, continue to next iteration: skip loading a new texture
         bool skipTextureLoading = false;
         for (unsigned int j = 0; j < m_textures_loaded.size(); j++) {
@@ -163,16 +186,13 @@ vector<Texture> Model::loadMaterialTextures(const aiMaterial* material, aiTextur
     return meshTextures;
 }
 
-unsigned int Model::loadTextureFromFile(const char *file, const string &directory) const {
+unsigned int Model::loadTextureFromFile(const char *file, const std::string &directory) const {
 
-    string fileName(file);
+    std::string fileName(file);
     fileName = directory + '/' + fileName;
 
     unsigned int textureID;
     glGenTextures(1, &textureID);
-    if (textureID == 0) {
-        std::cerr << "Error: OpenGL no generó un ID de textura válido." << std::endl;
-    }
 
     int width;
     int height;
@@ -181,11 +201,11 @@ unsigned int Model::loadTextureFromFile(const char *file, const string &director
 
     if (!imageData) {
 
-        std::cerr << "Texture failed to load at path: " << file << std::endl;
+        std::cerr << "Texture failed to load at path: " << fileName << std::endl;
         stbi_image_free(imageData);
 
     } else {
-
+        std::cout<< "Texture image loaded: " << fileName << " textureID: " << textureID << std::endl;
         GLenum format = GL_RGB;
         if (colorChannels == 1)
             format = GL_RED;
@@ -207,4 +227,60 @@ unsigned int Model::loadTextureFromFile(const char *file, const string &director
     }
 
     return textureID;
+}
+
+
+void Model::PrintMaterialInfo(const aiScene* scene) {
+    if (!scene) return;
+
+    std::cout << "Número de materiales: " << scene->mNumMaterials << std::endl;
+
+    for (unsigned int i = 0; i < scene->mNumMaterials; i++) {
+        aiMaterial* material = scene->mMaterials[i];
+        std::cout << "Material " << i << ":\n";
+
+        for (int type = aiTextureType_NONE; type <= aiTextureType_EMISSIVE; type++) {
+            unsigned int count = material->GetTextureCount((aiTextureType)type);
+            std::cout << "  - Texturas de tipo " << type << ": " << count << std::endl;
+
+            for (unsigned int j = 0; j < count; j++) {
+                aiString path;
+                if (material->GetTexture((aiTextureType)type, j, &path) == AI_SUCCESS) {
+                    std::cout << "    - " << path.C_Str() << std::endl;
+                }
+            }
+        }
+    }
+}
+
+void Model::VerifyEmbebedTextures(const aiScene* scene) {
+    //  Verificar si el FBX contiene texturas embebidas
+    if (scene->mNumTextures > 0) {
+        std::cout << "El FBX contiene " << scene->mNumTextures << " texturas embebidas." << std::endl;
+        for (unsigned int i = 0; i < scene->mNumTextures; i++) {
+            aiTexture* tex = scene->mTextures[i];
+            std::cout << "Textura embebida encontrada: " << tex->mFilename.C_Str() << std::endl;
+        }
+    }
+    else {
+        std::cout << "No hay texturas embebidas en el FBX." << std::endl;
+    }
+}
+
+void Model::VerifyTexturesInMaterialProperties(const aiScene* scene) {
+    // Revisar si las texturas están en las propiedades del material
+    for (unsigned int i = 0; i < scene->mNumMaterials; i++) {
+        aiMaterial* material = scene->mMaterials[i];
+
+        std::cout << "Material " << i << " tiene " << material->mNumProperties << " propiedades." << std::endl;
+        for (unsigned int j = 0; j < material->mNumProperties; j++) {
+            aiMaterialProperty* prop = material->mProperties[j];
+            std::cout << "  Propiedad " << j << ": " << prop->mKey.C_Str() << " Tipo: " << prop->mType << std::endl;
+
+            if (prop->mType == aiPTI_String) {
+                std::string value(reinterpret_cast<char*>(prop->mData), prop->mDataLength);
+                std::cout << "    Valor: " << value << std::endl;
+            }
+        }
+    }
 }

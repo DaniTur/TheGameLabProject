@@ -82,7 +82,7 @@ int main() {
 		return -1;
 	}
 
-	// tell stb_image.h to flip loaded texture's on the y-axis (before loading model).
+	// tell stb_image.h to flip loaded texture's on the y-axis (before loading model). Needed for importing .obj material textures
 	//stbi_set_flip_vertically_on_load(true);
 
 	glEnable(GL_DEPTH_TEST);
@@ -93,14 +93,17 @@ int main() {
 
 	// load models
 	// -----------
-	Model ourModel("resources/models/backpack.obj");
-
+	Model handGun("resources/models/handgun/1911.fbx");
+	Model ourModel("resources/models/explorerBag/backpack.obj");
+	Model target("resources/models/target/target.fbx");
+	Model woodenBoxes("resources/models/woodenBoxes/box.fbx");
 	// Cube object
-	//Cube cube;
 	//Cube cubeStatic;
 
 	WorldTransform worldTransform;
-	//WorldTransform worldTransformStatic;
+	WorldTransform handGunWorldTransform;
+	WorldTransform targetWorldTransform;
+	WorldTransform woodenBoxesWorldTransform;
 
 	// Enable mouse movement inputs capture and the window will capture the mouse cursor
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
@@ -139,14 +142,25 @@ int main() {
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		// TODO: Change this to the correct way
-		// Binding all textures to texture_unit0, not the correct way
-		// and passing the sampler uniform to the shader automaticaly
-		//cube.bindTexture();
-		//cubeStatic.bindTexture();
-
 		ourShader.use();
 		
+		// Light source
+		glm::vec3 lightSourcePosition(0.0f, 10.0f, 0.0f);
+		glm::mat4 model(1.0f);
+		glm::translate(model, glm::vec3(0.0f, 0.0f, 8.0f));
+		glm::rotate(model, (float)glfwGetTime(), glm::vec3(0.0f, 1.0f, 0.0f));
+		ourShader.setVec3("light.position", lightSourcePosition);
+
+		// light color and intensity/strenght
+		glm::vec3 lightAmbient(0.1f);
+		glm::vec3 lightDiffuse(0.5f);
+		glm::vec3 lightSpecular(1.0f);
+		ourShader.setVec3("light.ambient", lightAmbient);
+		ourShader.setVec3("light.diffuse", lightDiffuse);
+		ourShader.setVec3("light.specular", lightSpecular);
+		ourShader.setVec3("viewPos", gameCamera.getPosition());
+
+		// Bagpack
 		// Model matrix or World Transform Matrix: model or local space to world space
 		// World transform
 		//WorldTransform worldTransform;
@@ -156,13 +170,50 @@ int main() {
 		glm::mat4 cameraView = gameCamera.getView();
 		glm::mat4 projectionTransformMatrix = projectionTransform.getMatrix();
 		glm::mat4 WVPmatrix = projectionTransformMatrix * cameraView * worldTransformMatrix;
-		ourShader.setMatrix4("WVPmatrix", WVPmatrix);
+		ourShader.setMatrix4("model", worldTransformMatrix);
+		ourShader.setMatrix4("view", cameraView);
+		ourShader.setMatrix4("projection", projectionTransformMatrix);
 
 		ourModel.Draw(ourShader);
 
-		//cube.draw();
+		// Handgun
+		handGunWorldTransform.setTranslation(glm::vec3(3.0f, 0.0f, 0.0f));
+		handGunWorldTransform.setScale(0.5f);
+		worldTransformMatrix = handGunWorldTransform.getMatrix();
+		cameraView = gameCamera.getView();
+		projectionTransformMatrix = projectionTransform.getMatrix();
+		WVPmatrix = projectionTransformMatrix * cameraView * worldTransformMatrix;
+		ourShader.setMatrix4("model", worldTransformMatrix);
+		ourShader.setMatrix4("view", cameraView);
+		ourShader.setMatrix4("projection", projectionTransformMatrix);
 
-		//// Cube Static
+		handGun.Draw(ourShader);
+
+		// Wooden Boxes
+		woodenBoxesWorldTransform.setTranslation(glm::vec3(0.0f, 0.0f, -5.0f));
+		worldTransformMatrix = woodenBoxesWorldTransform.getMatrix();
+		cameraView = gameCamera.getView();
+		projectionTransformMatrix = projectionTransform.getMatrix();
+		WVPmatrix = projectionTransformMatrix * cameraView * worldTransformMatrix;
+		ourShader.setMatrix4("model", worldTransformMatrix);
+		ourShader.setMatrix4("view", cameraView);
+		ourShader.setMatrix4("projection", projectionTransformMatrix);
+
+		woodenBoxes.Draw(ourShader);
+
+		// TODO: Este modelo esta bug y pilla las texturas del último modelo que se renderiza
+		// Target
+		worldTransformMatrix = targetWorldTransform.getMatrix();
+		cameraView = gameCamera.getView();
+		projectionTransformMatrix = projectionTransform.getMatrix();
+		WVPmatrix = projectionTransformMatrix * cameraView * worldTransformMatrix;
+		ourShader.setMatrix4("model", worldTransformMatrix);
+		ourShader.setMatrix4("view", cameraView);
+		ourShader.setMatrix4("projection", projectionTransformMatrix);
+
+		target.Draw(ourShader);
+
+		// Light cube
 		//worldTransformStatic.setTranslation(glm::vec3(3.0f, 0.0f, 0.0f));
 		//worldTransformStatic.setScale(glm::vec3(0.5f, 2.0f, 0.5f));
 		//worldTransformMatrix = worldTransformStatic.getMatrix();

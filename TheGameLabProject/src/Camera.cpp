@@ -16,6 +16,11 @@ glm::mat4& Camera::getView() {
 	return m_view;
 }
 
+glm::vec3& Camera::getPosition()
+{
+	return m_cameraPosition;
+}
+
 void Camera::moveForward() {
 	 m_cameraPosition += (m_cameraTarget * m_speed);
 	//m_cameraPosition.z -= m_speed;
