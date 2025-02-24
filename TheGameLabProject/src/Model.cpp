@@ -143,13 +143,21 @@ Mesh Model::processMesh(const aiMesh *mesh, const aiScene *scene) {
     // 2. specular maps
     std::vector<Texture> specularMaps = loadMaterialTextures(material, aiTextureType_SPECULAR, "texture_specular");
     textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
-    // 3. normal maps
-    std::vector<Texture> normalMaps = loadMaterialTextures(material, aiTextureType_NORMALS, "texture_normal");
+    if (specularMaps.size() == 0) {
+        // 15. Metalness as specular
+        specularMaps = loadMaterialTextures(material, aiTextureType_METALNESS, "texture_specular");
+        textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
+    }
+    // 3. ambient maps
+    std::vector<Texture> ambientMaps = loadMaterialTextures(material, aiTextureType_AMBIENT, "texture_ambient");
+    textures.insert(textures.end(), ambientMaps.begin(), ambientMaps.end());
+    // 5. normal maps? height?
+    std::vector<Texture> normalMaps = loadMaterialTextures(material, aiTextureType_HEIGHT, "texture_normal");
     textures.insert(textures.end(), normalMaps.begin(), normalMaps.end());
-    // 4. height maps
-    std::vector<Texture> heightMaps = loadMaterialTextures(material, aiTextureType_AMBIENT, "texture_height");
-    textures.insert(textures.end(), heightMaps.begin(), heightMaps.end());
-    
+    // 7. shininess maps? roughness?
+    std::vector<Texture> shininessMaps = loadMaterialTextures(material, aiTextureType_SHININESS, "texture_shininess");
+    textures.insert(textures.end(), shininessMaps.begin(), shininessMaps.end());
+
     return Mesh(vertices, indices, textures);
 }
 
@@ -239,9 +247,11 @@ void Model::PrintMaterialInfo(const aiScene* scene) {
         aiMaterial* material = scene->mMaterials[i];
         std::cout << "Material " << i << ":\n";
 
-        for (int type = aiTextureType_NONE; type <= aiTextureType_EMISSIVE; type++) {
+        for (int type = aiTextureType_NONE; type <= aiTextureType_ANISOTROPY; type++) {
             unsigned int count = material->GetTextureCount((aiTextureType)type);
-            std::cout << "  - Texturas de tipo " << type << ": " << count << std::endl;
+            if (count > 0) {
+                std::cout << "  - Texturas de tipo " << aiTextureTypeToString((aiTextureType)type) << ": " << count << std::endl;
+            }
 
             for (unsigned int j = 0; j < count; j++) {
                 aiString path;

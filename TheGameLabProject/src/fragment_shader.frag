@@ -10,6 +10,8 @@ in vec3 FragPos;
 uniform sampler2D texture_diffuse1;
 uniform sampler2D texture_specular1;
 uniform sampler2D texture_normal1;
+uniform sampler2D texture_ambient1;
+uniform sampler2D texture_shininess1;
 
 //struct Material {
 //    sampler2D diffuse;
@@ -19,7 +21,8 @@ uniform sampler2D texture_normal1;
 //};
 
 struct Light {
-    vec3 position;
+    vec3 position;	// point of light
+	vec3 direction; // directional light
 
     vec3 ambient;
     vec3 diffuse;
@@ -41,12 +44,15 @@ void main()
     vec3 normal = normalize(Normal);
 
 	// Vector pointing to the light source position
-    vec3 lightDir = normalize(light.position - FragPos);
+	// Point of light
+    //vec3 lightDir = normalize(light.position - FragPos);
+	// Directional light
+    vec3 lightDir = normalize(-light.direction);
 
 	// Diffuse lightning
 	// Amount of light that aligns with the normal vector, hence the light power focusing that normal
 	float diff = max(dot(normal, lightDir), 0.0);
-	vec3 diffuse = light.diffuse * (diff * albedo);
+	vec3 diffuse = light.diffuse * diff * albedo;
 
 	// Specular lightning (Phong)
 	vec3 viewDir = normalize(viewPos - FragPos); // Direction between the fragment and the camera

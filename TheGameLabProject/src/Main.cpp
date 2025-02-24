@@ -13,9 +13,11 @@
 #include "../include/ProjectionTransform.h"
 #include "../include/Cube.h"
 #include <Model.h>
+#include <FPSManager.h>
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void process_input(GLFWwindow* window);
+
 // Mouse
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void mouse_button_callback(GLFWwindow* window, int button, int action, int mods);
@@ -35,15 +37,6 @@ Camera gameCamera;
 
 // Perspective projection transform
 ProjectionTransform projectionTransform(SCREEN_WIDTH, SCREEN_HEIGHT);
-
-double deltaTime = 0.0f;	// Time between current frame and last frame
-double lastFrameTime = 0.0f; // Time of last frame
-
-float m_secondCounter;
-//These are not the real fps, just temporary
-float m_tempFps;
-//This float is the fps we should use
-float fps;
 
 int main() {
 
@@ -95,15 +88,21 @@ int main() {
 	// -----------
 	Model handGun("resources/models/handgun/1911.fbx");
 	Model ourModel("resources/models/explorerBag/backpack.obj");
-	Model target("resources/models/target/target.fbx");
 	Model woodenBoxes("resources/models/woodenBoxes/box.fbx");
+	//Model sr71Blackbird("resources/models/SR71/avionbien.fbx");
+	//Model sr71("resources/models/Lockheed_SR-71/avionbien.fbx");
+	//Model b2("resources/models/b2/B-2_v1_fbx.fbx");
+	Model mp7("resources/models/mp7/mp7.fbx");
 	// Cube object
 	//Cube cubeStatic;
 
 	WorldTransform worldTransform;
 	WorldTransform handGunWorldTransform;
-	WorldTransform targetWorldTransform;
 	WorldTransform woodenBoxesWorldTransform;
+	//WorldTransform sr71BlackbirdWorldTransform;
+	//WorldTransform sr71WorldTransform;
+	//WorldTransform b2WorldTransform;
+	WorldTransform mp7WorldTransform;
 
 	// Enable mouse movement inputs capture and the window will capture the mouse cursor
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
@@ -116,23 +115,7 @@ int main() {
 	while (!glfwWindowShouldClose(window)) {
 
 		// per-frame time logic
-		float currentFrame = static_cast<float>(glfwGetTime());
-		deltaTime = currentFrame - lastFrameTime;
-		lastFrameTime = currentFrame;
-		//cout << "Delta time: " << deltaTime << "\n";
-
-		if (m_secondCounter <= 1) {
-			m_secondCounter += deltaTime;
-			m_tempFps++;
-		}
-		else
-		{
-			//"fps" are the actual fps
-			fps = m_tempFps;
-			m_secondCounter = 0;
-			m_tempFps = 0;
-		}
-
+		float fps = FPSManager::Calculate();
 		//Do something with the fps
 		//std::cout << "FPS: " << fps << std::endl;
 
@@ -145,16 +128,29 @@ int main() {
 		ourShader.use();
 		
 		// Light source
+		// Point of light
 		glm::vec3 lightSourcePosition(0.0f, 10.0f, 0.0f);
-		glm::mat4 model(1.0f);
-		glm::translate(model, glm::vec3(0.0f, 0.0f, 8.0f));
-		glm::rotate(model, (float)glfwGetTime(), glm::vec3(0.0f, 1.0f, 0.0f));
+
+		glm::mat4 lightTransform(1.0f);
+		glm::mat4 translate = glm::translate(lightTransform, glm::vec3(0.0f, 0.0f, 5.0f));
+		glm::mat4 rotate = glm::rotate(lightTransform, (float)glfwGetTime(), glm::vec3(0.0f, 1.0f, 0.0f));
+		
+		lightTransform = rotate * translate;
+
+		glm::vec4 lightPosV4(lightSourcePosition, 1.0f);	// tranform to vec4
+		lightPosV4 = lightTransform * lightPosV4; // apply transformation
+		lightSourcePosition = lightPosV4;	//transform back to vec3
+
 		ourShader.setVec3("light.position", lightSourcePosition);
 
+		// Directional light
+		glm::vec3 lightDirection(-0.2f, -1.0f, -0.3f);
+		ourShader.setVec3("light.direction", lightDirection);
+
 		// light color and intensity/strenght
-		glm::vec3 lightAmbient(0.1f);
-		glm::vec3 lightDiffuse(0.5f);
-		glm::vec3 lightSpecular(1.0f);
+		glm::vec3 lightAmbient(0.2f);
+		glm::vec3 lightDiffuse(0.8f);
+		glm::vec3 lightSpecular(0.1f);
 		ourShader.setVec3("light.ambient", lightAmbient);
 		ourShader.setVec3("light.diffuse", lightDiffuse);
 		ourShader.setVec3("light.specular", lightSpecular);
@@ -201,9 +197,11 @@ int main() {
 
 		woodenBoxes.Draw(ourShader);
 
-		// TODO: Este modelo esta bug y pilla las texturas del último modelo que se renderiza
-		// Target
-		worldTransformMatrix = targetWorldTransform.getMatrix();
+		// MP7
+		mp7WorldTransform.setTranslation(glm::vec3(-0.5f, 0.0f, 0.0f));
+		mp7WorldTransform.setScale(3.0f);
+		mp7WorldTransform.setRotation(glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+		worldTransformMatrix = mp7WorldTransform.getMatrix();
 		cameraView = gameCamera.getView();
 		projectionTransformMatrix = projectionTransform.getMatrix();
 		WVPmatrix = projectionTransformMatrix * cameraView * worldTransformMatrix;
@@ -211,7 +209,42 @@ int main() {
 		ourShader.setMatrix4("view", cameraView);
 		ourShader.setMatrix4("projection", projectionTransformMatrix);
 
-		target.Draw(ourShader);
+		mp7.Draw(ourShader);
+
+		// SR71 Blackbird
+		//sr71BlackbirdWorldTransform.setScale(0.01f);
+		//sr71BlackbirdWorldTransform.setTranslation(glm::vec3(-60.0f, 0.0f, 0.0f));
+		//worldTransformMatrix = sr71BlackbirdWorldTransform.getMatrix();
+		//cameraView = gameCamera.getView();
+		//projectionTransformMatrix = projectionTransform.getMatrix();
+		//ourShader.setMatrix4("model", worldTransformMatrix);
+		//ourShader.setMatrix4("view", cameraView);
+		//ourShader.setMatrix4("projection", projectionTransformMatrix);
+
+		//sr71Blackbird.Draw(ourShader);
+
+		// SR71
+		//sr71WorldTransform.setScale(0.01f);
+		//sr71WorldTransform.setTranslation(glm::vec3(60.0f, 0.0f, 0.0f));
+		//worldTransformMatrix = sr71WorldTransform.getMatrix();
+		//cameraView = gameCamera.getView();
+		//projectionTransformMatrix = projectionTransform.getMatrix();
+		//ourShader.setMatrix4("model", worldTransformMatrix);
+		//ourShader.setMatrix4("view", cameraView);
+		//ourShader.setMatrix4("projection", projectionTransformMatrix);
+
+		//sr71.Draw(ourShader);
+
+		//b2WorldTransform.setScale(0.1f);
+		//b2WorldTransform.setTranslation(glm::vec3(20.0f, 0.0f, 0.0f));
+		//worldTransformMatrix = b2WorldTransform.getMatrix();
+		//cameraView = gameCamera.getView();
+		//projectionTransformMatrix = projectionTransform.getMatrix();
+		//ourShader.setMatrix4("model", worldTransformMatrix);
+		//ourShader.setMatrix4("view", cameraView);
+		//ourShader.setMatrix4("projection", projectionTransformMatrix);
+
+		//b2.Draw(ourShader);
 
 		// Light cube
 		//worldTransformStatic.setTranslation(glm::vec3(3.0f, 0.0f, 0.0f));
