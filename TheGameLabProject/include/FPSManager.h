@@ -23,6 +23,10 @@ public:
 		return static_cast<float>(fps);
 	}
 
+	static double GetDeltaTime() {
+		return deltaTime;
+	}
+
 private:
 	inline static double deltaTime = 0.0;	// Time between current frame and last frame
 	inline static double lastFrameTime = 0.0; // Time of last frame

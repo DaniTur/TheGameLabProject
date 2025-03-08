@@ -21,37 +21,35 @@ glm::vec3& Camera::getPosition()
 	return m_cameraPosition;
 }
 
-void Camera::moveForward() {
-	 m_cameraPosition += (m_cameraTarget * m_speed);
-	//m_cameraPosition.z -= m_speed;
+void Camera::moveForward(float deltaTime) {
+	 m_cameraPosition += (m_cameraTarget * (m_speed * deltaTime));
 }
 
-void Camera::moveBackward() {
-	 m_cameraPosition -= (m_cameraTarget * m_speed);
-	//m_cameraPosition.z += m_speed;
+void Camera::moveBackward(float deltaTime) {
+	 m_cameraPosition -= (m_cameraTarget * (m_speed * deltaTime));
 }
 
-void Camera::moveLeft() {
+void Camera::moveLeft(float deltaTime) {
 	glm::vec3 left = glm::cross(m_cameraTarget, m_up);
 	glm::normalize(left);
-	left *= m_speed;
+	left *= m_speed * deltaTime;
 	// left is pointing at -X, result of orthogonal vector between up and target
 	m_cameraPosition -= left;
 }
 
-void Camera::moveRight() {
+void Camera::moveRight(float deltaTime) {
 	glm::vec3 right = glm::cross(m_cameraTarget,m_up);
 	glm::normalize(right);
-	right *= m_speed;
+	right *= m_speed * deltaTime;
 	m_cameraPosition += right;
 }
 
-void Camera::moveUp() {
-	m_cameraPosition.y += m_speed;
+void Camera::moveUp(float deltaTime) {
+	m_cameraPosition.y += m_speed * deltaTime;
 }
 
-void Camera::moveDown() {
-	m_cameraPosition.y -= m_speed;
+void Camera::moveDown(float deltaTime) {
+	m_cameraPosition.y -= m_speed * deltaTime;
 }
 
 void Camera::targetCenter() {

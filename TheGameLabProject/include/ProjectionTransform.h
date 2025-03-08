@@ -9,6 +9,7 @@ class ProjectionTransform
 {
 public:
 
+	ProjectionTransform() = default;
 	ProjectionTransform(int screenWidth, int screenHeight);
 
 	void setFOV(float fov);
