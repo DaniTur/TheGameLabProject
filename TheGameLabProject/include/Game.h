@@ -26,6 +26,6 @@ private:
 
 	Camera m_gameCamera;
 	// Perspective projection transform
-	ProjectionTransform projectionTransform;
+	ProjectionTransform m_projectionTransform;
 };
 

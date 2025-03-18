@@ -20,7 +20,7 @@ public:
 
 private:
 
-	float m_aspectRatio;
+	float m_aspectRatio = 1.0f;
 	float m_FOV = 45.0f;	// vertical field of view
 	float m_zNear = 0.1f;	// near plane
 	float m_zFar = 100.0f;	// max render distance

@@ -10,14 +10,12 @@
 #include <WorldTransform.h>
 
 Game::Game() 
-	: m_window(m_screenWidth, m_screenHeight) {
+	: m_window(m_screenWidth, m_screenHeight), m_projectionTransform(m_screenWidth, m_screenHeight) {
 
 	// tell stb_image.h to flip loaded texture's on the y-axis (before loading model). Needed for importing .obj material textures
 	//stbi_set_flip_vertically_on_load(true);
 
 	glEnable(GL_DEPTH_TEST);	// Part of the Renderer
-
-	projectionTransform = ProjectionTransform(m_screenWidth, m_screenHeight);
 }
 
 void Game::run() {
@@ -77,21 +75,17 @@ void Game::run() {
 		// light color and intensity/strenght
 		glm::vec3 lightAmbient(0.2f);
 		glm::vec3 lightDiffuse(0.8f);
-		glm::vec3 lightSpecular(0.1f);
+		glm::vec3 lightSpecular(1.0f);
 		ourShader.setVec3("light.ambient", lightAmbient);
 		ourShader.setVec3("light.diffuse", lightDiffuse);
 		ourShader.setVec3("light.specular", lightSpecular);
 		ourShader.setVec3("viewPos",m_gameCamera.getPosition());
 
 		// Bagpack
-		// Model matrix or World Transform Matrix: model or local space to world space
-		// World transform
-		//WorldTransform worldTransform;
-		//worldTransform.setRotation((float)glfwGetTime(), glm::vec3(0.0f, 1.0f, 0.0f));
 		worldTransform.setScale(0.5f);
 		glm::mat4 worldTransformMatrix = worldTransform.getMatrix();
 		glm::mat4 cameraView = m_gameCamera.getView();
-		glm::mat4 projectionTransformMatrix = projectionTransform.getMatrix();
+		glm::mat4 projectionTransformMatrix = m_projectionTransform.getMatrix();
 		glm::mat4 WVPmatrix = projectionTransformMatrix * cameraView * worldTransformMatrix;
 		ourShader.setMatrix4("model", worldTransformMatrix);
 		ourShader.setMatrix4("view", cameraView);
@@ -104,7 +98,7 @@ void Game::run() {
 		handGunWorldTransform.setScale(0.5f);
 		worldTransformMatrix = handGunWorldTransform.getMatrix();
 		cameraView = m_gameCamera.getView();
-		projectionTransformMatrix = projectionTransform.getMatrix();
+		projectionTransformMatrix = m_projectionTransform.getMatrix();
 		WVPmatrix = projectionTransformMatrix * cameraView * worldTransformMatrix;
 		ourShader.setMatrix4("model", worldTransformMatrix);
 		ourShader.setMatrix4("view", cameraView);
@@ -116,7 +110,7 @@ void Game::run() {
 		woodenBoxesWorldTransform.setTranslation(glm::vec3(0.0f, 0.0f, -5.0f));
 		worldTransformMatrix = woodenBoxesWorldTransform.getMatrix();
 		cameraView = m_gameCamera.getView();
-		projectionTransformMatrix = projectionTransform.getMatrix();
+		projectionTransformMatrix = m_projectionTransform.getMatrix();
 		WVPmatrix = projectionTransformMatrix * cameraView * worldTransformMatrix;
 		ourShader.setMatrix4("model", worldTransformMatrix);
 		ourShader.setMatrix4("view", cameraView);
@@ -130,7 +124,7 @@ void Game::run() {
 		mp7WorldTransform.setRotation(glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 		worldTransformMatrix = mp7WorldTransform.getMatrix();
 		cameraView = m_gameCamera.getView();
-		projectionTransformMatrix = projectionTransform.getMatrix();
+		projectionTransformMatrix = m_projectionTransform.getMatrix();
 		WVPmatrix = projectionTransformMatrix * cameraView * worldTransformMatrix;
 		ourShader.setMatrix4("model", worldTransformMatrix);
 		ourShader.setMatrix4("view", cameraView);
@@ -180,5 +174,20 @@ void Game::processInput(double deltaTime) {
 	if (glfwGetKey(m_window.get(), GLFW_KEY_DOWN) == GLFW_PRESS) {
 		// move up "jump"/"fly"
 		m_gameCamera.moveDown(static_cast<float>(deltaTime));
+	}
+
+	// Mouse movement input
+	m_gameCamera.setCameraTarget(m_window.getCameraTarget());
+
+	// Mouse buttons input
+	// TODO: Hay que "consumir" el evento para que no se procese constanemente, y solo se procese una vez, sobretodo el Release
+	if (m_window.getMouseButtonState(GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
+		std::cout << "LMB pressed, shooting\n";
+	} else if (m_window.getMouseButtonState(GLFW_MOUSE_BUTTON_LEFT) == GLFW_RELEASE) {
+		std::cout << "LMB released\n";
+		// m_window.buttonEventProcessed(GLFW_MOUSE_BUTTON_LEFT, GLFW_RELEASE);
+		// 1) Iddle
+		// 2) Pulsado constanemente
+		// 3) Release una vez, consumimos evento y poner estado "no pulsado" al botón (-1 = no evento)?
 	}
 }

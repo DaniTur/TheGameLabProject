@@ -295,6 +295,7 @@
     <None Include="src\vertex_shader.vert" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="include\Event.h" />
     <ClInclude Include="include\Game.h" />
     <ClInclude Include="include\FPSManager.h" />
     <ClInclude Include="include\Cube.h" />
@@ -443,6 +444,8 @@
     <ClInclude Include="include\glm\vec3.hpp" />
     <ClInclude Include="include\glm\vec4.hpp" />
     <ClInclude Include="include\glm\vector_relational.hpp" />
+    <ClInclude Include="include\KeyEvent.h" />
+    <ClInclude Include="include\MouseEvent.h" />
     <ClInclude Include="include\shader.h" />
     <ClInclude Include="include\stb_image.h" />
     <ClInclude Include="include\WorldTransform.h" />

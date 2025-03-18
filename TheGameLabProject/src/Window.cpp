@@ -2,9 +2,16 @@
 #include <iostream>
 
 Window::Window(unsigned int width, unsigned int height)
-	: m_width(width), m_height(height)
+	: m_width(width), m_height(height),
+	m_cameraTarget(0.0f)
 {
-	glfwInit();
+	//int status = glfwInit();
+	
+	if (glfwInit() == GLFW_FALSE) {
+		std::string errorMessage = "Error: Could not initialize GLFW";
+		std::cerr << errorMessage << std::endl;
+		throw std::exception(errorMessage.c_str());
+	}
 
 	// Using OpenGL 3.3
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -21,7 +28,15 @@ Window::Window(unsigned int width, unsigned int height)
 	}
 
 	glfwMakeContextCurrent(m_window);
+	centerWindow();
+	onWindowResize();
+	setVSync(false);
+	// Stores the Window instance inside the GLFW structure to retrieve it inside the glfw callbacks, this way
+	// we have acces to the Windows instance inside the glfw callbacks
+	glfwSetWindowUserPointer(m_window, this);
+	setMouseInputsCallbacks();
 
+	// TODO: Move this away to another class like Renderer, this doesnt belong to Window
 	// GLFW tiene las funciones de OpenGL necesarias según el sistema operativo y el contexto activo, 
 	// se obtienen dichas funciones mediante una dirección y le decimos a GLAD que cargue esas funciones en memoria desde los drivers
 	// GLFW knows where the OpenGL functions are located inside the operative system(OpenGL 1.1 functions for Windows) 
@@ -32,27 +47,18 @@ Window::Window(unsigned int width, unsigned int height)
 		std::cerr << errorMessage << std::endl;
 		throw std::exception(errorMessage.c_str());
 	}
-
-	centerWindow();
-
-	disableVSync();
-
-	onWindowResize();
-
-	// Enable mouse movement inputs capture and the window will capture the mouse cursor
-	//glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-	// Fuction call back for mouse inputs
-	//glfwSetCursorPosCallback(m_window, mouse_callback);
-	// Enable mouse button inputs
-	//glfwSetMouseButtonCallback(m_window, mouse_button_callback);
 }
 
 Window::~Window() {
+	glfwSetWindowUserPointer(m_window, nullptr); // Is not strictly necesary for the actuall case uses
+	glfwDestroyWindow(m_window);
 	close();
 }
 
-void Window::disableVSync() const {
-	glfwSwapInterval(0);
+void Window::setVSync(bool enable) const {
+	if (!enable) {
+		glfwSwapInterval(0);
+	}
 }
 
 bool Window::shouldClose()
@@ -70,9 +76,22 @@ void Window::swapBuffers()
 	glfwSwapBuffers(m_window);
 }
 
-void Window::pollEvents()
+void Window::pollEvents() const
 {
 	glfwPollEvents();
+}
+
+glm::vec3 Window::getCameraTarget() const
+{
+	return m_cameraTarget;
+}
+
+int Window::getMouseButtonState(int button) {
+	// The specified key doesn't exists in the mouseButtonState map
+	if (m_mouseButtonState.count(button) <= 0) {
+		return -1;
+	}
+	return m_mouseButtonState.at(button);
 }
 
 GLFWwindow* Window::get()
@@ -95,59 +114,87 @@ void Window::onWindowResize() {
 	glfwSetFramebufferSizeCallback(m_window, framebuffer_size_callback);
 }
 
-
+void Window::setMouseInputsCallbacks() {
+	// Enable mouse movement inputs capture and the window will capture the mouse cursor
+	glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	// Raw motion mode ignores mouse acceleration and scaling
+	if (glfwRawMouseMotionSupported()) {
+		glfwSetInputMode(m_window, GLFW_RAW_MOUSE_MOTION, GLFW_TRUE);
+	}
+	// Fuction call back for mouse inputs
+	glfwSetCursorPosCallback(m_window, Window::mouseMovementInputCallback);
+	// Enable mouse button inputs
+	glfwSetMouseButtonCallback(m_window, Window::mouseButtonInputCallback);
+}
 
 // Mouse
-//double lastX = 400.0;
-//double lastY = 300.0;
-//float yaw = -90.0f;
-//float pitch = 0.0f;
-//bool firstMouse = true;
-//bool zoomEnable = false;
-//
-//void mouse_callback(GLFWwindow* window, double xpos, double ypos)
-//{
-//	if (firstMouse)
-//	{
-//		lastX = xpos;
-//		lastY = ypos;
-//		firstMouse = false;
+// Static callback
+// Uses the proper window instance method to handle the callback
+void Window::mouseMovementInputCallback(GLFWwindow* window, double xpos, double ypos) {
+	// Retrieve the Window instance that will handle the callback from the glfw structure, which is this Window instance
+	Window* thisWindowInstance = static_cast<Window*>(glfwGetWindowUserPointer(window));
+	if (thisWindowInstance) {
+		thisWindowInstance->handleMouseMovement(xpos, ypos);
+	}
+}
+
+void Window::mouseButtonInputCallback(GLFWwindow* window, int button, int action, int mods) {
+	Window* thisWindowInstance = static_cast<Window*>(glfwGetWindowUserPointer(window));
+	if (thisWindowInstance) {
+		thisWindowInstance->handleMouseButtonInput(button, action, mods);
+	}
+}
+
+// TODO: Move the input processing of the mouse movement to the Game class
+void Window::handleMouseMovement(double xpos, double ypos) {
+	if (m_firstMouse)
+	{
+		m_lastX = xpos;
+		m_lastY = ypos;
+		m_firstMouse = false;
+	}
+
+	double xoffset = xpos - m_lastX;
+	double yoffset = m_lastY - ypos;
+	m_lastX = xpos;
+	m_lastY = ypos;
+
+	float sensitivity = 0.1f;
+	xoffset *= sensitivity;
+	yoffset *= sensitivity;
+
+	// The mouse movement offset is equal to the angle of the camera we will move
+	m_yaw += (float)xoffset;
+	m_pitch += (float)yoffset;
+
+	// Pitch limitation
+	if (m_pitch > 89.0f)
+		m_pitch = 89.0f;
+	if (m_pitch < -89.0f)
+		m_pitch = -89.0f;
+
+	glm::vec3 direction;
+	direction.x = cos(glm::radians(m_yaw)) * cos(glm::radians(m_pitch));
+	direction.y = sin(glm::radians(m_pitch));
+	direction.z = sin(glm::radians(m_yaw)) * cos(glm::radians(m_pitch));
+	m_cameraTarget = glm::normalize(direction);
+}
+
+// TODO: Handle mouse buttons release
+void Window::handleMouseButtonInput(int button, int action, int mods) {
+	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
+		m_mouseButtonState.insert_or_assign(GLFW_MOUSE_BUTTON_LEFT, GLFW_PRESS);
+	} else if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE) {
+		m_mouseButtonState.insert_or_assign(GLFW_MOUSE_BUTTON_LEFT, GLFW_RELEASE);
+	}
+	//if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_RELEASE) {
+//	if (!zoomEnable) {
+//		zoomEnable = true;
+//		projectionTransform.setFOV(120.0f);
 //	}
-//
-//	double xoffset = xpos - lastX;
-//	double yoffset = lastY - ypos;
-//	lastX = xpos;
-//	lastY = ypos;
-//
-//	float sensitivity = 0.1f;
-//	xoffset *= sensitivity;
-//	yoffset *= sensitivity;
-//
-//	yaw += (float)xoffset;
-//	pitch += (float)yoffset;
-//
-//	if (pitch > 89.0f)
-//		pitch = 89.0f;
-//	if (pitch < -89.0f)
-//		pitch = -89.0f;
-//
-//	glm::vec3 direction;
-//	direction.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
-//	direction.y = sin(glm::radians(pitch));
-//	direction.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
-//	gameCamera.setCameraTarget(glm::normalize(direction));
-//}
-//
-//void mouse_button_callback(GLFWwindow* window, int button, int action, int mods) {
-//
-//	if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_RELEASE) {
-//		if (!zoomEnable) {
-//			zoomEnable = true;
-//			projectionTransform.setFOV(120.0f);
-//		}
-//		else {
-//			zoomEnable = false;
-//			projectionTransform.setFOV(90.0f);
-//		}
+//	else {
+//		zoomEnable = false;
+//		projectionTransform.setFOV(90.0f);
 //	}
 //}
+}
