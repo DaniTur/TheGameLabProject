@@ -4,6 +4,10 @@
 #include <GLFW/glfw3.h>
 #include <Camera.h>
 #include <unordered_map>
+#include <functional>
+#include "KeyEvent.h"
+
+using EventCallbackFn = std::function<void(Event&)>;
 
 class Window {
 public:
@@ -11,6 +15,8 @@ public:
 	Window() = default;
 	Window(unsigned int width, unsigned int height);
 	~Window();
+
+	void setEventCallback(const EventCallbackFn& callback);
 
 	void setVSync(bool enable) const;
 
@@ -42,8 +48,16 @@ private:
 
 	GLFWwindow* m_window;
 
-	unsigned int m_width;
-	unsigned int m_height;
+	struct WindowData {
+
+		std::string title;
+		unsigned int width{};
+		unsigned int height{};
+		// Function used when the window executes event callbacks(glfw callbacks)
+		EventCallbackFn eventCallback;
+	};
+
+	WindowData m_windowData;
 
 	// Mouse
 	double m_lastX = 400.0;

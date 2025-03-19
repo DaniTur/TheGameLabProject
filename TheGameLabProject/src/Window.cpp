@@ -2,10 +2,10 @@
 #include <iostream>
 
 Window::Window(unsigned int width, unsigned int height)
-	: m_width(width), m_height(height),
-	m_cameraTarget(0.0f)
+	: m_cameraTarget(0.0f)
 {
-	//int status = glfwInit();
+	m_windowData.width = width;
+	m_windowData.height = height;
 	
 	if (glfwInit() == GLFW_FALSE) {
 		std::string errorMessage = "Error: Could not initialize GLFW";
@@ -20,7 +20,7 @@ Window::Window(unsigned int width, unsigned int height)
 	// Using Core subset of features without the backwards-compatible features
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-	m_window = glfwCreateWindow(m_width, m_height, "TheGameLabProject", nullptr, nullptr);
+	m_window = glfwCreateWindow(m_windowData.width, m_windowData.height, "TheGameLabProject", nullptr, nullptr);
 	if (m_window == nullptr) {
 
 		std::cerr << "Failed to create GLFW window" << std::endl;
@@ -33,7 +33,20 @@ Window::Window(unsigned int width, unsigned int height)
 	setVSync(false);
 	// Stores the Window instance inside the GLFW structure to retrieve it inside the glfw callbacks, this way
 	// we have acces to the Windows instance inside the glfw callbacks
-	glfwSetWindowUserPointer(m_window, this);
+	glfwSetWindowUserPointer(m_window, &m_windowData);
+	
+	glfwSetKeyCallback(m_window, [](GLFWwindow* window,int key, int scancode, int action, int mods) {
+		const WindowData& windowData = *(WindowData*)(glfwGetWindowUserPointer(window));
+			if (action == GLFW_PRESS) {
+				KeyPressedEvent event(key);
+				windowData.eventCallback(event);
+				
+			}
+			else if (action == GLFW_RELEASE) {
+				KeyReleasedEvent event(key);
+				windowData.eventCallback(event);
+			}
+		});
 	setMouseInputsCallbacks();
 
 	// TODO: Move this away to another class like Renderer, this doesnt belong to Window
@@ -53,6 +66,10 @@ Window::~Window() {
 	glfwSetWindowUserPointer(m_window, nullptr); // Is not strictly necesary for the actuall case uses
 	glfwDestroyWindow(m_window);
 	close();
+}
+
+void Window::setEventCallback(const EventCallbackFn& callback) { 
+	m_windowData.eventCallback = callback; 
 }
 
 void Window::setVSync(bool enable) const {
@@ -101,7 +118,7 @@ GLFWwindow* Window::get()
 
 // Center the window(assuming a 1920x1080 monitor resolution)
 void Window::centerWindow() {
-	glfwSetWindowPos(m_window, (1920 / 2) - (m_width / 2), (1080 / 2) - (m_height / 2));
+	glfwSetWindowPos(m_window, (1920 / 2) - (m_windowData.width/ 2), (1080 / 2) - (m_windowData.height / 2));
 }
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height) {

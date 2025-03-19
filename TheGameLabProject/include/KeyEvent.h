@@ -31,10 +31,10 @@ public:
 	}
 };
 
-class KeyRelasedEvent : public KeyEvent {
+class KeyReleasedEvent : public KeyEvent {
 public:
 
-	explicit KeyRelasedEvent(const int keycode) : KeyEvent(keycode) {}
+	explicit KeyReleasedEvent(const int keycode) : KeyEvent(keycode) {}
 
 	EventType getEventType() const override {
 		return EventType::KeyReleased;

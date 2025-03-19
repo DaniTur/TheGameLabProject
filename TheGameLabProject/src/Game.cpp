@@ -12,6 +12,8 @@
 Game::Game() 
 	: m_window(m_screenWidth, m_screenHeight), m_projectionTransform(m_screenWidth, m_screenHeight) {
 
+	m_window.setEventCallback(std::bind(&Game::onEvent, this, std::placeholders::_1));
+	
 	// tell stb_image.h to flip loaded texture's on the y-axis (before loading model). Needed for importing .obj material textures
 	//stbi_set_flip_vertically_on_load(true);
 
@@ -143,6 +145,36 @@ void Game::run() {
 	glfwTerminate();
 }
 
+void Game::onEvent(Event& event)
+{
+	switch (event.getEventType())
+	{
+	case EventType::KeyPressed:
+		// Obtain the GLFW keycode
+		std::cout << event.toString() << std::endl;
+		break;
+	case EventType::KeyReleased:
+		// Obtain the GLFW keycode
+		std::cout << event.toString() << std::endl;
+		break;
+	case EventType::MouseMoved:
+		// Obtain the GLFW keycode
+		std::cout << event.toString() << std::endl;
+		break;
+	case EventType::MouseButtonPressed:
+		// Obtain the GLFW keycode
+		std::cout << event.toString() << std::endl;
+		break;
+	case EventType::MouseButtonReleased:
+		// Obtain the GLFW keycode
+		std::cout << event.toString() << std::endl;
+		break;
+
+	default:
+		break;
+	}
+}
+
 void Game::processInput(double deltaTime) {
 
 	if (glfwGetKey(m_window.get(), GLFW_KEY_ESCAPE) == GLFW_PRESS) {
@@ -191,3 +223,4 @@ void Game::processInput(double deltaTime) {
 		// 3) Release una vez, consumimos evento y poner estado "no pulsado" al botón (-1 = no evento)?
 	}
 }
+

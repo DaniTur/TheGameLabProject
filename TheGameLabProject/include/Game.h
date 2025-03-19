@@ -3,6 +3,7 @@
 #include <Window.h>
 #include <Camera.h>
 #include <ProjectionTransform.h>
+#include "Event.h"
 
 class Game
 {
@@ -11,6 +12,8 @@ public:
 	Game();
 
 	void run();
+
+	void onEvent(Event &event);
 
 private:
 
@@ -27,5 +30,7 @@ private:
 	Camera m_gameCamera;
 	// Perspective projection transform
 	ProjectionTransform m_projectionTransform;
+
+	bool m_PlayerWalking = false;
 };
 
