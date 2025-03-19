@@ -41,7 +41,6 @@ private:
 	void setMouseInputsCallbacks();
 	static void mouseMovementInputCallback(GLFWwindow* window, double xpos, double ypos);
 	static void mouseButtonInputCallback(GLFWwindow* window, int button, int action, int mods);
-	void handleMouseMovement(double xpos, double ypos);
 	void handleMouseButtonInput(int button, int action, int mods);
 
 private:
@@ -58,14 +57,6 @@ private:
 	};
 
 	WindowData m_windowData;
-
-	// Mouse
-	double m_lastX = 400.0;
-	double m_lastY = 300.0;
-	float m_yaw = -90.0f;
-	float m_pitch = 0.0f;
-	bool m_firstMouse = true;
-	bool m_zoomEnable = false;
 
 	glm::vec3 m_cameraTarget;
 	std::unordered_map<int, int> m_mouseButtonState;

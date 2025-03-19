@@ -18,6 +18,14 @@ public:
 		return m_MouseY;
 	}
 
+	EventType getEventType() const override {
+		return EventType::MouseMoved;
+	}
+
+	const char* getName() const override {
+		return "MouseMoved";
+	}
+
 	std::string toString() override {
 		std::stringstream ss;
 		ss << "MouseMovedEvent: " << m_MouseX << ", " << m_MouseY;
@@ -68,7 +76,7 @@ public:
 
 class MoueButtonReleasedEvent : public MouseButtonEvent {
 	EventType getEventType() const override {
-		return EventType::MouseButtonRelased;
+		return EventType::MouseButtonReleased;
 	}
 
 	const char* getName() const override {

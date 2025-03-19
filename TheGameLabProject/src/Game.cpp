@@ -8,6 +8,7 @@
 #include <shader.h>
 #include <Model.h>
 #include <WorldTransform.h>
+#include "MouseEvent.h"
 
 Game::Game() 
 	: m_window(m_screenWidth, m_screenHeight), m_projectionTransform(m_screenWidth, m_screenHeight) {
@@ -43,10 +44,11 @@ void Game::run() {
 	while (m_running) {
 
 		float fps = FPSManager::Calculate();
+		m_DeltaTime = FPSManager::GetDeltaTime();
 		//Do something with the fps
 		//std::cout << "FPS: " << fps << std::endl;
 
-		processInput(FPSManager::GetDeltaTime());
+		//processInput(FPSManager::GetDeltaTime());
 
 		// Render clear
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
@@ -152,14 +154,17 @@ void Game::onEvent(Event& event)
 	case EventType::KeyPressed:
 		// Obtain the GLFW keycode
 		std::cout << event.toString() << std::endl;
+		onKeyPressed(static_cast<KeyPressedEvent&>(event));
 		break;
 	case EventType::KeyReleased:
 		// Obtain the GLFW keycode
 		std::cout << event.toString() << std::endl;
+		onKeyReleased(static_cast<KeyReleasedEvent&>(event));
 		break;
 	case EventType::MouseMoved:
 		// Obtain the GLFW keycode
 		std::cout << event.toString() << std::endl;
+		onMouseMoved(static_cast<MouseMovedEvent&>(event));
 		break;
 	case EventType::MouseButtonPressed:
 		// Obtain the GLFW keycode
@@ -222,5 +227,105 @@ void Game::processInput(double deltaTime) {
 		// 2) Pulsado constanemente
 		// 3) Release una vez, consumimos evento y poner estado "no pulsado" al botón (-1 = no evento)?
 	}
+}
+
+void Game::onKeyPressed(KeyPressedEvent& e)
+{
+	switch (e.getKeyCode())
+	{
+	case GLFW_KEY_W:
+		std::cout << "Pressed: W, Walking\n" ;
+		m_PlayerWalking = true;
+		m_gameCamera.moveForward(static_cast<float>(m_DeltaTime));
+		break;
+	case GLFW_KEY_A:
+		std::cout << "Pressed: A, Walking\n";
+		m_gameCamera.moveLeft(static_cast<float>(m_DeltaTime));
+		break;
+	case GLFW_KEY_S:
+		std::cout << "Pressed: S, Walking\n";
+		m_gameCamera.moveBackward(static_cast<float>(m_DeltaTime));
+		break;
+	case GLFW_KEY_D:
+		std::cout << "Pressed: D, Walking\n";
+		m_gameCamera.moveRight(static_cast<float>(m_DeltaTime));
+		break;
+	case GLFW_KEY_UP:
+		std::cout << "Pressed: UP, Flying\n";
+		m_gameCamera.moveUp(static_cast<float>(m_DeltaTime));
+		break;
+	case GLFW_KEY_DOWN:
+		std::cout << "Pressed: DOWN, Flying\n";
+		m_gameCamera.moveDown(static_cast<float>(m_DeltaTime));
+		break;
+	default:
+		break;
+	}
+	e.handled = true;
+}
+
+void Game::onKeyReleased(KeyReleasedEvent& e)
+{
+	switch (e.getKeyCode())
+	{
+	case GLFW_KEY_W:
+		std::cout << "Released: W\n";
+		m_PlayerWalking = false;
+		break;
+	case GLFW_KEY_A:
+		std::cout << "Released: A\n";
+		break;
+	case GLFW_KEY_S:
+		std::cout << "Released: S\n";
+		break;
+	case GLFW_KEY_D:
+		std::cout << "Released: D\n";
+		break;
+	case GLFW_KEY_UP:
+		std::cout << "Released: UP\n";
+		break;
+	case GLFW_KEY_DOWN:
+		std::cout << "Released: DOWN\n";
+		break;
+	default:
+		break;
+	}
+	e.handled = true;
+}
+
+void Game::onMouseMoved(MouseMovedEvent &e) {
+	if (m_Mouse.firstMouse)
+	{
+		m_Mouse.lastX = e.getX();
+		m_Mouse.lastY = e.getY();
+		m_Mouse.firstMouse = false;
+	}
+
+	double xoffset = e.getX() - m_Mouse.lastX;
+	double yoffset = m_Mouse.lastY - e.getY();
+	m_Mouse.lastX = e.getX();
+	m_Mouse.lastY = e.getY();
+
+	float sensitivity = 0.1f;
+	xoffset *= sensitivity;
+	yoffset *= sensitivity;
+
+	// The mouse movement offset is equal to the angle of the camera we will move
+	m_Mouse.yaw += (float)xoffset;
+	m_Mouse.pitch += (float)yoffset;
+
+	// Pitch limitation
+	if (m_Mouse.pitch > 89.0f)
+		m_Mouse.pitch = 89.0f;
+	if (m_Mouse.pitch < -89.0f)
+		m_Mouse.pitch = -89.0f;
+
+	glm::vec3 direction;
+	direction.x = cos(glm::radians(m_Mouse.yaw)) * cos(glm::radians(m_Mouse.pitch));
+	direction.y = sin(glm::radians(m_Mouse.pitch));
+	direction.z = sin(glm::radians(m_Mouse.yaw)) * cos(glm::radians(m_Mouse.pitch));
+	m_gameCamera.setCameraTarget(glm::normalize(direction));
+	
+	e.handled = true;
 }
 

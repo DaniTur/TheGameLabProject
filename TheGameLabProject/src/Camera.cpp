@@ -1,5 +1,5 @@
 #include "../include/Camera.h"
-
+#include <iostream>
 Camera::Camera() {
 	m_cameraPosition = glm::vec3(0.0f, 0.0f, 1.0f);
 	// right handed system, target forward is along -Z axis
@@ -22,6 +22,7 @@ glm::vec3& Camera::getPosition()
 }
 
 void Camera::moveForward(float deltaTime) {
+	std::cout << "moving forward\n";
 	 m_cameraPosition += (m_cameraTarget * (m_speed * deltaTime));
 }
 

@@ -1,5 +1,6 @@
 #include "Window.h"
 #include <iostream>
+#include "MouseEvent.h"
 
 Window::Window(unsigned int width, unsigned int height)
 	: m_cameraTarget(0.0f)
@@ -40,7 +41,6 @@ Window::Window(unsigned int width, unsigned int height)
 			if (action == GLFW_PRESS) {
 				KeyPressedEvent event(key);
 				windowData.eventCallback(event);
-				
 			}
 			else if (action == GLFW_RELEASE) {
 				KeyReleasedEvent event(key);
@@ -139,21 +139,15 @@ void Window::setMouseInputsCallbacks() {
 		glfwSetInputMode(m_window, GLFW_RAW_MOUSE_MOTION, GLFW_TRUE);
 	}
 	// Fuction call back for mouse inputs
-	glfwSetCursorPosCallback(m_window, Window::mouseMovementInputCallback);
+	glfwSetCursorPosCallback(m_window, [](GLFWwindow* window, double xpos, double ypos) {
+			const WindowData &windowData = *(WindowData*)glfwGetWindowUserPointer(window);
+			MouseMovedEvent event((float)xpos, (float)ypos);
+			windowData.eventCallback(event);
+		});
 	// Enable mouse button inputs
 	glfwSetMouseButtonCallback(m_window, Window::mouseButtonInputCallback);
 }
 
-// Mouse
-// Static callback
-// Uses the proper window instance method to handle the callback
-void Window::mouseMovementInputCallback(GLFWwindow* window, double xpos, double ypos) {
-	// Retrieve the Window instance that will handle the callback from the glfw structure, which is this Window instance
-	Window* thisWindowInstance = static_cast<Window*>(glfwGetWindowUserPointer(window));
-	if (thisWindowInstance) {
-		thisWindowInstance->handleMouseMovement(xpos, ypos);
-	}
-}
 
 void Window::mouseButtonInputCallback(GLFWwindow* window, int button, int action, int mods) {
 	Window* thisWindowInstance = static_cast<Window*>(glfwGetWindowUserPointer(window));
@@ -162,40 +156,6 @@ void Window::mouseButtonInputCallback(GLFWwindow* window, int button, int action
 	}
 }
 
-// TODO: Move the input processing of the mouse movement to the Game class
-void Window::handleMouseMovement(double xpos, double ypos) {
-	if (m_firstMouse)
-	{
-		m_lastX = xpos;
-		m_lastY = ypos;
-		m_firstMouse = false;
-	}
-
-	double xoffset = xpos - m_lastX;
-	double yoffset = m_lastY - ypos;
-	m_lastX = xpos;
-	m_lastY = ypos;
-
-	float sensitivity = 0.1f;
-	xoffset *= sensitivity;
-	yoffset *= sensitivity;
-
-	// The mouse movement offset is equal to the angle of the camera we will move
-	m_yaw += (float)xoffset;
-	m_pitch += (float)yoffset;
-
-	// Pitch limitation
-	if (m_pitch > 89.0f)
-		m_pitch = 89.0f;
-	if (m_pitch < -89.0f)
-		m_pitch = -89.0f;
-
-	glm::vec3 direction;
-	direction.x = cos(glm::radians(m_yaw)) * cos(glm::radians(m_pitch));
-	direction.y = sin(glm::radians(m_pitch));
-	direction.z = sin(glm::radians(m_yaw)) * cos(glm::radians(m_pitch));
-	m_cameraTarget = glm::normalize(direction);
-}
 
 // TODO: Handle mouse buttons release
 void Window::handleMouseButtonInput(int button, int action, int mods) {

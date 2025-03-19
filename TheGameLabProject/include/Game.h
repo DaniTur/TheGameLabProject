@@ -4,6 +4,8 @@
 #include <Camera.h>
 #include <ProjectionTransform.h>
 #include "Event.h"
+#include "KeyEvent.h"
+#include "MouseEvent.h"
 
 class Game
 {
@@ -19,6 +21,10 @@ private:
 
 	void processInput(double deltaTime);
 
+	void onKeyPressed(KeyPressedEvent& e);
+	void onKeyReleased(KeyReleasedEvent& e);
+	void onMouseMoved(MouseMovedEvent &e);
+
 private:
 
 	bool m_running = false;
@@ -31,6 +37,17 @@ private:
 	// Perspective projection transform
 	ProjectionTransform m_projectionTransform;
 
+	double m_DeltaTime{};
 	bool m_PlayerWalking = false;
+
+	struct Mouse {
+		double lastX = 400.0;
+		double lastY = 300.0;
+		float yaw = -90.0f;
+		float pitch = 0.0f;
+		bool firstMouse = true;
+		bool zoomEnable = false;
+	};
+	Mouse m_Mouse;
 };
 
