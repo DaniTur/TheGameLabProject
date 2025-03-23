@@ -19,11 +19,10 @@ public:
 
 private:
 
-	void processInput(double deltaTime);
-
 	void onKeyPressed(KeyPressedEvent& e);
 	void onKeyReleased(KeyReleasedEvent& e);
 	void onMouseMoved(MouseMovedEvent &e);
+	void onMouseButtonPressed(MouseButtonPressedEvent &e);
 
 private:
 

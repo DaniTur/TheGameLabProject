@@ -6,6 +6,7 @@
 #include <unordered_map>
 #include <functional>
 #include "KeyEvent.h"
+#include "Logger.h"
 
 using EventCallbackFn = std::function<void(Event&)>;
 

@@ -5,7 +5,8 @@
 enum class EventType {
 	None = 0,
 	KeyPressed, KeyReleased,
-	MouseButtonPressed, MouseButtonReleased, MouseMoved, MouseScrolled
+	MouseButtonPressed, MouseButtonReleased, MouseMoved, MouseScrolled,
+	WindowClosed
 };
 
 // Abstract Class

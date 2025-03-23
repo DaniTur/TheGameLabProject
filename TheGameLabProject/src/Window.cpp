@@ -1,6 +1,8 @@
-#include "Window.h"
 #include <iostream>
+
+#include "Window.h"
 #include "MouseEvent.h"
+#include "Logger.h"
 
 Window::Window(unsigned int width, unsigned int height)
 	: m_cameraTarget(0.0f)
@@ -9,8 +11,8 @@ Window::Window(unsigned int width, unsigned int height)
 	m_windowData.height = height;
 	
 	if (glfwInit() == GLFW_FALSE) {
-		std::string errorMessage = "Error: Could not initialize GLFW";
-		std::cerr << errorMessage << std::endl;
+		std::string errorMessage = "Could not initialize GLFW";
+		LOG_ERROR(errorMessage);
 		throw std::exception(errorMessage.c_str());
 	}
 
@@ -21,10 +23,11 @@ Window::Window(unsigned int width, unsigned int height)
 	// Using Core subset of features without the backwards-compatible features
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
+	LOG_INFO("GLFW initialized");
+
 	m_window = glfwCreateWindow(m_windowData.width, m_windowData.height, "TheGameLabProject", nullptr, nullptr);
 	if (m_window == nullptr) {
-
-		std::cerr << "Failed to create GLFW window" << std::endl;
+		LOG_FATAL("Failed to create GLFW window");
 		glfwTerminate();
 	}
 
@@ -50,14 +53,14 @@ Window::Window(unsigned int width, unsigned int height)
 	setMouseInputsCallbacks();
 
 	// TODO: Move this away to another class like Renderer, this doesnt belong to Window
-	// GLFW tiene las funciones de OpenGL necesarias según el sistema operativo y el contexto activo, 
-	// se obtienen dichas funciones mediante una dirección y le decimos a GLAD que cargue esas funciones en memoria desde los drivers
+	// GLFW tiene las funciones de OpenGL necesarias segun el sistema operativo y el contexto activo, 
+	// se obtienen dichas funciones mediante una direccion y le decimos a GLAD que cargue esas funciones en memoria desde los drivers
 	// GLFW knows where the OpenGL functions are located inside the operative system(OpenGL 1.1 functions for Windows) 
 	// and in the driver list of functions(above OpenGL 1.1 version). GLFW gives the address of the function list (OS + drivers)
 	// to GLAD to be able to load those functions.
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
 		std::string errorMessage = "Failed to initialize GLAD";
-		std::cerr << errorMessage << std::endl;
+		LOG_FATAL(errorMessage);
 		throw std::exception(errorMessage.c_str());
 	}
 }
@@ -122,7 +125,7 @@ void Window::centerWindow() {
 }
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
-	// Tells OpenGL the size of the render area inside the window. Indica a OpenGL el área dentro de la ventana donde va a tener que renderizar
+	// Tells OpenGL the size of the render area inside the window. Indica a OpenGL el area dentro de la ventana donde va a tener que renderizar
 	glViewport(0, 0, width, height);
 }
 
