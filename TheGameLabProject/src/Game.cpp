@@ -1,10 +1,6 @@
-#include "Logging/Logger.h"
+#include "pch.h"
+
 #include "Game.h"
-
-#include <glad/glad.h>
-#include <GLFW/glfw3.h>
-#include <iostream>
-
 #include "FPSManager.h"
 #include "Graphics/shader.h"
 #include "Graphics/Model.h"

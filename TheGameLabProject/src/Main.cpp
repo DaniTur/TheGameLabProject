@@ -1,4 +1,5 @@
-#include "Logging/Logger.h"
+#include "pch.h"
+
 #include "Game.h"
 
 int main() {

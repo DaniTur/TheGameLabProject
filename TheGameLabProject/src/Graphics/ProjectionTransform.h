@@ -16,7 +16,7 @@ public:
 
 	void setMaxRenderDistance(float maxDistance);
 
-	glm::mat4& getMatrix() const;
+	glm::mat4 getMatrix() const;
 
 private:
 

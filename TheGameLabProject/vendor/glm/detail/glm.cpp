@@ -1,5 +1,6 @@
 /// @ref core
 /// @file glm/glm.cpp
+#include "pch.h"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/quaternion.hpp>

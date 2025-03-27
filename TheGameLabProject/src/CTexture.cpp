@@ -1,5 +1,6 @@
-#include "CTexture.h"
+#include "pch.h"
 
+#include "CTexture.h"
 
 CTexture::CTexture(unsigned int target, const std::string& filePath) : m_target(target) {
 

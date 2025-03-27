@@ -1,6 +1,5 @@
-#include <iostream>
+#include "pch.h"
 
-#include "Logging/Logger.h"
 #include "Window.h"
 #include "Events/MouseEvent.h"
 

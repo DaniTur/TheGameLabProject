@@ -1,8 +1,11 @@
+#include "pch.h"
+
+#include "Model.h"
+
 #include <assimp/Importer.hpp>
 #include <assimp/postprocess.h>
 #include <stb_image/stb_image.h>
 
-#include "Model.h"
 
 #define ASSIMP_IMPORTER_POSTPROCESSING_FLAGS_OBJ (aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_CalcTangentSpace)
 #define ASSIMP_IMPORTER_POSTPROCESSING_FLAGS_FBX (aiProcess_FlipUVs | aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_CalcTangentSpace)

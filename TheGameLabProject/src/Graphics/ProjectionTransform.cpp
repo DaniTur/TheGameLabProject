@@ -1,3 +1,5 @@
+#include "pch.h"
+
 #include "ProjectionTransform.h"
 
 ProjectionTransform::ProjectionTransform(int screenWidth, int screenHeight) {
@@ -12,7 +14,7 @@ void ProjectionTransform::setMaxRenderDistance(float maxDistance) {
 	m_zFar = maxDistance;
 }
 
-glm::mat4& ProjectionTransform::getMatrix() const {
+glm::mat4 ProjectionTransform::getMatrix() const {
 
 	glm::mat4 projection(1.0f);
 

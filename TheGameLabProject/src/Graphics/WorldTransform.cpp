@@ -1,3 +1,5 @@
+#include "pch.h"
+
 #include "WorldTransform.h"
 
 WorldTransform::WorldTransform() 
