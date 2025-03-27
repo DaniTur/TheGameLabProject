@@ -1,15 +1,15 @@
+#include "Logging/Logger.h"
 #include "Game.h"
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <iostream>
 
-#include <FPSManager.h>
-#include <shader.h>
-#include <Model.h>
-#include <WorldTransform.h>
-#include "MouseEvent.h"
-#include "Logger.h"
+#include "FPSManager.h"
+#include "Graphics/shader.h"
+#include "Graphics/Model.h"
+#include "Graphics/WorldTransform.h"
+#include "Events/MouseEvent.h"
 
 Game::Game() 
 	: m_window(m_screenWidth, m_screenHeight), m_projectionTransform(m_screenWidth, m_screenHeight) {
@@ -25,8 +25,7 @@ Game::Game()
 void Game::run() {
 
 	m_running = true;
-	int r = 5;
-	LOG_INFO("Game running...{}", r);
+	LOG_INFO("Game running...");
 
 	// SHADERS
 	// Build and Compile our shader program from files

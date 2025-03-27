@@ -1,6 +1,6 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
-#include "../include/Cube.h"
+#include "Cube.h"
 
 Cube::Cube() {
 	m_vertices = {

@@ -1,8 +1,8 @@
 #include <iostream>
 
+#include "Logging/Logger.h"
 #include "Window.h"
-#include "MouseEvent.h"
-#include "Logger.h"
+#include "Events/MouseEvent.h"
 
 Window::Window(unsigned int width, unsigned int height)
 	: m_cameraTarget(0.0f)

@@ -1,4 +1,4 @@
-#include "../include/CTexture.h"
+#include "CTexture.h"
 
 
 CTexture::CTexture(unsigned int target, const std::string& filePath) : m_target(target) {
