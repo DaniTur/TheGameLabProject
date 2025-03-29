@@ -1,6 +1,7 @@
 #include "pch.h"
-
 #include "CTexture.h"
+
+#include "stb_image.h"
 
 CTexture::CTexture(unsigned int target, const std::string& filePath) : m_target(target) {
 

@@ -2,7 +2,7 @@
 <Project>
   <ProjectOutputs>
     <ProjectOutput>
-      <FullPath>C:\dev\TheGameLabProject\bin\Release-x64\TheGameLabProject\TheGameLabProject.exe</FullPath>
+      <FullPath>C:\dev\TheGameLabProject\bin\Release-x86_64\TheGameLabProject\TheGameLabProject.exe</FullPath>
     </ProjectOutput>
   </ProjectOutputs>
   <ContentFiles />

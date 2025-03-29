@@ -4,7 +4,7 @@
 
 #include <assimp/Importer.hpp>
 #include <assimp/postprocess.h>
-#include <stb_image/stb_image.h>
+#include "stb_image.h"
 
 
 #define ASSIMP_IMPORTER_POSTPROCESSING_FLAGS_OBJ (aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_CalcTangentSpace)
@@ -125,7 +125,7 @@ Mesh Model::processMesh(const aiMesh *mesh, const aiScene *scene) {
     // Process indices
     for (unsigned int i = 0; i < mesh->mNumFaces; i++) {
         aiFace face = mesh->mFaces[i];
-       // TODO: cambiar por otro for recorriendo los indices de cada cara y aÒadirlos uno a uno
+       // TODO: cambiar por otro for recorriendo los indices de cada cara y a√±adirlos uno a uno
         //indices.insert(indices.end(), &face.mIndices[0], &face.mIndices[0] + face.mNumIndices);
         for (unsigned int j = 0; j < face.mNumIndices; j++)
             indices.push_back(face.mIndices[j]);
@@ -245,7 +245,7 @@ unsigned int Model::loadTextureFromFile(const char *file, const std::string &dir
 void Model::PrintMaterialInfo(const aiScene* scene) {
     if (!scene) return;
 
-    std::cout << "N˙mero de materiales: " << scene->mNumMaterials << std::endl;
+    std::cout << "N√∫mero de materiales: " << scene->mNumMaterials << std::endl;
 
     for (unsigned int i = 0; i < scene->mNumMaterials; i++) {
         aiMaterial* material = scene->mMaterials[i];
@@ -282,7 +282,7 @@ void Model::VerifyEmbebedTextures(const aiScene* scene) {
 }
 
 void Model::VerifyTexturesInMaterialProperties(const aiScene* scene) {
-    // Revisar si las texturas est·n en las propiedades del material
+    // Revisar si las texturas est√°n en las propiedades del material
     for (unsigned int i = 0; i < scene->mNumMaterials; i++) {
         aiMaterial* material = scene->mMaterials[i];
 

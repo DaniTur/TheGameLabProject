@@ -25,7 +25,7 @@ void Game::run() {
 
 	// SHADERS
 	// Build and Compile our shader program from files
-	Shader ourShader("src/vertex_shader.vert", "src/fragment_shader.frag");
+	Shader ourShader("src/Graphics/vertex_shader.vert", "src/Graphics/fragment_shader.frag");
 
 	// load models
 	// -----------
