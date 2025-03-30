@@ -134,11 +134,7 @@ void Game::run() {
 
 		mp7.Draw(ourShader);
 
-		// TODO: This shold be a renderer responsability?
-		// Check and call IO events and swap the buffers
-		m_window.swapBuffers();
-		m_window.pollEvents();
-
+		m_window.onUpdate();
 	}
 
 	// Clearing all previously allocated GLFW resources.
@@ -172,6 +168,7 @@ void Game::onEvent(Event& event)
 	case EventType::MouseButtonReleased:
 		// Obtain the GLFW keycode
 		std::cout << event.toString() << std::endl;
+		onMouseButtonReleased(static_cast<MouseButtonReleasedEvent&>(event));
 		break;
 
 	default:
@@ -292,6 +289,23 @@ void Game::onMouseButtonPressed(MouseButtonPressedEvent& e)
 		break;
 	case GLFW_MOUSE_BUTTON_2:	//right button
 		std::cout << "RMB pressed, zooming\n";
+		break;
+	default:
+		break;
+	}
+
+	e.handled = true;
+}
+
+void Game::onMouseButtonReleased(MouseButtonReleasedEvent& e)
+{
+	switch (e.getButtonCode())
+	{
+	case GLFW_MOUSE_BUTTON_1:	//left button
+		std::cout << "LMB released, stop shooting\n";
+		break;
+	case GLFW_MOUSE_BUTTON_2:	//right button
+		std::cout << "RMB released, zooming out\n";
 		break;
 	default:
 		break;

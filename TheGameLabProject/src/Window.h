@@ -24,8 +24,7 @@ public:
 
 	void close();
 
-	void swapBuffers();
-	void pollEvents() const; // user events
+	void onUpdate();
 
 	glm::vec3 getCameraTarget() const;
 	int getMouseButtonState(int button);

@@ -65,8 +65,6 @@ Window::Window(unsigned int width, unsigned int height)
 }
 
 Window::~Window() {
-	glfwSetWindowUserPointer(m_window, nullptr); // Is not strictly necesary for the actuall case uses
-	glfwDestroyWindow(m_window);
 	close();
 }
 
@@ -75,9 +73,7 @@ void Window::setEventCallback(const EventCallbackFn& callback) {
 }
 
 void Window::setVSync(bool enable) const {
-	if (!enable) {
-		glfwSwapInterval(0);
-	}
+	glfwSwapInterval(enable);
 }
 
 bool Window::shouldClose()
@@ -87,17 +83,15 @@ bool Window::shouldClose()
 
 // Release all previously allocated GLFW resources.
 void Window::close() {
+	glfwSetWindowUserPointer(m_window, nullptr); // Is not strictly necesary for the actual use case
+	glfwDestroyWindow(m_window);
 	glfwTerminate();
 }
 
-void Window::swapBuffers()
-{
-	glfwSwapBuffers(m_window);
-}
-
-void Window::pollEvents() const
+void Window::onUpdate()
 {
 	glfwPollEvents();
+	glfwSwapBuffers(m_window);
 }
 
 glm::vec3 Window::getCameraTarget() const
@@ -146,8 +140,18 @@ void Window::setMouseInputsCallbacks() {
 			MouseMovedEvent event((float)xpos, (float)ypos);
 			windowData.eventCallback(event);
 		});
+
 	// Enable mouse button inputs
-	glfwSetMouseButtonCallback(m_window, Window::mouseButtonInputCallback);
+	glfwSetMouseButtonCallback(m_window, [](GLFWwindow* window, int button, int action, int mods) {
+			const WindowData& windowData = *(WindowData*)glfwGetWindowUserPointer(window);
+			if (action == GLFW_PRESS) {
+				MouseButtonPressedEvent event(button);
+				windowData.eventCallback(event);
+			} else if (action == GLFW_RELEASE) {
+				MouseButtonReleasedEvent event(button);
+				windowData.eventCallback(event);
+			}
+		});
 }
 
 

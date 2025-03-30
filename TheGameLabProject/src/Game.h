@@ -23,6 +23,7 @@ private:
 	void onKeyReleased(KeyReleasedEvent& e);
 	void onMouseMoved(MouseMovedEvent &e);
 	void onMouseButtonPressed(MouseButtonPressedEvent &e);
+	void onMouseButtonReleased(MouseButtonReleasedEvent &e);
 
 private:
 

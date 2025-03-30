@@ -74,7 +74,11 @@ public:
 };
 
 
-class MoueButtonReleasedEvent : public MouseButtonEvent {
+class MouseButtonReleasedEvent : public MouseButtonEvent {
+public:
+
+	explicit MouseButtonReleasedEvent(const int buttoncode) : MouseButtonEvent(buttoncode) {}
+
 	EventType getEventType() const override {
 		return EventType::MouseButtonReleased;
 	}
