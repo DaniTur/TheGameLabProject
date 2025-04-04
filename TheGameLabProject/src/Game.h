@@ -19,6 +19,9 @@ public:
 
 private:
 
+	void processInputPolling();
+	void onUpdate();
+
 	void onKeyPressed(KeyPressedEvent& e);
 	void onKeyReleased(KeyReleasedEvent& e);
 	void onMouseMoved(MouseMovedEvent &e);
@@ -38,7 +41,6 @@ private:
 	ProjectionTransform m_projectionTransform;
 
 	double m_DeltaTime{};
-	bool m_PlayerWalking = false;
 
 	struct Mouse {
 		double lastX = 400.0;

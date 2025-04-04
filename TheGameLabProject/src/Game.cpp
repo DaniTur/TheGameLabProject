@@ -6,11 +6,14 @@
 #include "Graphics/Model.h"
 #include "Graphics/WorldTransform.h"
 #include "Events/MouseEvent.h"
+#include "Input.h"
 
 Game::Game() 
 	: m_window(m_screenWidth, m_screenHeight), m_projectionTransform(m_screenWidth, m_screenHeight) {
 
 	m_window.setEventCallback(std::bind(&Game::onEvent, this, std::placeholders::_1));
+
+	Input::Init(m_window.get());
 	
 	// tell stb_image.h to flip loaded texture's on the y-axis (before loading model). Needed for importing .obj material textures
 	//stbi_set_flip_vertically_on_load(true);
@@ -41,12 +44,10 @@ void Game::run() {
 	
 	while (m_running) {
 
-		float fps = FPSManager::Calculate();
+		FPSManager::Calculate();
 		m_DeltaTime = FPSManager::GetDeltaTime();
-		//Do something with the fps
-		//std::cout << "FPS: " << fps << std::endl;
 
-		//processInput(FPSManager::GetDeltaTime());
+		processInputPolling();
 
 		// Render clear
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
@@ -134,6 +135,8 @@ void Game::run() {
 
 		mp7.Draw(ourShader);
 
+		onUpdate();
+
 		m_window.onUpdate();
 	}
 
@@ -145,27 +148,28 @@ void Game::onEvent(Event& event)
 {
 	switch (event.getEventType())
 	{
-	case EventType::KeyPressed:
+	using enum EventType;	// reduce verbosity
+	case KeyPressed:
 		// Obtain the GLFW keycode
 		std::cout << event.toString() << std::endl;
 		onKeyPressed(static_cast<KeyPressedEvent&>(event));
 		break;
-	case EventType::KeyReleased:
+	case KeyReleased:
 		// Obtain the GLFW keycode
 		std::cout << event.toString() << std::endl;
 		onKeyReleased(static_cast<KeyReleasedEvent&>(event));
 		break;
-	case EventType::MouseMoved:
+	case MouseMoved:
 		// Obtain the GLFW keycode
 		std::cout << event.toString() << std::endl;
 		onMouseMoved(static_cast<MouseMovedEvent&>(event));
 		break;
-	case EventType::MouseButtonPressed:
+	case MouseButtonPressed:
 		// Obtain the GLFW keycode
 		std::cout << event.toString() << std::endl;
 		onMouseButtonPressed(static_cast<MouseButtonPressedEvent&>(event));
 		break;
-	case EventType::MouseButtonReleased:
+	case MouseButtonReleased:
 		// Obtain the GLFW keycode
 		std::cout << event.toString() << std::endl;
 		onMouseButtonReleased(static_cast<MouseButtonReleasedEvent&>(event));
@@ -176,13 +180,34 @@ void Game::onEvent(Event& event)
 	}
 }
 
+void Game::processInputPolling()
+{
+	if (Input::IsKeyPressed(Key::W)) {
+		m_gameCamera.moveForward((float)m_DeltaTime);
+	}
+	if (Input::IsKeyPressed(Key::A)) {
+		m_gameCamera.moveLeft((float)m_DeltaTime);
+	}
+	if (Input::IsKeyPressed(Key::S)) {
+		m_gameCamera.moveBackward((float)m_DeltaTime);
+	}
+	if (Input::IsKeyPressed(Key::D)) {
+		m_gameCamera.moveRight((float)m_DeltaTime);
+	}
+}
+
+void Game::onUpdate()
+{
+	// check for input key presses
+
+}
+
 void Game::onKeyPressed(KeyPressedEvent& e)
 {
 	switch (e.getKeyCode())
 	{
 	case GLFW_KEY_W:
 		std::cout << "Pressed: W, Walking\n" ;
-		m_PlayerWalking = true;
 		m_gameCamera.moveForward(static_cast<float>(m_DeltaTime));
 		break;
 	case GLFW_KEY_A:
@@ -221,7 +246,6 @@ void Game::onKeyReleased(KeyReleasedEvent& e)
 	{
 	case GLFW_KEY_W:
 		std::cout << "Released: W\n";
-		m_PlayerWalking = false;
 		break;
 	case GLFW_KEY_A:
 		std::cout << "Released: A\n";

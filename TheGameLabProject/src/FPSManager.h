@@ -6,31 +6,31 @@ public:
 
 	static float Calculate() {
 		double currentFrame = glfwGetTime();
-		deltaTime = currentFrame - lastFrameTime;
-		lastFrameTime = currentFrame;
+		s_DeltaTime = currentFrame - s_LastFrameTime;
+		s_LastFrameTime = currentFrame;
 
-		if (m_secondCounter <= 1) {
-			m_secondCounter += deltaTime;
-			m_tempFps++;
+		if (s_SecondCounter <= 1) {
+			s_SecondCounter += s_DeltaTime;
+			s_TempFps++;
 		}
 		else
 		{
 			//"fps" are the actual fps
-			fps = m_tempFps;
-			m_secondCounter = 0;
-			m_tempFps = 0;
+			s_Fps = s_TempFps;
+			s_SecondCounter = 0;
+			s_TempFps = 0;
 		}
-		return static_cast<float>(fps);
+		return static_cast<float>(s_Fps);
 	}
 
 	static double GetDeltaTime() {
-		return deltaTime;
+		return s_DeltaTime;
 	}
 
 private:
-	inline static double deltaTime = 0.0;	// Time between current frame and last frame
-	inline static double lastFrameTime = 0.0; // Time of last frame
-	inline static double m_secondCounter = 0.0;
-	inline static double m_tempFps = 0.0;	//These are not the real fps, just temporary
-	inline static double fps = 0.0;	//This float is the fps we should use
+	inline static double s_DeltaTime = 0.0;	// Time between current frame and last frame
+	inline static double s_LastFrameTime = 0.0; // Time of last frame
+	inline static double s_SecondCounter = 0.0;
+	inline static double s_TempFps = 0.0;	//These are not the real fps, just temporary
+	inline static double s_Fps = 0.0;	//This float is the fps we should use
 };

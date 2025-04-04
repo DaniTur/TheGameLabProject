@@ -24,7 +24,6 @@ glm::vec3& Camera::getPosition()
 }
 
 void Camera::moveForward(float deltaTime) {
-	std::cout << "moving forward\n";
 	 m_cameraPosition += (m_cameraTarget * (m_speed * deltaTime));
 }
 
