@@ -830,6 +830,8 @@
     </ClInclude>
     <ClInclude Include="src\Input.h" />
     <ClInclude Include="src\KeyCodes.h" />
+    <ClInclude Include="src\MouseCodes.h" />
+    <ClInclude Include="src\Events\ApplicationEvent.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\CTexture.cpp">

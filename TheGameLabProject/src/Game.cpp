@@ -150,31 +150,23 @@ void Game::onEvent(Event& event)
 	{
 	using enum EventType;	// reduce verbosity
 	case KeyPressed:
-		// Obtain the GLFW keycode
-		std::cout << event.toString() << std::endl;
 		onKeyPressed(static_cast<KeyPressedEvent&>(event));
 		break;
 	case KeyReleased:
-		// Obtain the GLFW keycode
-		std::cout << event.toString() << std::endl;
 		onKeyReleased(static_cast<KeyReleasedEvent&>(event));
 		break;
 	case MouseMoved:
-		// Obtain the GLFW keycode
-		std::cout << event.toString() << std::endl;
 		onMouseMoved(static_cast<MouseMovedEvent&>(event));
 		break;
 	case MouseButtonPressed:
-		// Obtain the GLFW keycode
-		std::cout << event.toString() << std::endl;
 		onMouseButtonPressed(static_cast<MouseButtonPressedEvent&>(event));
 		break;
 	case MouseButtonReleased:
-		// Obtain the GLFW keycode
-		std::cout << event.toString() << std::endl;
 		onMouseButtonReleased(static_cast<MouseButtonReleasedEvent&>(event));
 		break;
-
+	case WindowClosed:
+		onWindowClosed(static_cast<WindowClosedEvent&>(event));
+		break;
 	default:
 		break;
 	}
@@ -183,16 +175,22 @@ void Game::onEvent(Event& event)
 void Game::processInputPolling()
 {
 	if (Input::IsKeyPressed(Key::W)) {
-		m_gameCamera.moveForward((float)m_DeltaTime);
+		m_gameCamera.moveForward(static_cast<float>(m_DeltaTime));
 	}
 	if (Input::IsKeyPressed(Key::A)) {
-		m_gameCamera.moveLeft((float)m_DeltaTime);
+		m_gameCamera.moveLeft(static_cast<float>(m_DeltaTime));
 	}
 	if (Input::IsKeyPressed(Key::S)) {
-		m_gameCamera.moveBackward((float)m_DeltaTime);
+		m_gameCamera.moveBackward(static_cast<float>(m_DeltaTime));
 	}
 	if (Input::IsKeyPressed(Key::D)) {
-		m_gameCamera.moveRight((float)m_DeltaTime);
+		m_gameCamera.moveRight(static_cast<float>(m_DeltaTime));
+	}
+	if (Input::IsKeyPressed(Key::UP)) {
+		m_gameCamera.moveUp(static_cast<float>(m_DeltaTime));
+	}
+	if (Input::IsKeyPressed(Key::DOWN)) {
+		m_gameCamera.moveDown(static_cast<float>(m_DeltaTime));
 	}
 }
 
@@ -206,66 +204,52 @@ void Game::onKeyPressed(KeyPressedEvent& e)
 {
 	switch (e.getKeyCode())
 	{
-	case GLFW_KEY_W:
-		std::cout << "Pressed: W, Walking\n" ;
-		m_gameCamera.moveForward(static_cast<float>(m_DeltaTime));
+	case Key::W:
 		break;
-	case GLFW_KEY_A:
-		std::cout << "Pressed: A, Walking\n";
-		m_gameCamera.moveLeft(static_cast<float>(m_DeltaTime));
+	case Key::A:
 		break;
-	case GLFW_KEY_S:
-		std::cout << "Pressed: S, Walking\n";
-		m_gameCamera.moveBackward(static_cast<float>(m_DeltaTime));
+	case Key::S:
 		break;
-	case GLFW_KEY_D:
-		std::cout << "Pressed: D, Walking\n";
-		m_gameCamera.moveRight(static_cast<float>(m_DeltaTime));
+	case Key::D:
 		break;
-	case GLFW_KEY_UP:
-		std::cout << "Pressed: UP, Flying\n";
-		m_gameCamera.moveUp(static_cast<float>(m_DeltaTime));
+	case Key::UP:
 		break;
-	case GLFW_KEY_DOWN:
-		std::cout << "Pressed: DOWN, Flying\n";
-		m_gameCamera.moveDown(static_cast<float>(m_DeltaTime));
+	case Key::DOWN:
 		break;
-	case GLFW_KEY_ESCAPE:
-		std::cout << "Closing application\n";
-		m_running = false;
+	case Key::ESCAPE:
+	{
+		WindowClosedEvent event;
+		onWindowClosed(event);
 		break;
+	}
 	default:
 		break;
 	}
 	e.handled = true;
+	LOG_TRACE("KeyPressed {}", e.getKeyCode());
 }
 
 void Game::onKeyReleased(KeyReleasedEvent& e)
 {
 	switch (e.getKeyCode())
 	{
-	case GLFW_KEY_W:
-		std::cout << "Released: W\n";
+	case Key::W:
 		break;
-	case GLFW_KEY_A:
-		std::cout << "Released: A\n";
+	case Key::A:
 		break;
-	case GLFW_KEY_S:
-		std::cout << "Released: S\n";
+	case Key::S:
 		break;
-	case GLFW_KEY_D:
-		std::cout << "Released: D\n";
+	case Key::D:
 		break;
-	case GLFW_KEY_UP:
-		std::cout << "Released: UP\n";
+	case Key::UP:
 		break;
-	case GLFW_KEY_DOWN:
-		std::cout << "Released: DOWN\n";
+	case Key::DOWN:
 		break;
 	default:
 		break;
 	}
 	e.handled = true;
+	LOG_TRACE("KeyReleased {}", e.getKeyCode());
 }
 
 void Game::onMouseMoved(MouseMovedEvent &e) {
@@ -302,39 +286,42 @@ void Game::onMouseMoved(MouseMovedEvent &e) {
 	m_gameCamera.setCameraTarget(glm::normalize(direction));
 	
 	e.handled = true;
+	//LOG_TRACE("MouseMoved x:{} y:{}", e.getX(), e.getY());
 }
 
 void Game::onMouseButtonPressed(MouseButtonPressedEvent& e)
 {
 	switch (e.getButtonCode())
 	{
-	case GLFW_MOUSE_BUTTON_1:	//left button
-		std::cout << "LMB pressed, shooting\n";
+	case MouseBtn::ButtonLeft:
 		break;
-	case GLFW_MOUSE_BUTTON_2:	//right button
-		std::cout << "RMB pressed, zooming\n";
+	case MouseBtn::ButtonRight:
 		break;
 	default:
 		break;
 	}
-
 	e.handled = true;
+	LOG_TRACE("ButtonPressed {}", e.getButtonCode());
 }
 
 void Game::onMouseButtonReleased(MouseButtonReleasedEvent& e)
 {
 	switch (e.getButtonCode())
 	{
-	case GLFW_MOUSE_BUTTON_1:	//left button
-		std::cout << "LMB released, stop shooting\n";
+	case MouseBtn::ButtonLeft:
 		break;
-	case GLFW_MOUSE_BUTTON_2:	//right button
-		std::cout << "RMB released, zooming out\n";
+	case MouseBtn::ButtonRight:
 		break;
 	default:
 		break;
 	}
-
 	e.handled = true;
+	LOG_TRACE("ButtonReleased {}", e.getButtonCode());
 }
 
+void Game::onWindowClosed(WindowClosedEvent& e)
+{
+	m_running = false;
+	e.handled = true;
+	LOG_TRACE("WindowClosed");
+}

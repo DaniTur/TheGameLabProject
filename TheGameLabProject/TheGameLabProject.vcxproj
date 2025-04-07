@@ -109,6 +109,7 @@
   <ItemGroup>
     <ClInclude Include="src\CTexture.h" />
     <ClInclude Include="src\Cube.h" />
+    <ClInclude Include="src\Events\ApplicationEvent.h" />
     <ClInclude Include="src\Events\Event.h" />
     <ClInclude Include="src\Events\KeyEvent.h" />
     <ClInclude Include="src\Events\MouseEvent.h" />
@@ -123,6 +124,7 @@
     <ClInclude Include="src\Input.h" />
     <ClInclude Include="src\KeyCodes.h" />
     <ClInclude Include="src\Logging\Logger.h" />
+    <ClInclude Include="src\MouseCodes.h" />
     <ClInclude Include="src\Window.h" />
     <ClInclude Include="src\pch.h" />
     <ClInclude Include="vendor\glm\common.hpp" />

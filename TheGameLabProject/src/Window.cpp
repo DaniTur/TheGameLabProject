@@ -1,6 +1,7 @@
 #include "pch.h"
 
 #include "Window.h"
+#include "Events/KeyEvent.h"
 #include "Events/MouseEvent.h"
 
 Window::Window(unsigned int width, unsigned int height)
@@ -38,6 +39,12 @@ Window::Window(unsigned int width, unsigned int height)
 	// we have acces to the Windows instance inside the glfw callbacks
 	glfwSetWindowUserPointer(m_window, &m_windowData);
 	
+	glfwSetWindowCloseCallback(m_window, [](GLFWwindow* window) {
+			const WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
+			WindowClosedEvent event;
+			data.eventCallback(event);
+		});
+
 	glfwSetKeyCallback(m_window, [](GLFWwindow* window,int key, int scancode, int action, int mods) {
 		const WindowData& windowData = *(WindowData*)(glfwGetWindowUserPointer(window));
 			if (action == GLFW_PRESS) {

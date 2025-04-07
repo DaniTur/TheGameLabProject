@@ -5,7 +5,7 @@
 #include <unordered_map>
 #include <functional>
 #include "Graphics/Camera.h"
-#include "Events/KeyEvent.h"
+#include "Events/ApplicationEvent.h"
 
 using EventCallbackFn = std::function<void(Event&)>;
 
