@@ -7,18 +7,26 @@
 #include "Graphics/WorldTransform.h"
 #include "Events/MouseEvent.h"
 #include "Input.h"
+#include "ImGui/ImGuiLayer.h"
+#include "Gameplay/GameplayLayer.h"
 
 Game::Game() 
 	: m_window(m_screenWidth, m_screenHeight), m_projectionTransform(m_screenWidth, m_screenHeight) {
 
-	m_window.setEventCallback(std::bind(&Game::onEvent, this, std::placeholders::_1));
+	m_window.setEventCallback(std::bind_front(&Game::onEvent, this));
 
 	Input::Init(m_window.get());
+
+	m_LayerStack.PushLayer(new GameplayLayer());
+	m_LayerStack.PushOverlay(new ImGuiLayer());
 	
+
+	// TODO: Move this to Renderer
 	// tell stb_image.h to flip loaded texture's on the y-axis (before loading model). Needed for importing .obj material textures
 	//stbi_set_flip_vertically_on_load(true);
 
 	glEnable(GL_DEPTH_TEST);	// Part of the Renderer, need glad to obtain the opengl functions before
+	// -----
 }
 
 void Game::run() {
@@ -44,10 +52,22 @@ void Game::run() {
 	
 	while (m_running) {
 
+		// Timing
 		FPSManager::Calculate();
 		m_DeltaTime = FPSManager::GetDeltaTime();
 
 		processInputPolling();
+
+		// Update
+		//for (auto it = m_LayerStack.end(); it != m_LayerStack.begin(); it--) {
+		//	(*it)->OnUpdate(m_DeltaTime);
+		//}
+
+		//// Render
+		//for (auto& layer : m_LayerStack) {
+		//	layer->OnRender();
+		//}
+
 
 		// Render clear
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
@@ -146,35 +166,20 @@ void Game::run() {
 
 void Game::onEvent(Event& event)
 {
-	switch (event.getEventType())
-	{
-	using enum EventType;	// reduce verbosity
-	case KeyPressed:
-		onKeyPressed(static_cast<KeyPressedEvent&>(event));
-		break;
-	case KeyReleased:
-		onKeyReleased(static_cast<KeyReleasedEvent&>(event));
-		break;
-	case MouseMoved:
-		onMouseMoved(static_cast<MouseMovedEvent&>(event));
-		break;
-	case MouseButtonPressed:
-		onMouseButtonPressed(static_cast<MouseButtonPressedEvent&>(event));
-		break;
-	case MouseButtonReleased:
-		onMouseButtonReleased(static_cast<MouseButtonReleasedEvent&>(event));
-		break;
-	case WindowClosed:
+	if (event.getEventType() == EventType::WindowClosed)
 		onWindowClosed(static_cast<WindowClosedEvent&>(event));
-		break;
-	default:
-		break;
+
+	for (auto it = m_LayerStack.rbegin(); it != m_LayerStack.rend(); ++it) {
+		if (event.handled)
+			break;
+	
+		(*it)->OnEvent(event);
 	}
 }
 
 void Game::processInputPolling()
 {
-	if (Input::IsKeyPressed(Key::W)) {
+	if (Input::IsKeyPressed(Key::W)) {	
 		m_gameCamera.moveForward(static_cast<float>(m_DeltaTime));
 	}
 	if (Input::IsKeyPressed(Key::A)) {
@@ -229,30 +234,10 @@ void Game::onKeyPressed(KeyPressedEvent& e)
 	LOG_TRACE("KeyPressed {}", e.getKeyCode());
 }
 
-void Game::onKeyReleased(KeyReleasedEvent& e)
-{
-	switch (e.getKeyCode())
-	{
-	case Key::W:
-		break;
-	case Key::A:
-		break;
-	case Key::S:
-		break;
-	case Key::D:
-		break;
-	case Key::UP:
-		break;
-	case Key::DOWN:
-		break;
-	default:
-		break;
-	}
-	e.handled = true;
-	LOG_TRACE("KeyReleased {}", e.getKeyCode());
-}
+
 
 void Game::onMouseMoved(MouseMovedEvent &e) {
+	// TODO: Mouse input pulling, or mouse event for movement? 
 	if (m_Mouse.firstMouse)
 	{
 		m_Mouse.lastX = e.getX();
@@ -289,39 +274,10 @@ void Game::onMouseMoved(MouseMovedEvent &e) {
 	//LOG_TRACE("MouseMoved x:{} y:{}", e.getX(), e.getY());
 }
 
-void Game::onMouseButtonPressed(MouseButtonPressedEvent& e)
-{
-	switch (e.getButtonCode())
-	{
-	case MouseBtn::ButtonLeft:
-		break;
-	case MouseBtn::ButtonRight:
-		break;
-	default:
-		break;
-	}
-	e.handled = true;
-	LOG_TRACE("ButtonPressed {}", e.getButtonCode());
-}
 
-void Game::onMouseButtonReleased(MouseButtonReleasedEvent& e)
-{
-	switch (e.getButtonCode())
-	{
-	case MouseBtn::ButtonLeft:
-		break;
-	case MouseBtn::ButtonRight:
-		break;
-	default:
-		break;
-	}
-	e.handled = true;
-	LOG_TRACE("ButtonReleased {}", e.getButtonCode());
-}
 
 void Game::onWindowClosed(WindowClosedEvent& e)
 {
 	m_running = false;
 	e.handled = true;
-	LOG_TRACE("WindowClosed");
 }

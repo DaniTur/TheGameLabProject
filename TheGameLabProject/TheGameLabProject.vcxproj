@@ -60,7 +60,7 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>PLATFORM_WINDOWS;GLFW_STATIC;DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>src;vendor\spdlog\include;vendor\GLAD\include;vendor\GLFW\include;vendor\stb_image;vendor\glm;vendor\assimp\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src;src\Core;vendor\spdlog\include;vendor\GLAD\include;vendor\GLFW\include;vendor\stb_image;vendor\glm;vendor\assimp\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
@@ -84,7 +84,7 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>PLATFORM_WINDOWS;GLFW_STATIC;RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>src;vendor\spdlog\include;vendor\GLAD\include;vendor\GLFW\include;vendor\stb_image;vendor\glm;vendor\assimp\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src;src\Core;vendor\spdlog\include;vendor\GLAD\include;vendor\GLFW\include;vendor\stb_image;vendor\glm;vendor\assimp\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -107,25 +107,29 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="src\Gameplay\GameplayLayer.h" />
+    <ClInclude Include="src\ImGui\ImGuiLayer.h" />
+    <ClInclude Include="src\Core\LayerStack.h" />
+    <ClInclude Include="src\Core\Layer.h" />
     <ClInclude Include="src\CTexture.h" />
+    <ClInclude Include="src\Core\FPSManager.h" />
+    <ClInclude Include="src\Core\Game.h" />
+    <ClInclude Include="src\Core\Input.h" />
+    <ClInclude Include="src\Core\KeyCodes.h" />
+    <ClInclude Include="src\Core\MouseCodes.h" />
+    <ClInclude Include="src\Core\Window.h" />
     <ClInclude Include="src\Cube.h" />
     <ClInclude Include="src\Events\ApplicationEvent.h" />
     <ClInclude Include="src\Events\Event.h" />
     <ClInclude Include="src\Events\KeyEvent.h" />
     <ClInclude Include="src\Events\MouseEvent.h" />
-    <ClInclude Include="src\FPSManager.h" />
-    <ClInclude Include="src\Game.h" />
     <ClInclude Include="src\Graphics\Camera.h" />
     <ClInclude Include="src\Graphics\Mesh.h" />
     <ClInclude Include="src\Graphics\Model.h" />
     <ClInclude Include="src\Graphics\ProjectionTransform.h" />
     <ClInclude Include="src\Graphics\WorldTransform.h" />
     <ClInclude Include="src\Graphics\shader.h" />
-    <ClInclude Include="src\Input.h" />
-    <ClInclude Include="src\KeyCodes.h" />
     <ClInclude Include="src\Logging\Logger.h" />
-    <ClInclude Include="src\MouseCodes.h" />
-    <ClInclude Include="src\Window.h" />
     <ClInclude Include="src\pch.h" />
     <ClInclude Include="vendor\glm\common.hpp" />
     <ClInclude Include="vendor\glm\detail\_features.hpp" />
@@ -376,18 +380,22 @@
     <ClInclude Include="vendor\stb_image\stb_image.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Gameplay\GameplayLayer.cpp" />
+    <ClCompile Include="src\ImGui\ImGuiLayer.cpp" />
+    <ClCompile Include="src\Core\LayerStack.cpp" />
+    <ClCompile Include="src\Core\Layer.cpp" />
     <ClCompile Include="src\CTexture.cpp" />
+    <ClCompile Include="src\Core\Game.cpp" />
+    <ClCompile Include="src\Core\Input.cpp" />
+    <ClCompile Include="src\Core\Window.cpp" />
     <ClCompile Include="src\Cube.cpp" />
-    <ClCompile Include="src\Game.cpp" />
     <ClCompile Include="src\Graphics\Camera.cpp" />
     <ClCompile Include="src\Graphics\Mesh.cpp" />
     <ClCompile Include="src\Graphics\Model.cpp" />
     <ClCompile Include="src\Graphics\ProjectionTransform.cpp" />
     <ClCompile Include="src\Graphics\WorldTransform.cpp" />
-    <ClCompile Include="src\Input.cpp" />
     <ClCompile Include="src\Logging\Logger.cpp" />
     <ClCompile Include="src\Main.cpp" />
-    <ClCompile Include="src\Window.cpp" />
     <ClCompile Include="src\pch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>

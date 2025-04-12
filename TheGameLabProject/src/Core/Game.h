@@ -7,6 +7,7 @@
 #include "Events/KeyEvent.h"
 #include "Events/MouseEvent.h"
 #include "Events/ApplicationEvent.h"
+#include "Core/LayerStack.h"
 
 class Game
 {
@@ -34,6 +35,10 @@ private:
 
 	bool m_running = false;
 
+	double m_DeltaTime{};
+
+	LayerStack m_LayerStack;
+
 	unsigned int m_screenWidth = 800;
 	unsigned int m_screenHeight = 600;
 	Window m_window;
@@ -42,7 +47,6 @@ private:
 	// Perspective projection transform
 	ProjectionTransform m_projectionTransform;
 
-	double m_DeltaTime{};
 
 	struct Mouse {
 		double lastX = 400.0;

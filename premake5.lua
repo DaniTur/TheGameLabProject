@@ -26,6 +26,7 @@ project "TheGameLabProject"
 
 	includedirs {
 		"%{prj.name}/src",
+		"%{prj.name}/src/Core",
 		"%{prj.name}/vendor/spdlog/include", 
 		"%{prj.name}/vendor/GLAD/include",
 		"%{prj.name}/vendor/GLFW/include",

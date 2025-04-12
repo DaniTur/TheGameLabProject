@@ -21,7 +21,6 @@
 // glm?
 // assimp?
 // stb image?
-// looger?
 #include "Logging/Logger.h"
 
 #endif

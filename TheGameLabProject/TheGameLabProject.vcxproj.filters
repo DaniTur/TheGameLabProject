@@ -4,6 +4,9 @@
     <Filter Include="src">
       <UniqueIdentifier>{2DAB880B-99B4-887C-2230-9F7C8E38947C}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Core">
+      <UniqueIdentifier>{A5D31CCF-91A0-77DA-BAB9-6582A6E5AC68}</UniqueIdentifier>
+    </Filter>
     <Filter Include="src\Events">
       <UniqueIdentifier>{7162C20E-5D1A-045C-C621-DDB7B2F89E4C}</UniqueIdentifier>
     </Filter>
@@ -42,8 +45,29 @@
     <ClInclude Include="src\CTexture.h">
       <Filter>src</Filter>
     </ClInclude>
+    <ClInclude Include="src\Core\FPSManager.h">
+      <Filter>src\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Core\Game.h">
+      <Filter>src\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Core\Input.h">
+      <Filter>src\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Core\KeyCodes.h">
+      <Filter>src\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Core\MouseCodes.h">
+      <Filter>src\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Core\Window.h">
+      <Filter>src\Core</Filter>
+    </ClInclude>
     <ClInclude Include="src\Cube.h">
       <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Events\ApplicationEvent.h">
+      <Filter>src\Events</Filter>
     </ClInclude>
     <ClInclude Include="src\Events\Event.h">
       <Filter>src\Events</Filter>
@@ -53,12 +77,6 @@
     </ClInclude>
     <ClInclude Include="src\Events\MouseEvent.h">
       <Filter>src\Events</Filter>
-    </ClInclude>
-    <ClInclude Include="src\FPSManager.h">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Game.h">
-      <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="src\Graphics\Camera.h">
       <Filter>src\Graphics</Filter>
@@ -80,9 +98,6 @@
     </ClInclude>
     <ClInclude Include="src\Logging\Logger.h">
       <Filter>src\Logging</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Window.h">
-      <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="src\pch.h">
       <Filter>src</Filter>
@@ -828,19 +843,25 @@
     <ClInclude Include="vendor\stb_image\stb_image.h">
       <Filter>vendor\stb_image</Filter>
     </ClInclude>
-    <ClInclude Include="src\Input.h" />
-    <ClInclude Include="src\KeyCodes.h" />
-    <ClInclude Include="src\MouseCodes.h" />
-    <ClInclude Include="src\Events\ApplicationEvent.h" />
+    <ClInclude Include="src\Core\Layer.h" />
+    <ClInclude Include="src\Core\LayerStack.h" />
+    <ClInclude Include="src\ImGui\ImGuiLayer.h" />
+    <ClInclude Include="src\Gameplay\GameplayLayer.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\CTexture.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="src\Cube.cpp">
-      <Filter>src</Filter>
+    <ClCompile Include="src\Core\Game.cpp">
+      <Filter>src\Core</Filter>
     </ClCompile>
-    <ClCompile Include="src\Game.cpp">
+    <ClCompile Include="src\Core\Input.cpp">
+      <Filter>src\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Core\Window.cpp">
+      <Filter>src\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Cube.cpp">
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="src\Graphics\Camera.cpp">
@@ -864,9 +885,6 @@
     <ClCompile Include="src\Main.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="src\Window.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
     <ClCompile Include="src\pch.cpp">
       <Filter>src</Filter>
     </ClCompile>
@@ -876,6 +894,9 @@
     <ClCompile Include="vendor\stb_image\stb_image.cpp">
       <Filter>vendor\stb_image</Filter>
     </ClCompile>
-    <ClCompile Include="src\Input.cpp" />
+    <ClCompile Include="src\Core\Layer.cpp" />
+    <ClCompile Include="src\Core\LayerStack.cpp" />
+    <ClCompile Include="src\ImGui\ImGuiLayer.cpp" />
+    <ClCompile Include="src\Gameplay\GameplayLayer.cpp" />
   </ItemGroup>
 </Project>
