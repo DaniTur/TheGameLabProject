@@ -17,8 +17,11 @@ Game::Game()
 
 	Input::Init(m_window.get());
 
-	m_LayerStack.PushLayer(new GameplayLayer());
-	m_LayerStack.PushOverlay(new ImGuiLayer());
+	GameplayLayer* gameplayLayer = new GameplayLayer();
+	gameplayLayer->SetEventCallback(std::bind_front(&Game::onEvent, this));
+	m_LayerStack.PushLayer(gameplayLayer);
+
+	//m_LayerStack.PushOverlay(new ImGuiLayer());
 	
 
 	// TODO: Move this to Renderer
@@ -164,6 +167,7 @@ void Game::run() {
 	glfwTerminate();
 }
 
+// Don't generate Events in any of the OnEvent functions in any Layer
 void Game::onEvent(Event& event)
 {
 	if (event.getEventType() == EventType::WindowClosed)
@@ -222,11 +226,7 @@ void Game::onKeyPressed(KeyPressedEvent& e)
 	case Key::DOWN:
 		break;
 	case Key::ESCAPE:
-	{
-		WindowClosedEvent event;
-		onWindowClosed(event);
 		break;
-	}
 	default:
 		break;
 	}

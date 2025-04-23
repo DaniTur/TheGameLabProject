@@ -847,6 +847,8 @@
     <ClInclude Include="src\Core\LayerStack.h" />
     <ClInclude Include="src\ImGui\ImGuiLayer.h" />
     <ClInclude Include="src\Gameplay\GameplayLayer.h" />
+    <ClInclude Include="src\Core\IEventEmitter.h" />
+    <ClInclude Include="src\Menus\MenuLayer.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\CTexture.cpp">
@@ -898,5 +900,6 @@
     <ClCompile Include="src\Core\LayerStack.cpp" />
     <ClCompile Include="src\ImGui\ImGuiLayer.cpp" />
     <ClCompile Include="src\Gameplay\GameplayLayer.cpp" />
+    <ClCompile Include="src\Menus\MenuLayer.cpp" />
   </ItemGroup>
 </Project>

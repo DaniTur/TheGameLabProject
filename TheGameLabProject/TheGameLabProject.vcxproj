@@ -107,6 +107,8 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="src\Menus\MenuLayer.h" />
+    <ClInclude Include="src\Core\IEventEmitter.h" />
     <ClInclude Include="src\Gameplay\GameplayLayer.h" />
     <ClInclude Include="src\ImGui\ImGuiLayer.h" />
     <ClInclude Include="src\Core\LayerStack.h" />
@@ -380,6 +382,7 @@
     <ClInclude Include="vendor\stb_image\stb_image.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Menus\MenuLayer.cpp" />
     <ClCompile Include="src\Gameplay\GameplayLayer.cpp" />
     <ClCompile Include="src\ImGui\ImGuiLayer.cpp" />
     <ClCompile Include="src\Core\LayerStack.cpp" />
