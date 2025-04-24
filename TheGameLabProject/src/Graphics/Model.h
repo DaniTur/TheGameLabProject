@@ -7,6 +7,7 @@ class Model
 {
 public:
 
+	Model() = default;
 	Model(const char* filepath);
 
 	void Draw(Shader& shader);
