@@ -1,32 +1,22 @@
 # TheGameLabProject
 
-## 🚧 Experimental Graphics Engine in C++
+## 🚀 Experimental Graphics Engine in C++
+A learning-focused engine with basic 3D rendering using OpenGL, model loading, scene management, and real-time debugging tools.
 This is a personal learning project focused on building a minimal graphics engine from scratch in C++. The goal is to gain experience with low-level rendering, modern C++ architecture, and modular engine design.
 
-The project includes:
+## 🔧 Features
 
-✅ 3D model loading using Assimp
+- 3D rendering with OpenGL 3.3
+- Custom build system using Premake5
+- Model loading with Assimp
+- Logging system using spdlog
+- Real-time UI with ImGui
+- Organized modular architecture in C++17/20
 
-✅ Rendering pipeline built with OpenGL
+## 🚧 Project Status
 
-✅ Shader management and basic transformation logic
-
-✅ Scene setup and testing of rendering components
-
-✅ Custom build system using Premake and Git submodules
-
-## Objectives
-Deepen understanding of 3D rendering pipelines
-
-Explore modular architecture patterns in C++
-
-Learn to manage complex build setups and third-party libraries
-
-Gain practical experience with engine-level concepts
-
-## 🧪 Project Status
-This is a work in progress and not intended for production.
-Some components are experimental or incomplete, and the architecture is subject to change as the project evolves.
+Still under development. Some features are experimental or incomplete.
+Primary goal: explore architecture and graphics techniques in a low-level engine.
 
 ## 🛠️ Tech Stack
 Language: C++17/20
@@ -35,18 +25,10 @@ Rendering: OpenGL + GLFW + Glad
 
 Build System: Premake5 + Git submodules
 
-Dependencies: Assimp, spdlog, stb
+Dependencies: Assimp, spdlog, stb, ImGui
 
-## 💡 Notes
-This project is primarily educational. While it is not a commercial engine, it demonstrates my ability to:
+## 📸 Screenshots
 
-Organize and scale a C++ codebase
-
-Integrate and manage external dependencies
-
-Understand graphics programming fundamentals
-
-Work independently on complex, multi-module systems
 
 ## 📦 Download and compile
 
