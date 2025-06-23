@@ -29,13 +29,13 @@ This is a work in progress and not intended for production.
 Some components are experimental or incomplete, and the architecture is subject to change as the project evolves.
 
 ## 🛠️ Tech Stack
-Language: C++17
+Language: C++17/20
 
-Rendering: OpenGL
+Rendering: OpenGL + GLFW + Glad
 
-Build System: Premake5
+Build System: Premake5 + Git submodules
 
-Dependencies: stb, Assimp (via Git submodules)
+Dependencies: Assimp, spdlog, stb
 
 ## 💡 Notes
 This project is primarily educational. While it is not a commercial engine, it demonstrates my ability to:
