@@ -1,6 +1,6 @@
 # TheGameLabProject
 
-🚧 ## Experimental Graphics Engine in C++
+## 🚧 Experimental Graphics Engine in C++
 This is a personal learning project focused on building a minimal graphics engine from scratch in C++. The goal is to gain experience with low-level rendering, modern C++ architecture, and modular engine design.
 
 The project includes:
@@ -24,11 +24,11 @@ Learn to manage complex build setups and third-party libraries
 
 Gain practical experience with engine-level concepts
 
-🧪 ## Project Status
+## 🧪 Project Status
 This is a work in progress and not intended for production.
 Some components are experimental or incomplete, and the architecture is subject to change as the project evolves.
 
-🛠️ ## Tech Stack
+## 🛠️ Tech Stack
 Language: C++17
 
 Rendering: OpenGL
@@ -37,7 +37,7 @@ Build System: Premake5
 
 Dependencies: stb, Assimp (via Git submodules)
 
-💡 ## Notes
+## 💡 Notes
 This project is primarily educational. While it is not a commercial engine, it demonstrates my ability to:
 
 Organize and scale a C++ codebase
