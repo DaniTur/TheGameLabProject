@@ -48,7 +48,7 @@ Understand graphics programming fundamentals
 
 Work independently on complex, multi-module systems
 
-## Download and compile
+## 📦 Download and compile
 
 Download the project with the required submodeules:
 ``
