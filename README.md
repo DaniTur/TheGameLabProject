@@ -46,3 +46,9 @@ Execute the script to generate the project(uses premake5):
 ``
 scripts/GenerateProject.bat
 ``
+
+Open the Visual Studio solution file `TheGameLabProject.sln`
+
+Build Solution with **Release x64** mode
+
+Execute
