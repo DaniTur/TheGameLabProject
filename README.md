@@ -28,7 +28,7 @@ Build System: Premake5 + Git submodules
 Dependencies: Assimp, spdlog, stb, ImGui
 
 ## 📸 Screenshots
-
+![image](https://github.com/user-attachments/assets/922bd478-6d79-46ad-9658-63693634f1db)
 
 ## 📦 Download and compile
 
