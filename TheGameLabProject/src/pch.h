@@ -16,11 +16,6 @@
 #include <vector>
 #include <unordered_map>
 
-#include <glad/glad.h>
-#include <GLFW/glfw3.h>
-// glm?
-// assimp?
-// stb image?
 #include "Logging/Logger.h"
 
 #endif

@@ -1,7 +1,9 @@
 #pragma once
-#include "Layer.h"
+#include "Core/Layer.h"
 // test
+#include "Events/ApplicationEvent.h"
 #include "Events/KeyEvent.h"
+#include "Events/MouseEvent.h"
 
 class ImGuiLayer : public Layer
 {

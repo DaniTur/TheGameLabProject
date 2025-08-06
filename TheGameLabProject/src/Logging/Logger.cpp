@@ -21,6 +21,7 @@ void Logger::Init()
     spdlog::set_level(spdlog::level::trace); // Print logs from the trace level(0) to above
 }
 
+// Log to multiple destinations (sinks)
 void Logger::InitMultiSink()
 {
     try {

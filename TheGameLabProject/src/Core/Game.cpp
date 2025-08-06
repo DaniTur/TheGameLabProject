@@ -17,11 +17,11 @@ Game::Game()
 
 	Input::Init(m_window.get());
 
-	GameplayLayer* gameplayLayer = new GameplayLayer();
+	auto gameplayLayer = new GameplayLayer();
 	gameplayLayer->SetEventCallback(std::bind_front(&Game::onEvent, this));
 	m_LayerStack.PushLayer(gameplayLayer);
 
-	//m_LayerStack.PushOverlay(new ImGuiLayer());
+	m_LayerStack.PushOverlay(new ImGuiLayer());
 }
 
 void Game::run() {
@@ -35,7 +35,7 @@ void Game::run() {
 		FPSManager::Calculate();
 		m_DeltaTime = FPSManager::GetDeltaTime();
 
-		// Update
+		// Update layers of the LayerStack each frame
 		for (auto it = m_LayerStack.rbegin(); it != m_LayerStack.rend(); ++it) {
 			(*it)->OnUpdate(m_DeltaTime);
 		}

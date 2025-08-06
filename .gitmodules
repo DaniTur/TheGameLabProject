@@ -1,3 +1,6 @@
 [submodule "TheGameLabProject/vendor/spdlog"]
 	path = TheGameLabProject/vendor/spdlog
 	url = https://github.com/gabime/spdlog
+[submodule "TheGameLabProject/vendor/imgui"]
+	path = TheGameLabProject/vendor/imgui
+	url = https://github.com/ocornut/imgui.git

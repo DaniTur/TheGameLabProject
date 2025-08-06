@@ -3,6 +3,9 @@
 
 #include "stb_image.h"
 
+#include <glad/glad.h>
+#include <GLFW/glfw3.h>
+
 CTexture::CTexture(unsigned int target, const std::string& filePath) : m_target(target) {
 
 	// Generate texture object

@@ -1,8 +1,20 @@
 workspace "TheGameLabProject"
 	architecture "x64"
-	configurations { "Debug", "Release" }
+
+	configurations 
+	{ 
+		"Debug", 
+		"Release" 
+	}
 
 outputdir = "%{cfg.buildcfg}-%{cfg.architecture}"
+
+-- Include directories relative to root folder (solution directory)
+IncludeDirs = {}
+IncludeDirs["ImGui"] = "TheGameLabProject/vendor/imgui"
+
+-- Include premake5 files for dependencies before building the actual project
+include "TheGameLabProject/vendor/premake5_imgui.lua"
 
 project "TheGameLabProject"
 	location "TheGameLabProject"
@@ -22,6 +34,13 @@ project "TheGameLabProject"
 		"%{prj.name}/vendor/stb_image/**.cpp",
 		"%{prj.name}/vendor/glm/**.hpp",
 		"%{prj.name}/vendor/glm/**.inl",
+		-- ImGui Build Backends (dependencies of ImGui)
+		"%{prj.name}/src/ImGui/ImGuiBuild.cpp"
+	}
+
+	defines { 
+		"GLFW_INCLUDE_NONE",
+		"_CRT_SECURE_NO_WARNINGS" 
 	}
 
 	includedirs {
@@ -33,6 +52,7 @@ project "TheGameLabProject"
 		"%{prj.name}/vendor/stb_image",
 		"%{prj.name}/vendor/glm",
 		"%{prj.name}/vendor/assimp/include",
+		"%{IncludeDirs.ImGui}",
 	}
 
 	-- Compiled libraries
@@ -43,6 +63,7 @@ project "TheGameLabProject"
 
 	links {
 		"glfw3",
+		"ImGui"
 	}
 
 	-- Precompiled header
@@ -61,8 +82,10 @@ project "TheGameLabProject"
 
 		buildoptions "/utf-8"
 
+	-- Filters for Debug and Release configurations of the dynamic libraries that manage different .dll files
 	filter "configurations:Debug"
 		defines "DEBUG"
+		runtime "Debug"
 		symbols "On"
 		links { 
 			"assimp-vc143-mtd"
@@ -74,6 +97,7 @@ project "TheGameLabProject"
 
 	filter "configurations:Release"
 		defines "RELEASE"
+		runtime "Release"
 		optimize "On"
 		links {
 			"assimp-vc143-mt"

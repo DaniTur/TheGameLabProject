@@ -97,7 +97,7 @@ void Window::close() {
 
 void Window::onUpdate()
 {
-	glfwPollEvents();
+	glfwPollEvents(); // this funtion executes our callbacks setted for the window events
 	glfwSwapBuffers(m_window);
 }
 
@@ -141,7 +141,7 @@ void Window::setMouseInputsCallbacks() {
 	if (glfwRawMouseMotionSupported()) {
 		glfwSetInputMode(m_window, GLFW_RAW_MOUSE_MOTION, GLFW_TRUE);
 	}
-	// Fuction call back for mouse inputs
+	// Fuction callback for mouse inputs
 	glfwSetCursorPosCallback(m_window, [](GLFWwindow* window, double xpos, double ypos) {
 			const WindowData &windowData = *(WindowData*)glfwGetWindowUserPointer(window);
 			MouseMovedEvent event((float)xpos, (float)ypos);
