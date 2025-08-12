@@ -11,9 +11,11 @@ outputdir = "%{cfg.buildcfg}-%{cfg.architecture}"
 
 -- Include directories relative to root folder (solution directory)
 IncludeDirs = {}
+IncludeDirs["GLFW"] = "TheGameLabProject/vendor/GLFW/include"
 IncludeDirs["ImGui"] = "TheGameLabProject/vendor/imgui"
 
 -- Include premake5 files for dependencies before building the actual project
+include "TheGameLabProject/vendor/premake5_glfw.lua"
 include "TheGameLabProject/vendor/premake5_imgui.lua"
 
 project "TheGameLabProject"
@@ -48,7 +50,8 @@ project "TheGameLabProject"
 		"%{prj.name}/src/Core",
 		"%{prj.name}/vendor/spdlog/include", 
 		"%{prj.name}/vendor/GLAD/include",
-		"%{prj.name}/vendor/GLFW/include",
+		--"%{prj.name}/vendor/GLFW/include",
+		"%{IncludeDirs.GLFW}",
 		"%{prj.name}/vendor/stb_image",
 		"%{prj.name}/vendor/glm",
 		"%{prj.name}/vendor/assimp/include",
@@ -57,12 +60,13 @@ project "TheGameLabProject"
 
 	-- Compiled libraries
 	libdirs { 
-		"%{prj.name}/vendor/GLFW/lib",
+		--"%{prj.name}/vendor/GLFW/lib",
 		"%{prj.name}/vendor/assimp/lib"
 	}
 
 	links {
-		"glfw3",
+		--"glfw3",
+		"GLFW",
 		"ImGui"
 	}
 
