@@ -4,3 +4,6 @@
 [submodule "TheGameLabProject/vendor/imgui"]
 	path = TheGameLabProject/vendor/imgui
 	url = https://github.com/ocornut/imgui.git
+[submodule "TheGameLabProject/vendor/GLFW"]
+	path = TheGameLabProject/vendor/GLFW
+	url = https://github.com/glfw/glfw.git

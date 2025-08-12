@@ -1,5 +1,5 @@
 project "GLFW"
-	kind "StaicLib"
+	kind "StaticLib"
 	language "C"
 	staticruntime "off"
 
@@ -9,13 +9,27 @@ project "GLFW"
 	files {
 		"include/GLFW/glfw3.h",
 		"include/GLFW/glfw3native.h",
-		"src/context.c",
-		"src/init.c",
-		"src/input.c",
-		"src/monitor.c", 
-		"src/platform.c", 
-		"src/vulkan.c",
-		"src/window.c"
+		
+		"GLFW/src/internal.h",
+		"GLFW/src/platform.h",
+		"GLFW/src/mappings.h",
+
+		"GLFW/src/context.c",
+		"GLFW/src/init.c",
+		"GLFW/src/input.c",
+		"GLFW/src/monitor.c", 
+		"GLFW/src/platform.c", 
+		"GLFW/src/vulkan.c",
+		"GLFW/src/window.c",
+		"GLFW/src/egl_context.c",
+		"GLFW/src/osmesa_context.c",
+		    
+		"GLFW/src/null_platform.h",
+		"GLFW/src/null_joystick.h",
+		"GLFW/src/null_init.c",
+		"GLFW/src/null_monitor.c",
+		"GLFW/src/null_window.c",
+		"GLFW/src/null_joystick.c"
 	}
 
 	filter "system:windows"
@@ -23,13 +37,19 @@ project "GLFW"
 		staticruntime "on"	-- for Visual Studio sets <RuntimeLibrary> to "MultiThreaded", "off" for MultiThreadedDLL
 
 		files {
-			"win32_platform.h",
-			"win32_joystick.h",
-			"win32_init.c",
-			"win32_joystick.c",
-			"win32_monitor.c",
-			"win32_window.c",
-			"wgl_context.c"
+			"GLFW/src/win32_time.h",
+			"GLFW/src/win32_thread.h",
+			"GLFW/src/win32_module.c",
+			"GLFW/src/win32_time.c",
+			"GLFW/src/win32_thread.c",
+
+			"GLFW/src/win32_platform.h",
+			"GLFW/src/win32_joystick.h",
+			"GLFW/src/win32_init.c",
+			"GLFW/src/win32_joystick.c",
+			"GLFW/src/win32_monitor.c",
+			"GLFW/src/win32_window.c",
+			"GLFW/src/wgl_context.c"
 		}
 
 		defines {
@@ -43,15 +63,15 @@ project "GLFW"
 		staticruntime "on"
 
 		files {
-			"x11_platform.h",
-			"xkb_unicode.h",
-			"x11_init.c",
-			"x11_monitor.c",
-			"x11_window.c",
-			"xkb_unicode.c",
-			"glx_context.c",
-			"linux_joystick.h",
-			"linux_joystick.c"
+			"GLFW/src/x11_platform.h",
+			"GLFW/src/.h",
+			"GLFW/src/x11_init.c",
+			"GLFW/src/x11_monitor.c",
+			"GLFW/src/x11_window.c",
+			"GLFW/src/.c",
+			"GLFW/src/glx_context.c",
+			"GLFW/src/linux_joystick.h",
+			"GLFW/src/linux_joystick.c"
 		}
 
 		defines {
