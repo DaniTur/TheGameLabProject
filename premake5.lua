@@ -50,7 +50,6 @@ project "TheGameLabProject"
 		"%{prj.name}/src/Core",
 		"%{prj.name}/vendor/spdlog/include", 
 		"%{prj.name}/vendor/GLAD/include",
-		--"%{prj.name}/vendor/GLFW/include",
 		"%{IncludeDirs.GLFW}",
 		"%{prj.name}/vendor/stb_image",
 		"%{prj.name}/vendor/glm",
@@ -60,12 +59,10 @@ project "TheGameLabProject"
 
 	-- Compiled libraries
 	libdirs { 
-		--"%{prj.name}/vendor/GLFW/lib",
 		"%{prj.name}/vendor/assimp/lib"
 	}
 
 	links {
-		--"glfw3",
 		"GLFW",
 		"ImGui"
 	}
@@ -109,3 +106,38 @@ project "TheGameLabProject"
 		postbuildcommands {
 			"{COPYFILE} vendor/assimp/bin/assimp-vc143-mt.dll %{cfg.targetdir}"
 		}
+
+	filter {"system:linux", "configurations:Debug"}
+		runtime "Debug"
+		symbols "On"
+		systemversion "latest"
+		defines {
+			"PLATFORM_LINUX",
+			"DEBUG",
+			"GLFW_STATIC"
+		}
+		links { 
+			"assimpd"
+		}
+		-- Requiers relative path from the project this block of commands is, in this case: project "TheGameLabProject"
+		postbuildcommands { 
+			"{COPYFILE} %{prj.location}/vendor/assimp/bin/libassimpd.so %{cfg.targetdir}"
+		}
+		
+	filter {"system:linux", "configurations:Release"}
+		runtime "Release"
+		optimize "On"
+		defines {
+			"PLATFORM_LINUX",
+			"RELEASE",
+			"GLFW_STATIC"
+		}
+		links {
+			"assimp"
+		}
+		postbuildcommands {
+			"{COPYFILE} %{prj.location}/vendor/assimp/bin/libassimp.so %{cfg.targetdir}"
+		}
+
+
+		
