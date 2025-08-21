@@ -34,8 +34,6 @@ private:
 
 private:
 
-	bool m_Active;
-
 	EventCallback m_EventCallback;
 
 	struct Mouse {

@@ -4,6 +4,10 @@
 class KeyEvent : public Event {
 public:
 
+	EventCathegory getEventCathegory() const override{
+		return EventCathegory::Layer;
+	}
+
 	int getKeyCode() const {
 		return m_KeyCode;
 	}

@@ -18,6 +18,10 @@ public:
 		return m_MouseY;
 	}
 
+	EventCathegory getEventCathegory() const override{
+		return EventCathegory::Layer;
+	}
+
 	EventType getEventType() const override {
 		return EventType::MouseMoved;
 	}
@@ -26,7 +30,7 @@ public:
 		return "MouseMoved";
 	}
 
-	std::string toString() override {
+	std::string toString() const override {
 		std::stringstream ss;
 		ss << "MouseMovedEvent: " << m_MouseX << ", " << m_MouseY;
 		return ss.str();
@@ -39,7 +43,11 @@ private:
 
 class MouseButtonEvent : public Event {
 public:
-	
+
+	EventCathegory getEventCathegory() const override{
+		return EventCathegory::Layer;
+	}
+
 	int getButtonCode() const {
 		return m_ButtonCode;
 	}
@@ -66,7 +74,7 @@ public:
 		return "MouseButtonPressed";
 	}
 
-	std::string toString() override {
+	std::string toString() const override {
 		std::stringstream ss;
 		ss << "MouseButtonPressed: " << m_ButtonCode;
 		return ss.str();
@@ -87,7 +95,7 @@ public:
 		return "MouseButtonReleased";
 	}
 
-	std::string toString() override {
+	std::string toString() const override {
 		std::stringstream ss;
 		ss << "MoueButtonReleasedEvent: " << m_ButtonCode;
 		return ss.str();

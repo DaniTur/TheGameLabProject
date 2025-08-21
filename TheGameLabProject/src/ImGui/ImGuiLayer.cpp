@@ -9,21 +9,33 @@
 #include "KeyCodes.h"
 
 ImGuiLayer::ImGuiLayer() 
-	: Layer("ImGuiLayer"), m_Active(true)
+	: Layer("ImGuiLayer")
 {
+	m_Active = false;
 }
 
 void ImGuiLayer::OnUpdate(double deltaTime)
 {
-	LOG_TRACE("ImGuiOverlay Update");
+	if (!m_Active) {
+		return;
+	}
+
+	//LOG_TRACE("ImGuiOverlay Update");
 }
 
 void ImGuiLayer::OnRender()
 {
+	if (!m_Active) {
+		return;
+	}
 }
 
 void ImGuiLayer::OnEvent(Event& event)
 {
+	if (!m_Active) {
+		return;
+	}
+
 	switch (event.getEventType())
 	{
 		using enum EventType;	// reduce verbosity
@@ -45,10 +57,21 @@ void ImGuiLayer::onKeyPressed(KeyPressedEvent& event)
 	switch (event.getKeyCode())
 	{
 	case Key::F1:
-		event.handled = true;
+	{
+		// generate event
+		ToggleLayerEvent toggleEvent("ImGuiLayer");
+		m_EventCallback(toggleEvent);
 		LOG_TRACE("Handled by ImGuiLayer -> KeyPressed F1");
 		break;
+	}
 	default:
 		break;
 	}
+	event.handled = true;
+	LOG_TRACE("[ImGuiLayer] KeyPressed {}", event.getKeyCode());
+}
+
+void ImGuiLayer::SetEventCallback(const EventCallback& callback)
+{
+	m_EventCallback = callback;
 }

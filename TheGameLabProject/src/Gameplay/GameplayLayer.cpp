@@ -5,9 +5,10 @@
 #include "Events/ApplicationEvent.h"
 #include "glm.hpp"
 #include "Core/Input.h"
+#include "Game.h"
 
 GameplayLayer::GameplayLayer() 
-	: Layer("GameplayLayer"), m_Active(true)
+	: Layer("GameplayLayer")
 {
 	// Shader program
 	m_Shader = Shader("src/Graphics/vertex_shader.vert", "src/Graphics/fragment_shader.frag");
@@ -26,6 +27,9 @@ GameplayLayer::GameplayLayer()
 
 void GameplayLayer::OnUpdate(double deltaTime)
 {
+	if (!m_Active) {
+		return;
+	}
 	// Input
 	processInputPolling(deltaTime);
 
@@ -118,11 +122,19 @@ void GameplayLayer::OnUpdate(double deltaTime)
 
 void GameplayLayer::OnRender()
 {
+	if (!m_Active) {
+		return;
+	}
 }
 
 // GameplayLayer is always the bottom layer, so all the events that reach this layer should be always handled
 void GameplayLayer::OnEvent(Event& event)
 {
+	if (!m_Active) {
+		return;
+	}
+
+	LOG_TRACE("{}", event.toString());
 	switch (event.getEventType())
 	{
 	using enum EventType;	// reduce verbosity
@@ -179,7 +191,13 @@ void GameplayLayer::onKeyPressed(KeyPressedEvent& event)
 	case Key::UP:
 		break;
 	case Key::F1:
+	{
+		// generate event
+		ToggleLayerEvent toggleEvent("ImGuiLayer");
+		m_EventCallback(toggleEvent);
+		LOG_INFO("[GameplayLayer] toggle ImGuiLayer active");
 		break;
+	}
 	case Key::ESCAPE:
 	{
 		// TODO: Create a new event for toggle(enable/disable) the menu. Enable/Disable layers, 
@@ -194,7 +212,7 @@ void GameplayLayer::onKeyPressed(KeyPressedEvent& event)
 		break;
 	}
 	event.handled = true;
-	LOG_TRACE("KeyPressed {}", event.getKeyCode());
+	LOG_TRACE("[GameplayLayer] KeyPressed {}", event.getKeyCode());
 }
 
 void GameplayLayer::onKeyReleased(KeyReleasedEvent& e)
@@ -255,7 +273,7 @@ void GameplayLayer::onMouseMoved(MouseMovedEvent& event)
 	m_gameCamera.setCameraTarget(glm::normalize(direction));
 
 	event.handled = true;
-	//LOG_TRACE("MouseMoved x:{} y:{}", e.getX(), e.getY());
+	LOG_TRACE("MouseMoved x:{} y:{}", event.getX(), event.getY());
 }
 
 void GameplayLayer::onMouseButtonPressed(MouseButtonPressedEvent& event)

@@ -1,11 +1,12 @@
 #pragma once
 #include "Core/Layer.h"
-// test
+#include "IEventEmitter.h"
+
 #include "Events/ApplicationEvent.h"
 #include "Events/KeyEvent.h"
 #include "Events/MouseEvent.h"
 
-class ImGuiLayer : public Layer
+class ImGuiLayer : public Layer, public IEventEmitter
 {
 public:
 
@@ -17,10 +18,13 @@ public:
 
 	bool IsActive() const;
 
-private: //test
-	void onKeyPressed(KeyPressedEvent& event);
+	void SetEventCallback(const EventCallback& callback) override;
+
 private:
 
-	bool m_Active;
+	EventCallback m_EventCallback;
+
+	void onKeyPressed(KeyPressedEvent& event);
+
 };
 

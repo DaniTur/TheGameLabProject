@@ -21,7 +21,9 @@ Game::Game()
 	gameplayLayer->SetEventCallback(std::bind_front(&Game::onEvent, this));
 	m_LayerStack.PushLayer(gameplayLayer);
 
-	m_LayerStack.PushOverlay(new ImGuiLayer());
+	auto imGuiLayer = new ImGuiLayer();
+	imGuiLayer->SetEventCallback(std::bind_front(&Game::onEvent, this));
+	m_LayerStack.PushOverlay(imGuiLayer);
 }
 
 void Game::run() {
@@ -50,13 +52,20 @@ void Game::run() {
 // Don't generate Events in any of the OnEvent functions in any Layer
 void Game::onEvent(Event& event)
 {
-	if (event.getEventType() == EventType::WindowClosed)
-		onWindowClosed(static_cast<WindowClosedEvent&>(event));
+	// If the event is an application event, let the application handle it
+	if (event.getEventCathegory() == EventCathegory::Application) {
+		if (event.getEventType() == EventType::WindowClosed) {
+			onWindowClosed(static_cast<WindowClosedEvent&>(event));
+		}
+		if (event.getEventType() == EventType::ToggleLayer) {
+			onToggleLayer(static_cast<ToggleLayerEvent&>(event));
+		}
+	}
 
 	for (auto it = m_LayerStack.rbegin(); it != m_LayerStack.rend(); ++it) {
-		if (event.handled)
+		if (event.handled) {
 			break;
-	
+		}
 		(*it)->OnEvent(event);
 	}
 }
@@ -64,5 +73,28 @@ void Game::onEvent(Event& event)
 void Game::onWindowClosed(WindowClosedEvent& e)
 {
 	m_running = false;
+	e.handled = true;
+}
+
+// Toggles the layer active or inactive if exists
+void Game::onToggleLayer(ToggleLayerEvent& e)
+{
+	const std::string& layerId = e.getLayerId();
+	// search the layer to toggle by layerId
+	auto it = m_LayerStack.rbegin();
+	bool found = false;
+	while (it != m_LayerStack.rend() && !found) {
+		if ((*it)->GetName().compare(layerId) == 0) {
+			found = true;
+		}
+		else {
+			++it;
+		}
+	}
+	if (found)
+	{
+		(*it)->ToggleActive();
+	}
+
 	e.handled = true;
 }

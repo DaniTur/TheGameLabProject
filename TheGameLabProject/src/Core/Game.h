@@ -30,6 +30,7 @@ private:
 	void onMouseMoved(MouseMovedEvent &e);
 	void onMouseButtonPressed(MouseButtonPressedEvent &e);
 	void onMouseButtonReleased(MouseButtonReleasedEvent &e);
+	void onToggleLayer(ToggleLayerEvent& e);
 
 private:
 

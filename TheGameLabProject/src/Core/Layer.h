@@ -15,7 +15,12 @@ public:
 
 	virtual std::string GetName();
 
+	void ToggleActive() {
+		m_Active = !m_Active;
+	}
+
 protected:
 	std::string m_DebugName;
+	bool m_Active = true;
 };
 
