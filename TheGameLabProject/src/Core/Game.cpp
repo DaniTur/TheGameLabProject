@@ -21,7 +21,7 @@ Game::Game()
 	gameplayLayer->SetEventCallback(std::bind_front(&Game::onEvent, this));
 	m_LayerStack.PushLayer(gameplayLayer);
 
-	auto imGuiLayer = new ImGuiLayer();
+	auto imGuiLayer = new ImGuiLayer(m_window);
 	imGuiLayer->SetEventCallback(std::bind_front(&Game::onEvent, this));
 	m_LayerStack.PushOverlay(imGuiLayer);
 }
@@ -38,8 +38,8 @@ void Game::run() {
 		m_DeltaTime = FPSManager::GetDeltaTime();
 
 		// Update layers of the LayerStack each frame
-		for (auto it = m_LayerStack.rbegin(); it != m_LayerStack.rend(); ++it) {
-			(*it)->OnUpdate(m_DeltaTime);
+		for (Layer* layer : m_LayerStack) {
+			layer->OnUpdate(m_DeltaTime);
 		}
 
 		m_window.onUpdate();

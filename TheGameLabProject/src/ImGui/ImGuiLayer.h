@@ -6,11 +6,13 @@
 #include "Events/KeyEvent.h"
 #include "Events/MouseEvent.h"
 
+#include <Core/Window.h>
+
 class ImGuiLayer : public Layer, public IEventEmitter
 {
 public:
 
-	ImGuiLayer();
+	ImGuiLayer(Window& window);
 
 	void OnUpdate(double deltaTime) override;
 	void OnRender() override;

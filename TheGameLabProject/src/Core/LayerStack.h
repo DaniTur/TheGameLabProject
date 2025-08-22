@@ -15,6 +15,9 @@ public:
 	void PopLayer(Layer* layer);
 	void PopOverlay(Layer* overlay);
 
+	std::vector<Layer*>::iterator begin();
+	std::vector<Layer*>::iterator end();
+
 	std::vector<Layer*>::reverse_iterator rbegin();
 	std::vector<Layer*>::reverse_iterator rend();
 

@@ -36,6 +36,16 @@ void LayerStack::PopOverlay(Layer* overlay)
 	}
 }
 
+std::vector<Layer*>::iterator LayerStack::begin() 
+{
+	return m_Layers.begin();
+}
+
+std::vector<Layer*>::iterator LayerStack::end()
+{
+	return m_Layers.end();
+}
+
 std::vector<Layer*>::reverse_iterator LayerStack::rbegin()
 {
 	return m_Layers.rbegin();
