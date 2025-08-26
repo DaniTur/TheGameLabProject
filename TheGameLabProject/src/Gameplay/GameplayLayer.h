@@ -11,6 +11,8 @@
 #include "Graphics/ProjectionTransform.h"
 #include "Graphics/Camera.h"
 
+#include <Scene/Scene.h>
+
 class GameplayLayer : public Layer, public IEventEmitter
 {
 public:
@@ -47,19 +49,21 @@ private:
 	Mouse m_Mouse;
 
 	// Rendering
-	Shader m_Shader;
-	Model m_HandGun;
-	Model m_Bagpack;
-	Model m_WoodenBox;
-	Model m_Mp7;
+	//Shader m_Shader;
+	//Model m_HandGun;
+	//Model m_Bagpack;
+	//Model m_WoodenBox;
+	//Model m_Mp7;
 
-	WorldTransform m_WorldTransform;
-	WorldTransform m_handGunWorldTransform;
-	WorldTransform m_woodenBoxesWorldTransform;
-	WorldTransform m_mp7WorldTransform;
+	//WorldTransform m_WorldTransform;
+	//WorldTransform m_handGunWorldTransform;
+	//WorldTransform m_woodenBoxesWorldTransform;
+	//WorldTransform m_mp7WorldTransform;
+
+	Scene m_ActiveScene;	// default Scene
 
 	Camera m_gameCamera;
 	// Perspective projection transform
-	ProjectionTransform m_projectionTransform;
+	//ProjectionTransform m_projectionTransform;
 };
 

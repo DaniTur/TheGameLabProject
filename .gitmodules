@@ -7,3 +7,6 @@
 [submodule "TheGameLabProject/vendor/GLFW"]
 	path = TheGameLabProject/vendor/GLFW
 	url = https://github.com/glfw/glfw.git
+[submodule "TheGameLabProject/vendor/nlohmanJson"]
+	path = TheGameLabProject/vendor/nlohmanJson
+	url = https://github.com/nlohmann/json.git

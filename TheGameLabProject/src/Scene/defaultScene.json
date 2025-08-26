@@ -1,0 +1,65 @@
+﻿{
+	"scene_id" : "000DEFAULT",
+	"assets" : [
+		{
+			"type" : "GameObject",
+			"desc" : "Wooden Box",
+			"model_file_path" : "resources/models/woodenBoxes/box.fbx",
+			"position" : [0.0, 0.0, -5.0],
+			"rotation" : [0.0, 0.0, 0.0],
+			"scale" : 1.0,
+			"colissions" : true
+		},
+		{
+			"type" : "GameObject",
+			"desc" : "Backpack",
+			"model_file_path" : "resources/models/explorerBag/backpack.obj",
+			"position" : [0.0, 0.0, 0.0],
+			"rotation" : [0.0, 0.0, 0.0],
+			"scale" : 0.5,
+			"colissions" : true
+		},
+		{
+			"type" : "GameObject",
+			"desc" : "MP7",
+			"model_file_path" : "resources/models/mp7/mp7.fbx",
+			"position" : [-0.5, 0.0, 0.0],
+			"rotation" : [-90.0, 0.0, 0.0],
+			"scale" : 3.0,
+			"colissions" : false
+		},
+				{
+			"type" : "LightObject",
+			"desc" : "Point of Light",
+			"position" : [0.0, 10.0, 0.0],
+			"rotation" : [0.0, 1.0, 0.0],
+			"intensity" : 0.0,
+			"color" : [255, 255, 255]
+		},
+		{
+			"type" : "LightObject",
+			"desc" : "Directional Light",
+			"direction" : [-0.2, -1.0, -0.3],
+			"intensity" : 0.0,
+			"color" : [255, 255, 255]
+		},
+		{
+			"type" : "LightObject",
+			"desc" : "Ambient Light",
+			"intensity" : 0.2,
+			"color" : [255, 255, 255]
+		},
+		{
+			"type" : "LightObject",
+			"desc" : "Diffuse Light",
+			"intensity" : 0.9,
+			"color" : [255, 255, 255]
+		},
+		{
+			"type" : "LightObject",
+			"desc" : "Specular Light",
+			"intensity" : 1.0,
+			"color" : [255, 255, 255]
+		}
+	]
+}

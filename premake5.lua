@@ -13,6 +13,7 @@ outputdir = "%{cfg.buildcfg}-%{cfg.architecture}"
 IncludeDirs = {}
 IncludeDirs["GLFW"] = "TheGameLabProject/vendor/GLFW/include"
 IncludeDirs["ImGui"] = "TheGameLabProject/vendor/imgui"
+IncludeDirs["NlohmannJson"] = "TheGameLabProject/vendor/nlohmanJson/single_include"
 
 -- Include premake5 files for dependencies before building the actual project
 include "TheGameLabProject/vendor/premake5_glfw.lua"
@@ -55,6 +56,7 @@ project "TheGameLabProject"
 		"%{prj.name}/vendor/glm",
 		"%{prj.name}/vendor/assimp/include",
 		"%{IncludeDirs.ImGui}",
+		"%{IncludeDirs.NlohmannJson}"
 	}
 
 	-- Compiled libraries

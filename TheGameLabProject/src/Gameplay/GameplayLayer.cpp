@@ -10,13 +10,7 @@
 GameplayLayer::GameplayLayer() 
 	: Layer("GameplayLayer")
 {
-	// Shader program
-	m_Shader = Shader("src/Graphics/vertex_shader.vert", "src/Graphics/fragment_shader.frag");
-	// load models
-	m_HandGun = Model("resources/models/handgun/1911.fbx");
-	m_Bagpack = Model("resources/models/explorerBag/backpack.obj");
-	m_WoodenBox = Model("resources/models/woodenBoxes/box.fbx");
-	m_Mp7 = Model("resources/models/mp7/mp7.fbx");
+	m_ActiveScene.Load();
 	// TODO: Move this to Renderer
 	// tell stb_image.h to flip loaded texture's on the y-axis (before loading model). Needed for importing .obj material textures
 	//stbi_set_flip_vertically_on_load(true);
@@ -37,87 +31,8 @@ void GameplayLayer::OnUpdate(double deltaTime)
 	glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	m_Shader.use();
+	m_ActiveScene.Render(m_gameCamera);
 
-	// Light source
-	// Point of light
-	glm::vec3 lightSourcePosition(0.0f, 10.0f, 0.0f);
-
-	glm::mat4 lightTransform(1.0f);
-	glm::mat4 translate = glm::translate(lightTransform, glm::vec3(0.0f, 0.0f, 5.0f));
-	glm::mat4 rotate = glm::rotate(lightTransform, (float)glfwGetTime(), glm::vec3(0.0f, 1.0f, 0.0f));
-
-	lightTransform = rotate * translate;
-
-	glm::vec4 lightPosV4(lightSourcePosition, 1.0f);	// tranform to vec4
-	lightPosV4 = lightTransform * lightPosV4; // apply transformation
-	lightSourcePosition = lightPosV4;	//transform back to vec3
-
-	m_Shader.setVec3("light.position", lightSourcePosition);
-
-	// Directional light
-	glm::vec3 lightDirection(-0.2f, -1.0f, -0.3f);
-	m_Shader.setVec3("light.direction", lightDirection);
-
-	// light color and intensity/strenght
-	glm::vec3 lightAmbient(0.2f);
-	glm::vec3 lightDiffuse(0.8f);
-	glm::vec3 lightSpecular(1.0f);
-	m_Shader.setVec3("light.ambient", lightAmbient);
-	m_Shader.setVec3("light.diffuse", lightDiffuse);
-	m_Shader.setVec3("light.specular", lightSpecular);
-	m_Shader.setVec3("viewPos", m_gameCamera.getPosition());
-
-	// Bagpack
-	m_WorldTransform.setScale(0.5f);
-	glm::mat4 m_WorldTransformMatrix = m_WorldTransform.getMatrix();
-	glm::mat4 cameraView = m_gameCamera.getView();
-	glm::mat4 projectionTransformMatrix = m_projectionTransform.getMatrix();
-	glm::mat4 WVPmatrix = projectionTransformMatrix * cameraView * m_WorldTransformMatrix;
-	m_Shader.setMatrix4("model", m_WorldTransformMatrix);
-	m_Shader.setMatrix4("view", cameraView);
-	m_Shader.setMatrix4("projection", projectionTransformMatrix);
-
-	m_Bagpack.Draw(m_Shader);
-
-	// Handgun
-	m_handGunWorldTransform.setTranslation(glm::vec3(3.0f, 0.0f, 0.0f));
-	m_handGunWorldTransform.setScale(0.5f);
-	m_WorldTransformMatrix = m_handGunWorldTransform.getMatrix();
-	cameraView = m_gameCamera.getView();
-	projectionTransformMatrix = m_projectionTransform.getMatrix();
-	WVPmatrix = projectionTransformMatrix * cameraView * m_WorldTransformMatrix;
-	m_Shader.setMatrix4("model", m_WorldTransformMatrix);
-	m_Shader.setMatrix4("view", cameraView);
-	m_Shader.setMatrix4("projection", projectionTransformMatrix);
-
-	m_HandGun.Draw(m_Shader);
-
-	// Wooden Boxes
-	m_woodenBoxesWorldTransform.setTranslation(glm::vec3(0.0f, 0.0f, -5.0f));
-	m_WorldTransformMatrix = m_woodenBoxesWorldTransform.getMatrix();
-	cameraView = m_gameCamera.getView();
-	projectionTransformMatrix = m_projectionTransform.getMatrix();
-	WVPmatrix = projectionTransformMatrix * cameraView * m_WorldTransformMatrix;
-	m_Shader.setMatrix4("model", m_WorldTransformMatrix);
-	m_Shader.setMatrix4("view", cameraView);
-	m_Shader.setMatrix4("projection", projectionTransformMatrix);
-
-	m_WoodenBox.Draw(m_Shader);
-
-	// MP7
-	m_mp7WorldTransform.setTranslation(glm::vec3(-0.5f, 0.0f, 0.0f));
-	m_mp7WorldTransform.setScale(3.0f);
-	m_mp7WorldTransform.setRotation(glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-	m_WorldTransformMatrix = m_mp7WorldTransform.getMatrix();
-	cameraView = m_gameCamera.getView();
-	projectionTransformMatrix = m_projectionTransform.getMatrix();
-	WVPmatrix = projectionTransformMatrix * cameraView * m_WorldTransformMatrix;
-	m_Shader.setMatrix4("model", m_WorldTransformMatrix);
-	m_Shader.setMatrix4("view", cameraView);
-	m_Shader.setMatrix4("projection", projectionTransformMatrix);
-
-	m_Mp7.Draw(m_Shader);
 }
 
 void GameplayLayer::OnRender()
