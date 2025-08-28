@@ -3,8 +3,13 @@
 #include <Graphics/Model.h>
 #include <glm.hpp>
 
+enum class AssetType {
+	GameObject,
+	LightObject
+};
+
 struct AssetData {
-	std::string type;
+	AssetType type;
 	std::string filePath;
 	glm::vec3 position{0.0f};
 	glm::vec3 rotation{0.0f};

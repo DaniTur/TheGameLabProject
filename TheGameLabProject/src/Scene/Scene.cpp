@@ -1,11 +1,15 @@
 #include "pch.h"
 #include "Scene.h"
 #include "glm.hpp"
+// Temporary
+#include <GLFW/glfw3.h>
 #include <nlohmann/json.hpp>
 using json = nlohmann::json;
 
-// Temporary
-#include <GLFW/glfw3.h>
+NLOHMANN_JSON_SERIALIZE_ENUM(AssetType, {
+	{AssetType::GameObject, "GameObject"},
+	{AssetType::LightObject, "LightObject"}
+	})
 
 Scene::Scene() :
 	m_SceneID("000DEFAULT"), 
@@ -49,8 +53,8 @@ void Scene::Load()
 		for (auto it = JAssets.begin(); it != JAssets.end(); ++it)
 		{
 			json JAssetObject = (*it);
-			std::string type = JAssetObject.at("type");
-			if (type.compare("GameObject") == 0)
+			AssetType type = JAssetObject.at("type");
+			if (type == AssetType::GameObject)
 			{
 				AssetData assetData;
 				assetData.type = type;
@@ -105,90 +109,42 @@ void Scene::Render(Camera& camera)
 	m_Shader.setVec3("light.specular", lightSpecular);
 	m_Shader.setVec3("viewPos", camera.getPosition());
 
-	// Bagpack
-	//m_WorldTransform.setScale(0.5f);
-	//glm::mat4 m_WorldTransformMatrix = m_WorldTransform.getMatrix();
-	//glm::mat4 cameraView = camera.getView();
-	//glm::mat4 projectionTransformMatrix = m_projectionTransform.getMatrix();
-	//glm::mat4 WVPmatrix = projectionTransformMatrix * cameraView * m_WorldTransformMatrix;
-	//m_Shader.setMatrix4("model", m_WorldTransformMatrix);
-	//m_Shader.setMatrix4("view", cameraView);
-	//m_Shader.setMatrix4("projection", projectionTransformMatrix);
-
-	//m_Bagpack.Draw(m_Shader);
-
-	// Handgun
-	//m_handGunWorldTransform.setTranslation(glm::vec3(3.0f, 0.0f, 0.0f));
-	//m_handGunWorldTransform.setScale(0.5f);
-	//m_WorldTransformMatrix = m_handGunWorldTransform.getMatrix();
-	//cameraView = camera.getView();
-	//projectionTransformMatrix = m_projectionTransform.getMatrix();
-	//WVPmatrix = projectionTransformMatrix * cameraView * m_WorldTransformMatrix;
-	//m_Shader.setMatrix4("model", m_WorldTransformMatrix);
-	//m_Shader.setMatrix4("view", cameraView);
-	//m_Shader.setMatrix4("projection", projectionTransformMatrix);
-
-	//m_HandGun.Draw(m_Shader);
-
-	// Wooden Boxes
-	//m_woodenBoxesWorldTransform.setTranslation(glm::vec3(0.0f, 0.0f, -5.0f));
-	//m_WorldTransformMatrix = m_woodenBoxesWorldTransform.getMatrix();
-	//cameraView = camera.getView();
-	//projectionTransformMatrix = m_projectionTransform.getMatrix();
-	//WVPmatrix = projectionTransformMatrix * cameraView * m_WorldTransformMatrix;
-	//m_Shader.setMatrix4("model", m_WorldTransformMatrix);
-	//m_Shader.setMatrix4("view", cameraView);
-	//m_Shader.setMatrix4("projection", projectionTransformMatrix);
-
-	//m_WoodenBox.Draw(m_Shader);
-
-	// MP7
-	//m_mp7WorldTransform.setTranslation(glm::vec3(-0.5f, 0.0f, 0.0f));
-	//m_mp7WorldTransform.setScale(3.0f);
-	//m_mp7WorldTransform.setRotation(glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-	//m_WorldTransformMatrix = m_mp7WorldTransform.getMatrix();
-	//cameraView = camera.getView();
-	//projectionTransformMatrix = m_projectionTransform.getMatrix();
-	//WVPmatrix = projectionTransformMatrix * cameraView * m_WorldTransformMatrix;
-	//m_Shader.setMatrix4("model", m_WorldTransformMatrix);
-	//m_Shader.setMatrix4("view", cameraView);
-	//m_Shader.setMatrix4("projection", projectionTransformMatrix);
-
-	//m_Mp7.Draw(m_Shader);
-
 	// Only renders assets of type GameObject here
 	for (Asset* asset : m_AssetContainer)
 	{
 		AssetData& assetData = asset->GetData();
 
-		WorldTransform worldTransform;
+		if (assetData.type == AssetType::GameObject) {
+			WorldTransform worldTransform;
 
-		worldTransform.setTranslation(assetData.position);
-		worldTransform.setScale(assetData.scale);
-		if (assetData.rotation != glm::vec3{ 0.0f, 0.0f, 0.0f }) {	// rotation exists
-			float degrees = 0.0f;
-			glm::vec3 rotationAxis{ 0.0f };
-			if (assetData.rotation[0] != 0.0f) {
-				degrees = assetData.rotation[0];
-				rotationAxis[0] = 1.0f;
-			} else if (assetData.rotation[1] != 0.0f) {
-				degrees = assetData.rotation[1];
-				rotationAxis[1] = 1.0f;
-			} else if (assetData.rotation[2] != 0.0f) {
-				degrees = assetData.rotation[2];
-				rotationAxis[2] = 1.0f;
+			worldTransform.setTranslation(assetData.position);
+			worldTransform.setScale(assetData.scale);
+			if (assetData.rotation != glm::vec3{ 0.0f, 0.0f, 0.0f }) {	// rotation exists
+				float degrees = 0.0f;
+				glm::vec3 rotationAxis{ 0.0f };
+				if (assetData.rotation[0] != 0.0f) {
+					degrees = assetData.rotation[0];
+					rotationAxis[0] = 1.0f;
+				} else if (assetData.rotation[1] != 0.0f) {
+					degrees = assetData.rotation[1];
+					rotationAxis[1] = 1.0f;
+				} else if (assetData.rotation[2] != 0.0f) {
+					degrees = assetData.rotation[2];
+					rotationAxis[2] = 1.0f;
+				}
+				worldTransform.setRotation(glm::radians(degrees), rotationAxis);
 			}
-			worldTransform.setRotation(glm::radians(degrees), rotationAxis);
+
+			glm::mat4 worldTransformMatrix = worldTransform.getMatrix();
+			glm::mat4 cameraView = camera.getView();
+			glm::mat4 projectionTransformMatrix = m_projectionTransform.getMatrix();
+
+			m_Shader.setMatrix4("model", worldTransformMatrix);
+			m_Shader.setMatrix4("view", cameraView);
+			m_Shader.setMatrix4("projection", projectionTransformMatrix);
+
+			asset->Draw(m_Shader);
+
 		}
-
-		glm::mat4 worldTransformMatrix = worldTransform.getMatrix();
-		glm::mat4 cameraView = camera.getView();
-		glm::mat4 projectionTransformMatrix = m_projectionTransform.getMatrix();
-
-		m_Shader.setMatrix4("model", worldTransformMatrix);
-		m_Shader.setMatrix4("view", cameraView);
-		m_Shader.setMatrix4("projection", projectionTransformMatrix);
-
-		asset->Draw(m_Shader);
 	}
 }
