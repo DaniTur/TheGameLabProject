@@ -49,7 +49,6 @@ void GameplayLayer::OnEvent(Event& event)
 		return;
 	}
 
-	LOG_TRACE("{}", event.toString());
 	switch (event.getEventType())
 	{
 	using enum EventType;	// reduce verbosity
@@ -130,9 +129,9 @@ void GameplayLayer::onKeyPressed(KeyPressedEvent& event)
 	LOG_TRACE("[GameplayLayer] KeyPressed {}", event.getKeyCode());
 }
 
-void GameplayLayer::onKeyReleased(KeyReleasedEvent& e)
+void GameplayLayer::onKeyReleased(KeyReleasedEvent& event)
 {
-	switch (e.getKeyCode())
+	switch (event.getKeyCode())
 	{
 	case Key::W:
 		break;
@@ -149,8 +148,8 @@ void GameplayLayer::onKeyReleased(KeyReleasedEvent& e)
 	default:
 		break;
 	}
-	e.handled = true;
-	LOG_TRACE("KeyReleased {}", e.getKeyCode());
+	event.handled = true;
+	LOG_TRACE("[GameplayLayer] KeyReleased {}", event.getKeyCode());
 }
 
 void GameplayLayer::onMouseMoved(MouseMovedEvent& event)
@@ -188,7 +187,7 @@ void GameplayLayer::onMouseMoved(MouseMovedEvent& event)
 	m_gameCamera.setCameraTarget(glm::normalize(direction));
 
 	event.handled = true;
-	LOG_TRACE("MouseMoved x:{} y:{}", event.getX(), event.getY());
+	//LOG_TRACE("[GameplayLayer] MouseMoved x:{} y:{}", event.getX(), event.getY());
 }
 
 void GameplayLayer::onMouseButtonPressed(MouseButtonPressedEvent& event)
@@ -203,7 +202,7 @@ void GameplayLayer::onMouseButtonPressed(MouseButtonPressedEvent& event)
 		break;
 	}
 	event.handled = true;
-	LOG_TRACE("ButtonPressed {}", event.getButtonCode());
+	LOG_TRACE("[GameplayLayer] MouseButtonPressed {}", event.getButtonCode());
 }
 
 void GameplayLayer::onMouseButtonReleased(MouseButtonReleasedEvent& event)
@@ -218,7 +217,7 @@ void GameplayLayer::onMouseButtonReleased(MouseButtonReleasedEvent& event)
 		break;
 	}
 	event.handled = true;
-	LOG_TRACE("ButtonReleased {}", event.getButtonCode());
+	LOG_TRACE("[GameplayLayer] MouseButtonReleased {}", event.getButtonCode());
 }
 
 void GameplayLayer::SetEventCallback(const EventCallback& callback)

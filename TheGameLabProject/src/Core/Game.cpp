@@ -29,7 +29,7 @@ Game::Game()
 void Game::run() {
 
 	m_running = true;
-	LOG_INFO("Game running...");
+	LOG_INFO("[Game] Game running...");
 
 	while (m_running) {
 

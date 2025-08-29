@@ -6,8 +6,8 @@
 #include <nlohmann/json.hpp>
 using json = nlohmann::json;
 
-NLOHMANN_JSON_SERIALIZE_ENUM(AssetType, {
-	{AssetType::GameObject, "GameObject"},
+NLOHMANN_JSON_SERIALIZE_ENUM(GameObjectType, {
+	{AssetType::GameObject, "Entity"},
 	{AssetType::LightObject, "LightObject"}
 	})
 
@@ -25,53 +25,48 @@ Scene::Scene(const std::string_view &id) : m_SceneID(id)
 
 void Scene::Load()
 {
-	//m_HandGun = Model("resources/models/handgun/1911.fbx");
-	//m_Bagpack = Model("resources/models/explorerBag/backpack.obj");
-	//m_WoodenBox = Model("resources/models/woodenBoxes/box.fbx");
-	//m_Mp7 = Model("resources/models/mp7/mp7.fbx");
-	
 	// 1. Open the Scene file path and check for errors
 	try {
 		std::string relPathFromProjDir = "src/Scene/" + m_FilePath;
 		std::ifstream fileStream(relPathFromProjDir);
 		if (!fileStream.is_open()) {
-			LOG_ERROR("Cannot open the input file stream of the Scene::Load() : {}", m_FilePath);
+			LOG_ERROR("[Scene] Cannot open the input file stream of the Scene::Load() : {}", m_FilePath);
 			return;
 		}
 		json Jdata = json::parse(fileStream);
 		if (std::string SceneId = Jdata.at("scene_id"); SceneId.compare(m_SceneID) != 0) {
-			LOG_ERROR("Error from Json {}: 'scene_id' inside the json does not match the 'scene_id' of the Scene instance", m_FilePath);
+			LOG_ERROR("[Scene] Error from Json {}: 'scene_id' inside the json does not match the 'scene_id' of the Scene instance", m_FilePath);
 			return;
 		}
 		// Get the assets objects
 		json JAssets = Jdata.at("assets");
 		if (JAssets.empty()) {
-			LOG_ERROR("Error reading Json {}: assets is missing or empty", m_FilePath);
+			LOG_ERROR("[Scene] Error reading Json {}: assets is missing or empty", m_FilePath);
 			return;
 		}
 		// 2. Obtain every asset data and load in to the assets container
 		for (auto it = JAssets.begin(); it != JAssets.end(); ++it)
 		{
 			json JAssetObject = (*it);
-			AssetType type = JAssetObject.at("type");
-			if (type == AssetType::GameObject)
+			GameObjectType type = JAssetObject.at("type");
+			if (type == GameObjectType::Entity)
 			{
-				AssetData assetData;
-				assetData.type = type;
-				assetData.filePath = JAssetObject.at("model_file_path");
+				GameObjectData gameObjectData;
+				gameObjectData.type = type;
+				gameObjectData.filePath = JAssetObject.at("model_file_path");
 				json pos = JAssetObject.at("position");
-				assetData.position = glm::vec3(pos[0], pos[1], pos[2]);
+				gameObjectData.position = glm::vec3(pos[0], pos[1], pos[2]);
 				json rot = JAssetObject.at("rotation");
-				assetData.rotation = glm::vec3(rot[0], rot[1], rot[2]);
-				assetData.scale = JAssetObject.at("scale");
-				assetData.colissions = JAssetObject.at("colissions");
+				gameObjectData.rotation = glm::vec3(rot[0], rot[1], rot[2]);
+				gameObjectData.scale = JAssetObject.at("scale");
+				gameObjectData.colissions = JAssetObject.at("colissions");
 
-				m_AssetContainer.push_back(new Asset(assetData));
+				m_GameObjectContainer.push_back(new GameObject(gameObjectData));
 			}
 		}
 	}
 	catch (const nlohmann::json::parse_error& e) {
-		LOG_FATAL("Json Parse Error[{}]: {}", e.id, e.what());
+		LOG_ERROR("[Scene] Json Parse Error[{}]: {}", e.id, e.what());
 		throw;
 	}
 }
@@ -110,41 +105,44 @@ void Scene::Render(Camera& camera)
 	m_Shader.setVec3("viewPos", camera.getPosition());
 
 	// Only renders assets of type GameObject here
-	for (Asset* asset : m_AssetContainer)
-	{
-		AssetData& assetData = asset->GetData();
+	// Allocate memory here one time for performance improvement
+	glm::mat4 worldTransformMatrix;
+	glm::mat4 cameraView;
+	glm::mat4 projectionTransformMatrix;
 
-		if (assetData.type == AssetType::GameObject) {
+	for (GameObject* gameObject : m_GameObjectContainer)
+	{
+		GameObjectData& gameObjectData = gameObject->GetData();
+
+		if (gameObjectData.type == GameObjectType::Entity) {
 			WorldTransform worldTransform;
 
-			worldTransform.setTranslation(assetData.position);
-			worldTransform.setScale(assetData.scale);
-			if (assetData.rotation != glm::vec3{ 0.0f, 0.0f, 0.0f }) {	// rotation exists
+			worldTransform.setTranslation(gameObjectData.position);
+			worldTransform.setScale(gameObjectData.scale);
+			if (gameObjectData.rotation != glm::vec3{ 0.0f, 0.0f, 0.0f }) {	// rotation exists
 				float degrees = 0.0f;
 				glm::vec3 rotationAxis{ 0.0f };
-				if (assetData.rotation[0] != 0.0f) {
-					degrees = assetData.rotation[0];
+				if (gameObjectData.rotation[0] != 0.0f) {
+					degrees = gameObjectData.rotation[0];
 					rotationAxis[0] = 1.0f;
-				} else if (assetData.rotation[1] != 0.0f) {
-					degrees = assetData.rotation[1];
+				} else if (gameObjectData.rotation[1] != 0.0f) {
+					degrees = gameObjectData.rotation[1];
 					rotationAxis[1] = 1.0f;
-				} else if (assetData.rotation[2] != 0.0f) {
-					degrees = assetData.rotation[2];
+				} else if (gameObjectData.rotation[2] != 0.0f) {
+					degrees = gameObjectData.rotation[2];
 					rotationAxis[2] = 1.0f;
 				}
 				worldTransform.setRotation(glm::radians(degrees), rotationAxis);
 			}
 
-			glm::mat4 worldTransformMatrix = worldTransform.getMatrix();
-			glm::mat4 cameraView = camera.getView();
-			glm::mat4 projectionTransformMatrix = m_projectionTransform.getMatrix();
+			worldTransformMatrix = worldTransform.getMatrix();
+			cameraView = camera.getView();
+			projectionTransformMatrix = m_projectionTransform.getMatrix();
 
 			m_Shader.setMatrix4("model", worldTransformMatrix);
 			m_Shader.setMatrix4("view", cameraView);
 			m_Shader.setMatrix4("projection", projectionTransformMatrix);
-
-			asset->Draw(m_Shader);
-
 		}
+		gameObject->Draw(m_Shader);
 	}
 }

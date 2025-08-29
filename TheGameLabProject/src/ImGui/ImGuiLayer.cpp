@@ -84,7 +84,7 @@ void ImGuiLayer::onKeyPressed(KeyPressedEvent& event)
 		// generate event
 		ToggleLayerEvent toggleEvent("ImGuiLayer");
 		m_EventCallback(toggleEvent);
-		LOG_TRACE("Handled by ImGuiLayer -> KeyPressed F1");
+		LOG_TRACE("[ImGuiLayer] Handled KeyPressed F1");
 		break;
 	}
 	default:

@@ -12,7 +12,7 @@ Window::Window(unsigned int width, unsigned int height)
 	
 	if (glfwInit() == GLFW_FALSE) {
 		std::string errorMessage = "Could not initialize GLFW";
-		LOG_ERROR(errorMessage);
+		LOG_ERROR("[Window] {}", errorMessage);
 		throw std::exception(errorMessage.c_str());
 	}
 
@@ -23,18 +23,18 @@ Window::Window(unsigned int width, unsigned int height)
 	// Using Core subset of features without the backwards-compatible features
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-	LOG_INFO("GLFW initialized");
+	LOG_INFO("[Window] GLFW initialized");
 
 	m_window = glfwCreateWindow(m_windowData.width, m_windowData.height, "TheGameLabProject", nullptr, nullptr);
 	if (m_window == nullptr) {
-		LOG_FATAL("Failed to create GLFW window");
+		LOG_FATAL("[Window] Failed to create GLFW window");
 		glfwTerminate();
 	}
 
 	glfwMakeContextCurrent(m_window);
 	centerWindow();
 	onWindowResize();
-	setVSync(false);
+	setVSync(true);
 	// Stores the Window instance inside the GLFW structure to retrieve it inside the glfw callbacks, this way
 	// we have acces to the Windows instance inside the glfw callbacks
 	glfwSetWindowUserPointer(m_window, &m_windowData);
@@ -66,7 +66,7 @@ Window::Window(unsigned int width, unsigned int height)
 	// to GLAD to be able to load those functions.
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
 		std::string errorMessage = "Failed to initialize GLAD";
-		LOG_FATAL(errorMessage);
+		LOG_FATAL("[Window] {}", errorMessage);
 		throw std::exception(errorMessage.c_str());
 	}
 }

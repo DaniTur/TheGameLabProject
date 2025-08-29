@@ -3,13 +3,14 @@
 #include <Graphics/Model.h>
 #include <glm.hpp>
 
-enum class AssetType {
-	GameObject,
+enum class GameObjectType {
+	Default,
+	Entity,
 	LightObject
 };
 
-struct AssetData {
-	AssetType type;
+struct GameObjectData {
+	GameObjectType type = GameObjectType::Default;
 	std::string filePath;
 	glm::vec3 position{0.0f};
 	glm::vec3 rotation{0.0f};
@@ -17,20 +18,20 @@ struct AssetData {
 	bool colissions = false;
 };
 
-class Asset
+class GameObject
 {
 public:
-	Asset();
+	GameObject();
 
-	explicit Asset(AssetData& data); 
+	explicit GameObject(GameObjectData& data);
 
-	AssetData& GetData();
+	GameObjectData& GetData();
 
 	void Draw(Shader& shader);
 
 private:
 
-	AssetData m_Data;
+	GameObjectData m_Data;
 	std::unique_ptr<Model> m_Model;
 };
 

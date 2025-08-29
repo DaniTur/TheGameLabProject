@@ -55,5 +55,5 @@ void MenuLayer::onKeyPressed(KeyPressedEvent& event)
 		break;
 	}
 	event.handled = true;
-	LOG_TRACE("KeyPressed {}", event.getKeyCode());
+	LOG_TRACE("[MenuLayer] KeyPressed {}", event.getKeyCode());
 }
