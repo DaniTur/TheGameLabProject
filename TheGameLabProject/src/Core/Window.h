@@ -31,8 +31,12 @@ public:
 
 	void setMouseCursorCapture(bool captured);
 	void setMouseAcceleration(bool active);
+	void setNewSize(unsigned int width, unsigned int heigth);
 
 	GLFWwindow* get();
+
+	unsigned int GetWidth() const;
+	unsigned int GetHeight() const;
 
 private:
 
@@ -41,8 +45,6 @@ private:
 	
 	// Mouse input
 	void setMouseInputsCallbacks();
-	static void mouseMovementInputCallback(GLFWwindow* window, double xpos, double ypos);
-	static void mouseButtonInputCallback(GLFWwindow* window, int button, int action, int mods);
 	void handleMouseButtonInput(int button, int action, int mods);
 
 private:

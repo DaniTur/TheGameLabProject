@@ -1,3 +1,4 @@
+
 #include "pch.h"
 #include "GameplayLayer.h"
 #include "KeyCodes.h"
@@ -68,6 +69,14 @@ bool GameplayLayer::IsActive() const
 	return m_Active;
 }
 
+// EL input polling se llama en el Update() de Gameplay, que va antes que el Update() de ImGui,
+// por tanto, se mueve la camara en la capa Gameplay aun estando con ImGui activo porque esto no son 
+// eventos, sino un input polling constante. Esto se deberia parar y todos los inputs ser gestionador por ImGui?
+// Entonces al activar ImGui seria imposible hacer nada en la capa de Gameplay, si queremos poder clikar los objetos 
+// de las escena, le deberemos pasar la Scene a ImGui, para comprovar si el raton esta encima de un Modelo, pero ya 
+// le dariamos la responsabilidad de la gestion de los clicks de la Scene a la capa de ImGui que solo debe ser responsable
+// de los inputs hechos en sus ventanas, lo demas no. Digamos que es una capa que solo tiene que encargarse de lo que pasa
+// con sus ventanas. Como diseno esto?
 void GameplayLayer::processInputPolling(double deltaTime)
 {
 	if (Input::IsKeyPressed(Key::W)) {
@@ -106,10 +115,9 @@ void GameplayLayer::onKeyPressed(KeyPressedEvent& event)
 		break;
 	case Key::F1:
 	{
-		// generate event
+		// Generate event
 		ToggleLayerEvent toggleEvent("ImGuiLayer");
 		m_EventCallback(toggleEvent);
-		LOG_INFO("[GameplayLayer] toggle ImGuiLayer active");
 		break;
 	}
 	case Key::ESCAPE:
@@ -187,7 +195,6 @@ void GameplayLayer::onMouseMoved(MouseMovedEvent& event)
 	m_gameCamera.setCameraTarget(glm::normalize(direction));
 
 	event.handled = true;
-	//LOG_TRACE("[GameplayLayer] MouseMoved x:{} y:{}", event.getX(), event.getY());
 }
 
 void GameplayLayer::onMouseButtonPressed(MouseButtonPressedEvent& event)

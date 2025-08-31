@@ -6,8 +6,8 @@
 class MouseMovedEvent : public Event {
 public:
 	MouseMovedEvent(float xpos, float ypos) 
-		: m_MouseX(xpos), m_MouseY(ypos) {
-
+		: m_MouseX(xpos), m_MouseY(ypos) 
+	{
 	}
 
 	float getX() const {
@@ -39,6 +39,44 @@ public:
 private:
 	float m_MouseX;
 	float m_MouseY;
+};
+
+class MouseScrolledEvent : public Event {
+public:
+	MouseScrolledEvent(float xOffset, float yOffset) :
+		m_XOffset(xOffset), m_YOffset(yOffset)
+	{
+	}
+
+	float GetXOffset() const {
+		return m_XOffset;
+	}
+	
+	float GetYOffset() const {
+		return m_YOffset;
+	}
+
+	EventCathegory getEventCathegory() const override {
+		return EventCathegory::Layer;
+	}
+
+	EventType getEventType() const override {
+		return EventType::MouseScrolled;
+	}
+
+	const char* getName() const override {
+		return "MouseScrolled";
+	}
+
+	std::string toString() const override {
+		std::stringstream ss;
+		ss << "MouseScrolledEvent: " << m_XOffset << ", " << m_YOffset;
+		return ss.str();
+	}
+
+private:
+	float m_XOffset;
+	float m_YOffset;
 };
 
 class MouseButtonEvent : public Event {

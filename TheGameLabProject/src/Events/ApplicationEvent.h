@@ -7,6 +7,41 @@ class ApplicationEvent : public Event {
 	}
 };
 
+class WindowResizeEvent : public ApplicationEvent {
+public:
+	WindowResizeEvent(unsigned int width, unsigned int height)
+		: m_Width(width), m_Height(height)
+	{
+	}
+
+	unsigned int GetWidth() const {
+		return m_Width;
+	}
+
+	unsigned int GetHeight() const {
+		return m_Height;
+	}
+
+	EventType getEventType() const override {
+		return EventType::WindowResize;
+	}
+
+	const char* getName() const override {
+		return "WindowResize";
+	}
+
+	std::string toString() const override
+	{
+		std::stringstream ss;
+		ss << "WindowResizeEvent: " << m_Width << ", " << m_Height;
+		return ss.str();
+	}
+
+private:
+	unsigned int m_Width;
+	unsigned int m_Height;
+};
+
 class WindowClosedEvent : public ApplicationEvent {
 public:
 	WindowClosedEvent() = default;

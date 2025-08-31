@@ -60,6 +60,9 @@ void Game::onEvent(Event& event)
 		if (event.getEventType() == EventType::ToggleLayer) {
 			onToggleLayer(static_cast<ToggleLayerEvent&>(event));
 		}
+		if (event.getEventType() == EventType::WindowResize) {
+			onWindowResize(static_cast<WindowResizeEvent&>(event));
+		}
 	}
 
 	for (auto it = m_LayerStack.rbegin(); it != m_LayerStack.rend(); ++it) {
@@ -76,6 +79,11 @@ void Game::onWindowClosed(WindowClosedEvent& e)
 	e.handled = true;
 }
 
+void Game::onWindowResize(WindowResizeEvent& event) {
+	m_window.setNewSize(event.GetWidth(), event.GetHeight());
+	event.handled = true;
+}
+
 // Toggles the layer active or inactive if exists
 void Game::onToggleLayer(ToggleLayerEvent& event)
 {
@@ -86,16 +94,13 @@ void Game::onToggleLayer(ToggleLayerEvent& event)
 	while (it != m_LayerStack.rend() && !found) {
 		if ((*it)->GetName().compare(layerId) == 0) {
 			found = true;
-		}
-		else {
+		} else {
 			++it;
 		}
 	}
-	if (found)
-	{
+	if (found) {
 		(*it)->ToggleActive();
 	}
-
 	// De-activate the mouse cursor capture when ImGuiLayer is Active
 	if (event.getLayerId().compare("ImGuiLayer") == 0) {
 		if ((*it)->IsActive()) {
@@ -104,6 +109,6 @@ void Game::onToggleLayer(ToggleLayerEvent& event)
 			m_window.setMouseCursorCapture(true);
 		}
 	}
-
 	event.handled = true;
+	LOG_TRACE("[Game] ToggleLayerEvent id: {}, to active: {}", event.getLayerId(), (*it)->IsActive());
 }

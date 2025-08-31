@@ -7,6 +7,7 @@
 #include "Events/MouseEvent.h"
 
 #include <Core/Window.h>
+#include <imgui.h>
 
 class ImGuiLayer : public Layer, public IEventEmitter
 {
@@ -19,8 +20,6 @@ public:
 	void OnRender() override;
 	void OnEvent(Event& e) override;
 
-	bool IsActive() const;
-
 	void SetEventCallback(const EventCallback& callback) override;
 
 private:
@@ -29,10 +28,14 @@ private:
 	void onMouseMoved(MouseMovedEvent& event);
 	void onMouseButtonPressed(MouseButtonPressedEvent& event);
 	void onMouseButtonReleased(MouseButtonReleasedEvent& event);
+	void onMouseScrolled(MouseScrolledEvent& event);
+
+	ImGuiKey KeyMapToImGuiKey(int nativeKeyCode);
 
 private:
 
 	EventCallback m_EventCallback;
 
+	Window& m_Window;
 };
 

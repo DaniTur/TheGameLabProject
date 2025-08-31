@@ -32,19 +32,26 @@ Window::Window(unsigned int width, unsigned int height)
 	}
 
 	glfwMakeContextCurrent(m_window);
-	centerWindow();
-	onWindowResize();
 	setVSync(true);
+	centerWindow();
+
 	// Stores the Window instance inside the GLFW structure to retrieve it inside the glfw callbacks, this way
 	// we have acces to the Windows instance inside the glfw callbacks
 	glfwSetWindowUserPointer(m_window, &m_windowData);
 	
+	// Window Close
 	glfwSetWindowCloseCallback(m_window, [](GLFWwindow* window) {
 			const WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
 			WindowClosedEvent event;
 			data.eventCallback(event);
 		});
 
+	// Window Resize callback
+	glfwSetFramebufferSizeCallback(m_window, [](GLFWwindow* window, int width, int height) {
+			glViewport(0, 0, width, height);
+		});
+
+	// Key Inputs on Window callback
 	glfwSetKeyCallback(m_window, [](GLFWwindow* window,int key, int scancode, int action, int mods) {
 		const WindowData& windowData = *(WindowData*)(glfwGetWindowUserPointer(window));
 			if (action == GLFW_PRESS) {
@@ -123,19 +130,19 @@ GLFWwindow* Window::get()
 	return m_window;
 }
 
+unsigned int Window::GetWidth() const
+{
+	return m_windowData.width;
+}
+
+unsigned int Window::GetHeight() const
+{
+	return m_windowData.height;
+}
+
 // Center the window(assuming a 1920x1080 monitor resolution)
 void Window::centerWindow() {
 	glfwSetWindowPos(m_window, (1920 / 2) - (m_windowData.width/ 2), (1080 / 2) - (m_windowData.height / 2));
-}
-
-void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
-	// Tells OpenGL the size of the render area inside the window. Indica a OpenGL el area dentro de la ventana donde va a tener que renderizar
-	glViewport(0, 0, width, height);
-}
-
-void Window::onWindowResize() {
-	// On window resize, call the parameter function
-	glfwSetFramebufferSizeCallback(m_window, framebuffer_size_callback);
 }
 
 void Window::setMouseCursorCapture(bool capture)
@@ -157,16 +164,22 @@ void Window::setMouseAcceleration(bool active) {
 	}
 }
 
+void Window::setNewSize(unsigned int width, unsigned int heigth)
+{
+	m_windowData.width = width;
+	m_windowData.height = heigth;
+}
+
 void Window::setMouseInputsCallbacks() {
 	
-	// Fuction callback for mouse inputs
+	// Mouse position/moved callback
 	glfwSetCursorPosCallback(m_window, [](GLFWwindow* window, double xpos, double ypos) {
 			const WindowData &windowData = *(WindowData*)glfwGetWindowUserPointer(window);
 			MouseMovedEvent event((float)xpos, (float)ypos);
 			windowData.eventCallback(event);
 		});
 
-	// Enable mouse button inputs
+	// Mouse buttons callback
 	glfwSetMouseButtonCallback(m_window, [](GLFWwindow* window, int button, int action, int mods) {
 			const WindowData& windowData = *(WindowData*)glfwGetWindowUserPointer(window);
 			if (action == GLFW_PRESS) {
@@ -177,32 +190,11 @@ void Window::setMouseInputsCallbacks() {
 				windowData.eventCallback(event);
 			}
 		});
-}
 
-
-void Window::mouseButtonInputCallback(GLFWwindow* window, int button, int action, int mods) {
-	Window* thisWindowInstance = static_cast<Window*>(glfwGetWindowUserPointer(window));
-	if (thisWindowInstance) {
-		thisWindowInstance->handleMouseButtonInput(button, action, mods);
-	}
-}
-
-
-// TODO: Handle mouse buttons release
-void Window::handleMouseButtonInput(int button, int action, int mods) {
-	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
-		m_mouseButtonState.insert_or_assign(GLFW_MOUSE_BUTTON_LEFT, GLFW_PRESS);
-	} else if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE) {
-		m_mouseButtonState.insert_or_assign(GLFW_MOUSE_BUTTON_LEFT, GLFW_RELEASE);
-	}
-	//if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_RELEASE) {
-//	if (!zoomEnable) {
-//		zoomEnable = true;
-//		projectionTransform.setFOV(120.0f);
-//	}
-//	else {
-//		zoomEnable = false;
-//		projectionTransform.setFOV(90.0f);
-//	}
-//}
+	// Mouse Wheel callback
+	glfwSetScrollCallback(m_window, [](GLFWwindow* window, double xoffset, double yoffset) {
+			const WindowData& windowData = *(WindowData*)glfwGetWindowUserPointer(window);
+			MouseScrolledEvent event((float)xoffset, (float)yoffset);
+			windowData.eventCallback(event);
+		});
 }

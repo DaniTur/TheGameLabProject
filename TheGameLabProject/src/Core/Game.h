@@ -25,6 +25,7 @@ private:
 	void onUpdate();
 
 	void onWindowClosed(WindowClosedEvent& e);
+	void onWindowResize(WindowResizeEvent& event);
 	void onKeyPressed(KeyPressedEvent& e);
 	void onKeyReleased(KeyReleasedEvent& e);
 	void onMouseMoved(MouseMovedEvent &e);
