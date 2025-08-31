@@ -7,8 +7,8 @@
 using json = nlohmann::json;
 
 NLOHMANN_JSON_SERIALIZE_ENUM(GameObjectType, {
-	{AssetType::GameObject, "Entity"},
-	{AssetType::LightObject, "LightObject"}
+	{GameObjectType::Entity, "Entity"},
+	{GameObjectType::LightObject, "LightObject"}
 	})
 
 Scene::Scene() :

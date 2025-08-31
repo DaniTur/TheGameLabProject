@@ -13,6 +13,7 @@ public:
 	virtual void OnRender() { /*Not mandatory for all layers*/ };
 	virtual void OnEvent(Event& e) { /*Not mandatory for all layers*/ };
 
+	virtual bool IsActive();
 	virtual std::string GetName();
 
 	void ToggleActive() {

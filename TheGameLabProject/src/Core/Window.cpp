@@ -12,7 +12,7 @@ Window::Window(unsigned int width, unsigned int height)
 	
 	if (glfwInit() == GLFW_FALSE) {
 		std::string errorMessage = "Could not initialize GLFW";
-		LOG_ERROR("[Window] {}", errorMessage);
+		LOG_FATAL("[Window] {}", errorMessage);
 		throw std::exception(errorMessage.c_str());
 	}
 
@@ -56,6 +56,10 @@ Window::Window(unsigned int width, unsigned int height)
 				windowData.eventCallback(event);
 			}
 		});
+
+	// Mouse settings
+	setMouseCursorCapture(true);
+	setMouseAcceleration(false);
 	setMouseInputsCallbacks();
 
 	// TODO: Move this away to another class like Renderer, this doesnt belong to Window
@@ -134,13 +138,27 @@ void Window::onWindowResize() {
 	glfwSetFramebufferSizeCallback(m_window, framebuffer_size_callback);
 }
 
-void Window::setMouseInputsCallbacks() {
-	// Enable mouse movement inputs capture and the window will capture the mouse cursor
-	glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+void Window::setMouseCursorCapture(bool capture)
+{
+	if (capture) {
+		// Enable mouse movement inputs capture and the window will capture the mouse cursor
+		glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	} else {
+		glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+	}
+}
+
+void Window::setMouseAcceleration(bool active) {
 	// Raw motion mode ignores mouse acceleration and scaling
-	if (glfwRawMouseMotionSupported()) {
+	if (active) {
+		glfwSetInputMode(m_window, GLFW_RAW_MOUSE_MOTION, GLFW_FALSE);
+	} else {
 		glfwSetInputMode(m_window, GLFW_RAW_MOUSE_MOTION, GLFW_TRUE);
 	}
+}
+
+void Window::setMouseInputsCallbacks() {
+	
 	// Fuction callback for mouse inputs
 	glfwSetCursorPosCallback(m_window, [](GLFWwindow* window, double xpos, double ypos) {
 			const WindowData &windowData = *(WindowData*)glfwGetWindowUserPointer(window);

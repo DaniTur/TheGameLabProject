@@ -77,9 +77,9 @@ void Game::onWindowClosed(WindowClosedEvent& e)
 }
 
 // Toggles the layer active or inactive if exists
-void Game::onToggleLayer(ToggleLayerEvent& e)
+void Game::onToggleLayer(ToggleLayerEvent& event)
 {
-	const std::string& layerId = e.getLayerId();
+	const std::string& layerId = event.getLayerId();
 	// search the layer to toggle by layerId
 	auto it = m_LayerStack.rbegin();
 	bool found = false;
@@ -96,5 +96,14 @@ void Game::onToggleLayer(ToggleLayerEvent& e)
 		(*it)->ToggleActive();
 	}
 
-	e.handled = true;
+	// De-activate the mouse cursor capture when ImGuiLayer is Active
+	if (event.getLayerId().compare("ImGuiLayer") == 0) {
+		if ((*it)->IsActive()) {
+			m_window.setMouseCursorCapture(false);
+		} else {
+			m_window.setMouseCursorCapture(true);
+		}
+	}
+
+	event.handled = true;
 }

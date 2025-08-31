@@ -24,6 +24,13 @@ ImGuiLayer::ImGuiLayer(Window& window)
 	ImGui_ImplOpenGL3_Init("#version 330 core");
 }
 
+ImGuiLayer::~ImGuiLayer()
+{
+	ImGui_ImplGlfw_Shutdown();
+	ImGui_ImplOpenGL3_Shutdown();	
+	ImGui::DestroyContext();
+}
+
 void ImGuiLayer::OnUpdate(double deltaTime)
 {
 	if (!m_Active) {
@@ -36,9 +43,16 @@ void ImGuiLayer::OnUpdate(double deltaTime)
 
 	//ImGuiIO& io = ImGui::GetIO();
 	//io.DeltaTime = static_cast<float>(deltaTime);
+	float transformX, transformY, transformZ = 0.0f;
 
-	static bool show = true;
-	ImGui::ShowDemoWindow();
+	ImGui::Begin("Inspector");
+	ImGui::Text("Transform");
+	ImGui::Text("Position");
+	ImGui::SameLine();
+	ImGui::InputFloat2("X", &transformX);
+	ImGui::InputFloat2("Y", &transformY);
+	ImGui::InputFloat2("Z", &transformZ);
+	ImGui::End();
 
 	ImGui::Render();
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
@@ -65,6 +79,18 @@ void ImGuiLayer::OnEvent(Event& event)
 	case KeyPressed:
 		onKeyPressed(static_cast<KeyPressedEvent&>(event));
 		break;
+	case KeyReleased:
+		onKeyReleased(static_cast<KeyReleasedEvent&>(event));
+		break;
+	case MouseMoved:
+		onMouseMoved(static_cast<MouseMovedEvent&>(event));
+		break;
+	case MouseButtonPressed:
+		onMouseButtonPressed(static_cast<MouseButtonPressedEvent&>(event));
+		break;
+	case MouseButtonReleased:
+		onMouseButtonReleased(static_cast<MouseButtonReleasedEvent&>(event));
+		break;
 	default:
 		break;
 	}
@@ -77,21 +103,30 @@ bool ImGuiLayer::IsActive() const
 
 void ImGuiLayer::onKeyPressed(KeyPressedEvent& event)
 {
-	switch (event.getKeyCode())
-	{
-	case Key::F1:
-	{
+	if (event.getKeyCode() == Key::F1) {
 		// generate event
 		ToggleLayerEvent toggleEvent("ImGuiLayer");
 		m_EventCallback(toggleEvent);
-		LOG_TRACE("[ImGuiLayer] Handled KeyPressed F1");
-		break;
 	}
-	default:
-		break;
-	}
+
 	event.handled = true;
 	LOG_TRACE("[ImGuiLayer] KeyPressed {}", event.getKeyCode());
+}
+
+void ImGuiLayer::onKeyReleased(KeyReleasedEvent& event) {
+
+}
+
+void ImGuiLayer::onMouseMoved(MouseMovedEvent& event) {
+
+}
+
+void ImGuiLayer::onMouseButtonPressed(MouseButtonPressedEvent& event) {
+
+}
+
+void ImGuiLayer::onMouseButtonReleased(MouseButtonReleasedEvent& event) {
+
 }
 
 void ImGuiLayer::SetEventCallback(const EventCallback& callback)

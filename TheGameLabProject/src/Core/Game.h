@@ -40,8 +40,8 @@ private:
 
 	LayerStack m_LayerStack;
 
-	unsigned int m_screenWidth = 800;
-	unsigned int m_screenHeight = 600;
+	unsigned int m_screenWidth = 1280;
+	unsigned int m_screenHeight = 720;
 	Window m_window;
 
 	Camera m_gameCamera;

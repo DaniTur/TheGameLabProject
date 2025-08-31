@@ -29,6 +29,9 @@ public:
 	glm::vec3 getCameraTarget() const;
 	int getMouseButtonState(int button);
 
+	void setMouseCursorCapture(bool captured);
+	void setMouseAcceleration(bool active);
+
 	GLFWwindow* get();
 
 private:
