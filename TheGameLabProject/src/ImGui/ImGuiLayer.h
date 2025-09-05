@@ -28,6 +28,7 @@ public:
 private:
 	void onKeyPressed(KeyPressedEvent& event);
 	void onKeyReleased(KeyReleasedEvent& event);
+	void onKeyTyped(KeyTypedEvent& event);
 	void onMouseMoved(MouseMovedEvent& event);
 	void onMouseButtonPressed(MouseButtonPressedEvent& event);
 	void onMouseButtonReleased(MouseButtonReleasedEvent& event);

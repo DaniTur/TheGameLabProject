@@ -56,7 +56,7 @@ Window::Window(unsigned int width, unsigned int height)
 
 	// Key Inputs on Window callback
 	glfwSetKeyCallback(m_window, [](GLFWwindow* window,int key, int scancode, int action, int mods) {
-		const WindowData& windowData = *(WindowData*)(glfwGetWindowUserPointer(window));
+			const WindowData& windowData = *(WindowData*)(glfwGetWindowUserPointer(window));
 			if (action == GLFW_PRESS) {
 				KeyPressedEvent event(key);
 				windowData.eventCallback(event);
@@ -65,6 +65,13 @@ Window::Window(unsigned int width, unsigned int height)
 				KeyReleasedEvent event(key);
 				windowData.eventCallback(event);
 			}
+		});
+
+	// Key Input as printable characters callback
+	glfwSetCharCallback(m_window, [](GLFWwindow* window, unsigned int keycode) {
+			const WindowData& windowData = *(WindowData*)(glfwGetWindowUserPointer(window));
+			KeyTypedEvent event(keycode);
+			windowData.eventCallback(event);
 		});
 
 	// Mouse settings

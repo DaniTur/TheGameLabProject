@@ -154,6 +154,9 @@ void ImGuiLayer::OnEvent(Event& event)
 	case KeyReleased:
 		onKeyReleased(static_cast<KeyReleasedEvent&>(event));
 		break;
+	case KeyTyped:
+		onKeyTyped(static_cast<KeyTypedEvent&>(event));
+		break;
 	case MouseMoved:
 		onMouseMoved(static_cast<MouseMovedEvent&>(event));
 		break;
@@ -182,7 +185,6 @@ void ImGuiLayer::onKeyPressed(KeyPressedEvent& event)
 	ImGuiKey key = KeyMapToImGuiKey(event.getKeyCode());
 	io.AddKeyEvent(key, true);
 	event.handled = true;
-	LOG_TRACE("[ImGuiLayer] KeyPressed {}", event.getKeyCode());
 }
 
 void ImGuiLayer::onKeyReleased(KeyReleasedEvent& event) {
@@ -190,7 +192,15 @@ void ImGuiLayer::onKeyReleased(KeyReleasedEvent& event) {
 	ImGuiKey key = KeyMapToImGuiKey(event.getKeyCode());
 	io.AddKeyEvent(key, false);
 	event.handled = true;
-	LOG_TRACE("[ImGuiLayer] KeyReleased {}", event.getKeyCode());
+}
+
+void ImGuiLayer::onKeyTyped(KeyTypedEvent& event) {
+	ImGuiIO& io = ImGui::GetIO();
+	int keycode = event.getKeyCode();
+	if (keycode > 0 && keycode < 0x10000) {
+		io.AddInputCharacter((unsigned int)event.getKeyCode());
+	}
+	event.handled = true;
 }
 
 void ImGuiLayer::onMouseMoved(MouseMovedEvent& event) {
@@ -203,14 +213,12 @@ void ImGuiLayer::onMouseButtonPressed(MouseButtonPressedEvent& event) {
 	ImGuiIO& io = ImGui::GetIO();
 	io.AddMouseButtonEvent(event.getButtonCode(), true);
 	event.handled = true;
-	LOG_TRACE("[ImGuiLayer] MouseButtonPressed {}", event.getButtonCode());
 }
 
 void ImGuiLayer::onMouseButtonReleased(MouseButtonReleasedEvent& event) {
 	ImGuiIO& io = ImGui::GetIO();
 	io.AddMouseButtonEvent(event.getButtonCode(), false);
 	event.handled = true;
-	LOG_TRACE("[ImGuiLayer] MouseButtonReleased {}", event.getButtonCode());
 }
 
 void ImGuiLayer::onMouseScrolled(MouseScrolledEvent& event)
@@ -228,6 +236,12 @@ ImGuiKey ImGuiLayer::KeyMapToImGuiKey(int nativeKeyCode)
 	case Key::A: return ImGuiKey_A;
 	case Key::S: return ImGuiKey_S;
 	case Key::D: return ImGuiKey_D;
+	case Key::BACK: return ImGuiKey_Backspace;
+	case Key::LEFT: return ImGuiKey_LeftArrow;
+	case Key::RIGHT: return ImGuiKey_RightArrow;
+	case Key::ENTER: return ImGuiKey_Enter;
+	case Key::LSHIFT: return ImGuiKey_LeftShift;
+	case Key::LCONTROL: return ImGuiKey_LeftCtrl;
 	default: return ImGuiKey_None;
 	}
 }
