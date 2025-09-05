@@ -25,7 +25,7 @@ The primary goal is to evolve into a useful **map editor for creating and simula
 - **Dependencies:** Assimp, spdlog, stb, ImGui  
 
 ## 📸 Screenshots
-![image](<img width="1280" height="751" alt="image" src="https://github.com/user-attachments/assets/61768e85-05f5-4ad9-873c-b07ab5227131" />)
+<img width="1280" height="751" alt="image" src="https://github.com/user-attachments/assets/8c73d9d1-ce49-4954-8060-423546663842" />
 
 ## 📦 Download and compile
 
