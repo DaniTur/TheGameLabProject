@@ -7,8 +7,8 @@
 // test
 #include "KeyCodes.h"
 
-ImGuiLayer::ImGuiLayer(Window& window)
-	: Layer("ImGuiLayer"), m_Window(window)
+ImGuiLayer::ImGuiLayer(Window& window, Scene& scene)
+	: Layer("ImGuiLayer"), m_Window(window), m_ActiveScene(scene)
 {
 	m_Active = false;
 
@@ -44,26 +44,92 @@ void ImGuiLayer::OnUpdate(double deltaTime)
 	ImGui_ImplOpenGL3_NewFrame();
 	ImGui::NewFrame();
 
-	float transformX = 0.0f;
-	float transformY = 0.0f;
-	float transformZ = 0.0f;
+	glm::vec3 position(0.0f);
+	glm::vec3 rotation(0.0f);
+	glm::vec3 scale(0.0f);
+	// Improve Readability
+	const int X = 0;	
+	const int Y = 1;
+	const int Z = 2;
 
 	ImGui::ShowDemoWindow();
-	//ImGui::Begin("Inspector");
-	//ImGui::Text("Transform");
-	//ImGui::Text("Position");
-	//ImGui::SameLine();
-	//ImGui::InputFloat("X", &transformX);
-	//ImGui::SameLine();
-	//ImGui::InputFloat("Y", &transformY);
-	//ImGui::SameLine();
-	//ImGui::InputFloat("Z", &transformZ);
-	//ImGui::End();
+
+	ImGui::Begin("Inspector");
+	ImGui::SeparatorText("Transform");
+	for (auto gameObject : m_ActiveScene) {
+		GameObjectData& gameObjectData = gameObject->GetData();
+		std::string nameText = gameObjectData.name;
+
+		if (ImGui::CollapsingHeader(nameText.c_str())) {
+			if (ImGui::BeginTable(nameText.c_str(), 4, ImGuiTableFlags_SizingStretchProp)) {
+				// Position row
+				ImGui::TableNextRow();
+				ImGui::TableSetColumnIndex(0);
+				ImGui::Text("Position");
+
+				ImGui::TableSetColumnIndex(1);
+				ImGui::Text("X");
+				ImGui::SameLine();
+				ImGui::InputFloat(("##posX" + nameText).c_str(), &gameObjectData.position[X]);
+
+				ImGui::TableSetColumnIndex(2);
+				ImGui::Text("Y");
+				ImGui::SameLine();
+				ImGui::InputFloat(("##posY" + nameText).c_str(), &gameObjectData.position[Y]);
+
+				ImGui::TableSetColumnIndex(3);
+				ImGui::Text("Z");
+				ImGui::SameLine();
+				ImGui::InputFloat(("##posZ" + nameText).c_str(), &gameObjectData.position[Z]);
+
+				// Rotation row
+				ImGui::TableNextRow();
+				ImGui::TableSetColumnIndex(0);
+				ImGui::Text("Rotation");
+
+				ImGui::TableSetColumnIndex(1);
+				ImGui::Text("X");
+				ImGui::SameLine();
+				ImGui::InputFloat(("##rotX" + nameText).c_str(), &gameObjectData.rotation[X]);
+
+				ImGui::TableSetColumnIndex(2);
+				ImGui::Text("Y");
+				ImGui::SameLine();
+				ImGui::InputFloat(("##rotY" + nameText).c_str(), &gameObjectData.rotation[Y]);
+
+				ImGui::TableSetColumnIndex(3);
+				ImGui::Text("Z");
+				ImGui::SameLine();
+				ImGui::InputFloat(("##rotZ" + nameText).c_str(), &gameObjectData.rotation[Z]);
+
+				// Scale row
+				ImGui::TableNextRow();
+				ImGui::TableSetColumnIndex(0);
+				ImGui::Text("Scale");
+
+				ImGui::TableSetColumnIndex(1);
+				ImGui::Text("X");
+				ImGui::SameLine();
+				ImGui::InputFloat(("##scaX" + nameText).c_str(), &gameObjectData.scale[X]);
+
+				ImGui::TableSetColumnIndex(2);
+				ImGui::Text("Y");
+				ImGui::SameLine();
+				ImGui::InputFloat(("##scaY" + nameText).c_str(), &gameObjectData.scale[Y]);
+
+				ImGui::TableSetColumnIndex(3);
+				ImGui::Text("Z");
+				ImGui::SameLine();
+				ImGui::InputFloat(("##scaZ" + nameText).c_str(), &gameObjectData.scale[Z]);
+
+				ImGui::EndTable();
+			}
+		}
+	}
+	ImGui::End();
 
 	ImGui::Render();
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-
-	//LOG_TRACE("ImGuiOverlay Update");
 }
 
 void ImGuiLayer::OnRender()
@@ -169,4 +235,9 @@ ImGuiKey ImGuiLayer::KeyMapToImGuiKey(int nativeKeyCode)
 void ImGuiLayer::SetEventCallback(const EventCallback& callback)
 {
 	m_EventCallback = callback;
+}
+
+void ImGuiLayer::SetScene(Scene& scene)
+{
+	m_ActiveScene = scene;
 }

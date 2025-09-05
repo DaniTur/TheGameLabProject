@@ -18,6 +18,10 @@ public:
 
 	void Render(Camera& camera);
 
+	// Make Scene more abstract to use, enabling the use of the Scene as a container of elements
+	std::vector<GameObject*>::const_iterator begin();
+	std::vector<GameObject*>::const_iterator end();
+
 private:
 
 	std::string m_SceneID = "";

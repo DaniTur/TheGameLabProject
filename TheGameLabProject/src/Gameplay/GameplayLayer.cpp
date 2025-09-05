@@ -12,10 +12,10 @@ GameplayLayer::GameplayLayer()
 	: Layer("GameplayLayer")
 {
 	m_ActiveScene.Load();
+
 	// TODO: Move this to Renderer
 	// tell stb_image.h to flip loaded texture's on the y-axis (before loading model). Needed for importing .obj material textures
 	//stbi_set_flip_vertically_on_load(true);
-
 	glEnable(GL_DEPTH_TEST);	// Part of the Renderer, need glad to obtain the opengl functions before
 	// -----
 }
@@ -62,11 +62,6 @@ void GameplayLayer::OnEvent(Event& event)
 	default:
 		break;
 	}
-}
-
-bool GameplayLayer::IsActive() const
-{
-	return m_Active;
 }
 
 // EL input polling se llama en el Update() de Gameplay, que va antes que el Update() de ImGui,
@@ -230,4 +225,9 @@ void GameplayLayer::onMouseButtonReleased(MouseButtonReleasedEvent& event)
 void GameplayLayer::SetEventCallback(const EventCallback& callback)
 {
 	m_EventCallback = callback;
+}
+
+Scene& GameplayLayer::GetActiveScene()
+{
+	return m_ActiveScene;
 }

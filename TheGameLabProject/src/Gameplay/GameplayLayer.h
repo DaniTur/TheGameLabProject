@@ -22,9 +22,9 @@ public:
 	void OnRender() override;
 	void OnEvent(Event& e) override;
 
-	bool IsActive() const;
-
 	void SetEventCallback(const EventCallback& callback) override;
+
+	Scene& GetActiveScene();
 
 private:
 	void processInputPolling(double deltaTime);
@@ -48,22 +48,7 @@ private:
 	};
 	Mouse m_Mouse;
 
-	// Rendering
-	//Shader m_Shader;
-	//Model m_HandGun;
-	//Model m_Bagpack;
-	//Model m_WoodenBox;
-	//Model m_Mp7;
-
-	//WorldTransform m_WorldTransform;
-	//WorldTransform m_handGunWorldTransform;
-	//WorldTransform m_woodenBoxesWorldTransform;
-	//WorldTransform m_mp7WorldTransform;
-
 	Scene m_ActiveScene;	// default Scene
-
 	Camera m_gameCamera;
-	// Perspective projection transform
-	//ProjectionTransform m_projectionTransform;
 };
 

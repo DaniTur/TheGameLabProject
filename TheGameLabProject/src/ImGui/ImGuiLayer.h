@@ -7,13 +7,14 @@
 #include "Events/MouseEvent.h"
 
 #include <Core/Window.h>
+#include <Scene/Scene.h>
 #include <imgui.h>
 
 class ImGuiLayer : public Layer, public IEventEmitter
 {
 public:
 
-	explicit ImGuiLayer(Window& window);
+	explicit ImGuiLayer(Window& window, Scene& scene);
 	~ImGuiLayer() override;
 
 	void OnUpdate(double deltaTime) override;
@@ -21,6 +22,8 @@ public:
 	void OnEvent(Event& e) override;
 
 	void SetEventCallback(const EventCallback& callback) override;
+
+	void SetScene(Scene& scene);
 
 private:
 	void onKeyPressed(KeyPressedEvent& event);
@@ -37,5 +40,6 @@ private:
 	EventCallback m_EventCallback;
 
 	Window& m_Window;
+	Scene& m_ActiveScene;
 };
 

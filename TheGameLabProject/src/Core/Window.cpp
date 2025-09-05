@@ -48,7 +48,10 @@ Window::Window(unsigned int width, unsigned int height)
 
 	// Window Resize callback
 	glfwSetFramebufferSizeCallback(m_window, [](GLFWwindow* window, int width, int height) {
-			glViewport(0, 0, width, height);
+		// Glfw automaticaly calls glfwSetWindowSize(w, h) to set the new glfw window size
+		const WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
+		WindowResizeEvent event(width, height);
+		data.eventCallback(event);
 		});
 
 	// Key Inputs on Window callback
@@ -164,10 +167,12 @@ void Window::setMouseAcceleration(bool active) {
 	}
 }
 
-void Window::setNewSize(unsigned int width, unsigned int heigth)
+void Window::setNewSize(unsigned int width, unsigned int height)
 {
 	m_windowData.width = width;
-	m_windowData.height = heigth;
+	m_windowData.height = height;
+	//glfwSetWindowSize(m_window, m_windowData.width, m_windowData.height);
+	//glViewport(0, 0, m_windowData.width, m_windowData.height);
 }
 
 void Window::setMouseInputsCallbacks() {

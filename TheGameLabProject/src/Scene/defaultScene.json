@@ -7,7 +7,8 @@
 			"model_file_path" : "resources/models/woodenBoxes/box.fbx",
 			"position" : [0.0, 0.0, -5.0],
 			"rotation" : [0.0, 0.0, 0.0],
-			"scale" : 1.0,
+			"scale" : [1.0, 1.0, 1.0],
+			"uniform_scale" : 1.0,
 			"colissions" : true
 		},
 		{
@@ -16,7 +17,8 @@
 			"model_file_path" : "resources/models/explorerBag/backpack.obj",
 			"position" : [0.0, 0.0, 0.0],
 			"rotation" : [0.0, 0.0, 0.0],
-			"scale" : 0.5,
+			"scale" : [0.5, 0.5, 0.5],
+			"uniform_scale" : 0.5,
 			"colissions" : true
 		},
 		{
@@ -25,7 +27,8 @@
 			"model_file_path" : "resources/models/mp7/mp7.fbx",
 			"position" : [-0.5, 0.0, 0.0],
 			"rotation" : [-90.0, 0.0, 0.0],
-			"scale" : 3.0,
+			"scale" : [3.0, 3.0, 3.0],
+			"uniform_scale" : 3.0,
 			"colissions" : false
 		},
 				{

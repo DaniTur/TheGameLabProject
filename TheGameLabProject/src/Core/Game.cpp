@@ -21,7 +21,9 @@ Game::Game()
 	gameplayLayer->SetEventCallback(std::bind_front(&Game::onEvent, this));
 	m_LayerStack.PushLayer(gameplayLayer);
 
-	auto imGuiLayer = new ImGuiLayer(m_window);
+	Scene& activeScene = gameplayLayer->GetActiveScene();
+
+	auto imGuiLayer = new ImGuiLayer(m_window, activeScene);
 	imGuiLayer->SetEventCallback(std::bind_front(&Game::onEvent, this));
 	m_LayerStack.PushOverlay(imGuiLayer);
 }
@@ -80,7 +82,11 @@ void Game::onWindowClosed(WindowClosedEvent& e)
 }
 
 void Game::onWindowResize(WindowResizeEvent& event) {
+	// We are generating an event and setting the new size here, instead of setting the new size
+	// directly in the callback within the Window class, this way we follow the same structure for 
+	// all the events by not modifying any data in the glfw callbacks, do it in OnWhateverEvent() functions
 	m_window.setNewSize(event.GetWidth(), event.GetHeight());
+	glViewport(0, 0, event.GetWidth(), event.GetHeight());
 	event.handled = true;
 }
 

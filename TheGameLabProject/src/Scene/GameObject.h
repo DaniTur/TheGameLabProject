@@ -12,9 +12,11 @@ enum class GameObjectType {
 struct GameObjectData {
 	GameObjectType type = GameObjectType::Default;
 	std::string filePath;
+	std::string name;
 	glm::vec3 position{0.0f};
 	glm::vec3 rotation{0.0f};
-	float scale = 1.0f;
+	glm::vec3 scale{1.0f};
+	float uniformScale = 1.0f;
 	bool colissions = false;
 };
 

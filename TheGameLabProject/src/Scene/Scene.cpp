@@ -53,12 +53,15 @@ void Scene::Load()
 			{
 				GameObjectData gameObjectData;
 				gameObjectData.type = type;
+				gameObjectData.name = JAssetObject.at("desc");
 				gameObjectData.filePath = JAssetObject.at("model_file_path");
-				json pos = JAssetObject.at("position");
-				gameObjectData.position = glm::vec3(pos[0], pos[1], pos[2]);
-				json rot = JAssetObject.at("rotation");
-				gameObjectData.rotation = glm::vec3(rot[0], rot[1], rot[2]);
-				gameObjectData.scale = JAssetObject.at("scale");
+				json position = JAssetObject.at("position");
+				gameObjectData.position = glm::vec3(position[0], position[1], position[2]);
+				json rotation = JAssetObject.at("rotation");
+				gameObjectData.rotation = glm::vec3(rotation[0], rotation[1], rotation[2]);
+				json scale = JAssetObject.at("scale");
+				gameObjectData.scale = glm::vec3(scale[0], scale[1], scale[2]);
+				gameObjectData.uniformScale = JAssetObject.at("uniform_scale");
 				gameObjectData.colissions = JAssetObject.at("colissions");
 
 				m_GameObjectContainer.push_back(new GameObject(gameObjectData));
@@ -145,4 +148,14 @@ void Scene::Render(Camera& camera)
 		}
 		gameObject->Draw(m_Shader);
 	}
+}
+
+std::vector<GameObject*>::const_iterator Scene::begin()
+{
+	return m_GameObjectContainer.begin();
+}
+
+std::vector<GameObject*>::const_iterator Scene::end()
+{
+	return m_GameObjectContainer.end();
 }
