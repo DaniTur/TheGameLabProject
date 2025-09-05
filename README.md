@@ -1,8 +1,8 @@
 # TheGameLabProject
 
-## 🚀 Experimental Graphics Engine in C++
-A learning-focused engine with basic 3D rendering using OpenGL, model loading, scene management, and real-time debugging tools.
-This is a personal learning project focused on building a minimal graphics engine from scratch in C++. The goal is to gain experience with low-level rendering, modern C++ architecture, and modular engine design.
+## 🗺️ 3D Map Editor in C++
+An experimental map editor with simple 3D rendering using OpenGL, model loading, scene management, and real-time debugging tools.  
+The purpose of the project is to create a functional editor to design and simulate scenarios, built on top of a custom lightweight engine developed in modern C++.
 
 ## 🔧 Features
 
@@ -11,24 +11,21 @@ This is a personal learning project focused on building a minimal graphics engin
 - Model loading with Assimp
 - Logging system using spdlog
 - Real-time UI with ImGui
-- Organized modular architecture in C++17/20
+- Organized modular architecture in C++20
 
 ## 🚧 Project Status
 
-Still under development. Some features are experimental or incomplete.
-Primary goal: explore architecture and graphics techniques in a low-level engine.
+Still under development. Some features are experimental or incomplete.  
+The primary goal is to evolve into a useful **map editor for creating and simulating 3D scenarios**, while serving as a playground for learning rendering and engine architecture.
 
 ## 🛠️ Tech Stack
-Language: C++17/20
-
-Rendering: OpenGL + GLFW + Glad
-
-Build System: Premake5 + Git submodules
-
-Dependencies: Assimp, spdlog, stb, ImGui
+- **Language:** C++20  
+- **Rendering:** OpenGL 3.3 + Glad + GLFW (Window)  
+- **Build System:** Premake5 + Git submodules  
+- **Dependencies:** Assimp, spdlog, stb, ImGui  
 
 ## 📸 Screenshots
-![image](https://github.com/user-attachments/assets/922bd478-6d79-46ad-9658-63693634f1db)
+![image](<img width="1280" height="751" alt="image" src="https://github.com/user-attachments/assets/61768e85-05f5-4ad9-873c-b07ab5227131" />)
 
 ## 📦 Download and compile
 
