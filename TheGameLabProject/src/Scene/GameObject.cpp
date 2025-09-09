@@ -1,14 +1,15 @@
 #include "pch.h"
 #include "GameObject.h"
 
-GameObject::GameObject()
+GameObject::GameObject(AssetManager& assetManager) 
+	: m_SceneAssetManager(assetManager)
 {
 }
 
-GameObject::GameObject(GameObjectData& data)
+GameObject::GameObject(const GameObjectData& data, AssetManager& assetManager) 
+	: m_Data(data), m_SceneAssetManager(assetManager)
 {
-	m_Data = data;
-	m_Model = std::make_unique<Model>(m_Data.filePath.c_str());
+	m_Model = m_SceneAssetManager.LoadModel(m_Data.filePath);
 }
 
 GameObjectData& GameObject::GetData()

@@ -29,6 +29,8 @@ private:
 	
 	std::vector<GameObject*> m_GameObjectContainer;
 
+	AssetManager m_SceneAssetManager;
+
 	// Rendering
 	Shader m_Shader;
 

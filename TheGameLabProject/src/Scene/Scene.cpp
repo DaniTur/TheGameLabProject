@@ -64,7 +64,7 @@ void Scene::Load()
 				gameObjectData.uniformScale = JAssetObject.at("uniform_scale");
 				gameObjectData.colissions = JAssetObject.at("colissions");
 
-				m_GameObjectContainer.push_back(new GameObject(gameObjectData));
+				m_GameObjectContainer.push_back(new GameObject(gameObjectData, m_SceneAssetManager));
 			}
 		}
 	}

@@ -31,7 +31,17 @@
 			"uniform_scale" : 3.0,
 			"colissions" : false
 		},
-				{
+		{
+			"type" : "GameObject",
+			"desc" : "MP7",
+			"model_file_path" : "resources/models/mp7/mp7.fbx",
+			"position" : [0.5, 0.0, 0.0],
+			"rotation" : [-90.0, 0.0, 0.0],
+			"scale" : [2.0, 2.0, 2.0],
+			"uniform_scale" : 2.0,
+			"colissions" : false
+		},
+		{
 			"type" : "LightObject",
 			"desc" : "Point of Light",
 			"position" : [0.0, 10.0, 0.0],

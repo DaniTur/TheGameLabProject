@@ -1,7 +1,8 @@
 #pragma once
 
-#include <Graphics/Model.h>
 #include <glm.hpp>
+#include <Graphics/Model.h>
+#include <Scene/AssetManager.h>
 
 enum class GameObjectType {
 	Default,
@@ -23,9 +24,9 @@ struct GameObjectData {
 class GameObject
 {
 public:
-	GameObject();
+	explicit GameObject(AssetManager& assetManager);
 
-	explicit GameObject(GameObjectData& data);
+	GameObject(const GameObjectData& data, AssetManager& assetManager);
 
 	GameObjectData& GetData();
 
@@ -34,6 +35,8 @@ public:
 private:
 
 	GameObjectData m_Data;
-	std::unique_ptr<Model> m_Model;
+	std::shared_ptr<Model> m_Model;
+
+	AssetManager& m_SceneAssetManager;
 };
 
