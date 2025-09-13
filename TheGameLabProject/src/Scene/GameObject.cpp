@@ -6,8 +6,8 @@ GameObject::GameObject(AssetManager& assetManager)
 {
 }
 
-GameObject::GameObject(const GameObjectData& data, AssetManager& assetManager) 
-	: m_Data(data), m_SceneAssetManager(assetManager)
+GameObject::GameObject(const GameObjectData& data, Transform& transform, AssetManager& assetManager)
+	: m_Data(data), m_Transform(transform), m_SceneAssetManager(assetManager)
 {
 	m_Model = m_SceneAssetManager.LoadModel(m_Data.filePath);
 }
@@ -15,6 +15,11 @@ GameObject::GameObject(const GameObjectData& data, AssetManager& assetManager)
 GameObjectData& GameObject::GetData()
 {
 	return m_Data;
+}
+
+Transform& GameObject::GetTransform()
+{
+	return m_Transform;
 }
 
 void GameObject::Draw(Shader& shader)

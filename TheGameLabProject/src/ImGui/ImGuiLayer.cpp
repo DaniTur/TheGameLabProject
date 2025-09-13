@@ -58,6 +58,7 @@ void ImGuiLayer::OnUpdate(double deltaTime)
 	ImGui::SeparatorText("Transform");
 	for (auto gameObject : m_ActiveScene) {
 		GameObjectData& gameObjectData = gameObject->GetData();
+		Transform& transform = gameObject->GetTransform();
 		std::string nameText = gameObjectData.name;
 
 		if (ImGui::CollapsingHeader(nameText.c_str())) {
@@ -70,17 +71,17 @@ void ImGuiLayer::OnUpdate(double deltaTime)
 				ImGui::TableSetColumnIndex(1);
 				ImGui::Text("X");
 				ImGui::SameLine();
-				ImGui::InputFloat(("##posX" + nameText).c_str(), &gameObjectData.position[X]);
+				ImGui::InputFloat(("##posX" + nameText).c_str(), &transform.position[X]);
 
 				ImGui::TableSetColumnIndex(2);
 				ImGui::Text("Y");
 				ImGui::SameLine();
-				ImGui::InputFloat(("##posY" + nameText).c_str(), &gameObjectData.position[Y]);
+				ImGui::InputFloat(("##posY" + nameText).c_str(), &transform.position[Y]);
 
 				ImGui::TableSetColumnIndex(3);
 				ImGui::Text("Z");
 				ImGui::SameLine();
-				ImGui::InputFloat(("##posZ" + nameText).c_str(), &gameObjectData.position[Z]);
+				ImGui::InputFloat(("##posZ" + nameText).c_str(), &transform.position[Z]);
 
 				// Rotation row
 				ImGui::TableNextRow();
@@ -90,17 +91,17 @@ void ImGuiLayer::OnUpdate(double deltaTime)
 				ImGui::TableSetColumnIndex(1);
 				ImGui::Text("X");
 				ImGui::SameLine();
-				ImGui::InputFloat(("##rotX" + nameText).c_str(), &gameObjectData.rotation[X]);
+				ImGui::InputFloat(("##rotX" + nameText).c_str(), &transform.rotation[X]);
 
 				ImGui::TableSetColumnIndex(2);
 				ImGui::Text("Y");
 				ImGui::SameLine();
-				ImGui::InputFloat(("##rotY" + nameText).c_str(), &gameObjectData.rotation[Y]);
+				ImGui::InputFloat(("##rotY" + nameText).c_str(), &transform.rotation[Y]);
 
 				ImGui::TableSetColumnIndex(3);
 				ImGui::Text("Z");
 				ImGui::SameLine();
-				ImGui::InputFloat(("##rotZ" + nameText).c_str(), &gameObjectData.rotation[Z]);
+				ImGui::InputFloat(("##rotZ" + nameText).c_str(), &transform.rotation[Z]);
 
 				// Scale row
 				ImGui::TableNextRow();
@@ -110,17 +111,17 @@ void ImGuiLayer::OnUpdate(double deltaTime)
 				ImGui::TableSetColumnIndex(1);
 				ImGui::Text("X");
 				ImGui::SameLine();
-				ImGui::InputFloat(("##scaX" + nameText).c_str(), &gameObjectData.scale[X]);
+				ImGui::InputFloat(("##scaX" + nameText).c_str(), &transform.scale[X]);
 
 				ImGui::TableSetColumnIndex(2);
 				ImGui::Text("Y");
 				ImGui::SameLine();
-				ImGui::InputFloat(("##scaY" + nameText).c_str(), &gameObjectData.scale[Y]);
+				ImGui::InputFloat(("##scaY" + nameText).c_str(), &transform.scale[Y]);
 
 				ImGui::TableSetColumnIndex(3);
 				ImGui::Text("Z");
 				ImGui::SameLine();
-				ImGui::InputFloat(("##scaZ" + nameText).c_str(), &gameObjectData.scale[Z]);
+				ImGui::InputFloat(("##scaZ" + nameText).c_str(), &transform.scale[Z]);
 
 				ImGui::EndTable();
 			}

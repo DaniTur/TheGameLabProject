@@ -52,19 +52,20 @@ void Scene::Load()
 			if (type == GameObjectType::Entity)
 			{
 				GameObjectData gameObjectData;
+				Transform transform;
 				gameObjectData.type = type;
 				gameObjectData.name = JAssetObject.at("desc");
 				gameObjectData.filePath = JAssetObject.at("model_file_path");
 				json position = JAssetObject.at("position");
-				gameObjectData.position = glm::vec3(position[0], position[1], position[2]);
+				transform.position = glm::vec3(position[0], position[1], position[2]);
 				json rotation = JAssetObject.at("rotation");
-				gameObjectData.rotation = glm::vec3(rotation[0], rotation[1], rotation[2]);
+				transform.rotation = glm::vec3(rotation[0], rotation[1], rotation[2]);
 				json scale = JAssetObject.at("scale");
-				gameObjectData.scale = glm::vec3(scale[0], scale[1], scale[2]);
-				gameObjectData.uniformScale = JAssetObject.at("uniform_scale");
+				transform.scale = glm::vec3(scale[0], scale[1], scale[2]);
+				transform.uniformScale = JAssetObject.at("uniform_scale");
 				gameObjectData.colissions = JAssetObject.at("colissions");
 
-				m_GameObjectContainer.push_back(new GameObject(gameObjectData, m_SceneAssetManager));
+				m_GameObjectContainer.push_back(new GameObject(gameObjectData, transform, m_SceneAssetManager));
 			}
 		}
 	}
@@ -116,23 +117,24 @@ void Scene::Render(Camera& camera)
 	for (GameObject* gameObject : m_GameObjectContainer)
 	{
 		GameObjectData& gameObjectData = gameObject->GetData();
+		Transform& transform = gameObject->GetTransform();
 
 		if (gameObjectData.type == GameObjectType::Entity) {
 			WorldTransform worldTransform;
 
-			worldTransform.setTranslation(gameObjectData.position);
-			worldTransform.setScale(gameObjectData.scale);
-			if (gameObjectData.rotation != glm::vec3{ 0.0f, 0.0f, 0.0f }) {	// rotation exists
+			worldTransform.setTranslation(transform.position);
+			worldTransform.setScale(transform.scale);
+			if (transform.rotation != glm::vec3{ 0.0f, 0.0f, 0.0f }) {	// rotation exists
 				float degrees = 0.0f;
 				glm::vec3 rotationAxis{ 0.0f };
-				if (gameObjectData.rotation[0] != 0.0f) {
-					degrees = gameObjectData.rotation[0];
+				if (transform.rotation[0] != 0.0f) {
+					degrees = transform.rotation[0];
 					rotationAxis[0] = 1.0f;
-				} else if (gameObjectData.rotation[1] != 0.0f) {
-					degrees = gameObjectData.rotation[1];
+				} else if (transform.rotation[1] != 0.0f) {
+					degrees = transform.rotation[1];
 					rotationAxis[1] = 1.0f;
-				} else if (gameObjectData.rotation[2] != 0.0f) {
-					degrees = gameObjectData.rotation[2];
+				} else if (transform.rotation[2] != 0.0f) {
+					degrees = transform.rotation[2];
 					rotationAxis[2] = 1.0f;
 				}
 				worldTransform.setRotation(glm::radians(degrees), rotationAxis);
