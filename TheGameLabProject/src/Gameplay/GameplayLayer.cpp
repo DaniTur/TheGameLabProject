@@ -138,7 +138,7 @@ void GameplayLayer::onKeyPressed(KeyPressedEvent& event)
 		break;
 	}
 	event.handled = true;
-	LOG_TRACE("[GameplayLayer] KeyPressed {}", event.getKeyCode());
+	//LOG_TRACE("[GameplayLayer] KeyPressed {}", event.getKeyCode());
 }
 
 void GameplayLayer::onKeyReleased(KeyReleasedEvent& event)
@@ -161,7 +161,7 @@ void GameplayLayer::onKeyReleased(KeyReleasedEvent& event)
 		break;
 	}
 	event.handled = true;
-	LOG_TRACE("[GameplayLayer] KeyReleased {}", event.getKeyCode());
+	//LOG_TRACE("[GameplayLayer] KeyReleased {}", event.getKeyCode());
 }
 
 void GameplayLayer::onMouseMoved(MouseMovedEvent& event)
@@ -203,7 +203,7 @@ void GameplayLayer::onMouseButtonPressed(MouseButtonPressedEvent& event)
 		break;
 	}
 	event.handled = true;
-	LOG_TRACE("[GameplayLayer] MouseButtonPressed {}", event.getButtonCode());
+	//LOG_TRACE("[GameplayLayer] MouseButtonPressed {}", event.getButtonCode());
 }
 
 void GameplayLayer::onMouseButtonReleased(MouseButtonReleasedEvent& event)
@@ -218,7 +218,7 @@ void GameplayLayer::onMouseButtonReleased(MouseButtonReleasedEvent& event)
 		break;
 	}
 	event.handled = true;
-	LOG_TRACE("[GameplayLayer] MouseButtonReleased {}", event.getButtonCode());
+	//LOG_TRACE("[GameplayLayer] MouseButtonReleased {}", event.getButtonCode());
 }
 
 void GameplayLayer::SetEventCallback(const EventCallback& callback)

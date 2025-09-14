@@ -45,15 +45,22 @@ void Model::loadModel(const std::string &filepath) {
     }
 
     // Debug ----
-    PrintMaterialInfo(scene);
-    VerifyEmbebedTextures(scene);
-    VerifyTexturesInMaterialProperties(scene);
+    //PrintMaterialInfo(scene);
+    //VerifyEmbebedTextures(scene);
+    //VerifyTexturesInMaterialProperties(scene);
     // ----
-   
-    m_directory = filepath.substr(0, filepath.find_last_of('/'));
-
+    // Fix this with std::filesystem::path
+    std::string slashDir = filepath.substr(0, filepath.find_last_of('/') +1);
+    std::string backslashDir = filepath.substr(0, filepath.find_last_of('\\') +1);
+    if (slashDir.back() == '/') {
+        m_directory = filepath.substr(0, filepath.find_last_of('/'));
+    } else if (backslashDir.back() == '\\') {
+        m_directory = filepath.substr(0, filepath.find_last_of('\\'));
+    }   
+    LOG_INFO("[Model] Loading Model with directory slash {}", slashDir);
+    LOG_INFO("[Model] Loading Model with directory backslash {}", backslashDir);
+    
     processNode(scene->mRootNode, scene);
-
 }
 
 void Model::processNode(const aiNode* node, const aiScene* scene) {
@@ -173,7 +180,7 @@ std::vector<Texture> Model::loadMaterialTextures(const aiMaterial* material, aiT
 
         aiString file;
         material->GetTexture(type, i, &file);
-        std::cout << "Ruta de la textura obtenida por Assimp: " << file.C_Str() << std::endl;
+        //std::cout << "Ruta de la textura obtenida por Assimp: " << file.C_Str() << std::endl;
         // check if texture was loaded before and if so, continue to next iteration: skip loading a new texture
         bool skipTextureLoading = false;
         for (unsigned int j = 0; j < m_textures_loaded.size(); j++) {
