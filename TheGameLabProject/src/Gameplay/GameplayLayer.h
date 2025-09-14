@@ -38,15 +38,14 @@ private:
 
 	EventCallback m_EventCallback;
 
-	struct Mouse {
-		double lastX = 400.0;
-		double lastY = 300.0;
+	// Owns the virtual mouse data
+	struct MouseState {
+		float sensitivity = 0.1f;
 		float yaw = -90.0f;
 		float pitch = 0.0f;
-		bool firstMouse = true;
 		bool zoomEnable = false;
-	};
-	Mouse m_Mouse;
+	};;
+	MouseState m_MouseState;
 
 	Scene m_ActiveScene;	// default Scene
 	Camera m_gameCamera;

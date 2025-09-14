@@ -21,17 +21,20 @@ public:
 
 private:
 
-	void processInputPolling();
+	//void processInputPolling();
 	void onUpdate();
 
-	void onWindowClosed(WindowClosedEvent& e);
+	void onWindowClosed(WindowClosedEvent& event);
 	void onWindowResize(WindowResizeEvent& event);
-	void onKeyPressed(KeyPressedEvent& e);
-	void onKeyReleased(KeyReleasedEvent& e);
-	void onMouseMoved(MouseMovedEvent &e);
-	void onMouseButtonPressed(MouseButtonPressedEvent &e);
-	void onMouseButtonReleased(MouseButtonReleasedEvent &e);
-	void onToggleLayer(ToggleLayerEvent& e);
+	void onKeyPressed(KeyPressedEvent& event);
+	void onKeyReleased(KeyReleasedEvent& event);
+	void onMouseMoved(MouseMovedEvent& event);
+	void onMouseButtonPressed(MouseButtonPressedEvent& event);
+	void onMouseButtonReleased(MouseButtonReleasedEvent& event);
+	void onToggleLayer(ToggleLayerEvent& event);
+
+	// Resets the mouse position to the center of the window, not the screen
+	void resetMouseToCenterWindow();
 
 private:
 
@@ -49,14 +52,11 @@ private:
 	// Perspective projection transform
 	ProjectionTransform m_projectionTransform;
 
-
+	// Owns the physical mouse (manages the OS mouse movement callbacks)
 	struct Mouse {
-		double lastX = 400.0;
-		double lastY = 300.0;
-		float yaw = -90.0f;
-		float pitch = 0.0f;
+		float lastX = 400.0;
+		float lastY = 300.0;
 		bool firstMouse = true;
-		bool zoomEnable = false;
 	};
 	Mouse m_Mouse;
 };

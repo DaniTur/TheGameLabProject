@@ -17,6 +17,20 @@ public:
 	float getY() const {
 		return m_MouseY;
 	}
+	float getOffsetX() const {
+		return m_OffsetX;
+	}
+
+	float getOffsetY() const {
+		return m_OffsetY;
+	}
+	void setOffsetX(float xOffset) {
+		m_OffsetX = xOffset;
+	}
+
+	void setOffsetY(float yOffset) {
+		m_OffsetY = yOffset;
+	}
 
 	EventCathegory getEventCathegory() const override{
 		return EventCathegory::Layer;
@@ -39,6 +53,8 @@ public:
 private:
 	float m_MouseX;
 	float m_MouseY;
+	float m_OffsetX{};
+	float m_OffsetY{};
 };
 
 class MouseScrolledEvent : public Event {

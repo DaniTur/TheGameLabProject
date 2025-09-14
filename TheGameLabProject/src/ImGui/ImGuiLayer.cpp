@@ -12,6 +12,8 @@ ImGuiLayer::ImGuiLayer(Window& window, Scene& scene)
 {
 	m_Active = false;
 
+	m_currentFileBrowserPath = "resources";
+
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
 	ImGui::StyleColorsDark();
@@ -52,8 +54,35 @@ void ImGuiLayer::OnUpdate(double deltaTime)
 	const int Y = 1;
 	const int Z = 2;
 
-	ImGui::ShowDemoWindow();
+	// Browser
+	ImGui::SetNextWindowPos(ImVec2(400, 400), ImGuiCond_FirstUseEver);
+	if (ImGui::Begin("Browser")) {
 
+		// Go to parent directory button
+		if (m_currentFileBrowserPath.has_parent_path()) {
+			if (ImGui::Button("<-")) {
+				m_currentFileBrowserPath = m_currentFileBrowserPath.parent_path();
+			}
+		}
+
+		ImGui::BeginChild("FileList", ImVec2(0, -ImGui::GetFrameHeightWithSpacing()), true);
+		DisplayFileList();
+		ImGui::EndChild();
+
+		// Import 
+		// Move the button at the bottom of the ImGui frame/window
+		float windowHeight = ImGui::GetWindowHeight();
+		float buttonHeight = ImGui::GetFrameHeightWithSpacing();
+		ImGui::SetCursorPosY(windowHeight - buttonHeight);
+
+		if (ImGui::Button("Import Model", ImVec2(-FLT_MIN, 0))) {
+			LOG_INFO("Import file: {}", m_SelectedFilePath.string().c_str());
+			m_ActiveScene.AddGameObjectWithModel(m_SelectedFilePath.string());
+		}
+	}
+	ImGui::End();
+
+	// Inspector
 	ImGui::Begin("Inspector");
 	ImGui::SeparatorText("Transform");
 	for (auto gameObject : m_ActiveScene) {
@@ -244,6 +273,24 @@ ImGuiKey ImGuiLayer::KeyMapToImGuiKey(int nativeKeyCode)
 	case Key::LSHIFT: return ImGuiKey_LeftShift;
 	case Key::LCONTROL: return ImGuiKey_LeftCtrl;
 	default: return ImGuiKey_None;
+	}
+}
+
+void ImGuiLayer::DisplayFileList()
+{
+	bool fileSelected = false;
+	for (auto file : std::filesystem::directory_iterator(m_currentFileBrowserPath)) {
+		if (file.is_directory()) {
+			if (ImGui::Button(file.path().string().c_str())) {
+				m_currentFileBrowserPath = file.path();
+			}
+		} else {
+			fileSelected = m_SelectedFilePath == file.path() ? true : false;
+
+			if (ImGui::Selectable(file.path().string().c_str(), fileSelected)) {
+				m_SelectedFilePath = file.path();
+			}
+		}
 	}
 }
 

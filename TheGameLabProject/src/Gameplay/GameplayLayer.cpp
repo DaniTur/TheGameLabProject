@@ -56,8 +56,17 @@ void GameplayLayer::OnEvent(Event& event)
 	case KeyPressed:
 		onKeyPressed(static_cast<KeyPressedEvent&>(event));
 		break;
+	case KeyReleased:
+		onKeyReleased(static_cast<KeyReleasedEvent&>(event));
+		break;
 	case MouseMoved:
 		onMouseMoved(static_cast<MouseMovedEvent&>(event));
+		break;
+	case MouseButtonPressed:
+		onMouseButtonPressed(static_cast<MouseButtonPressedEvent&>(event));
+		break;
+	case MouseButtonReleased:
+		onMouseButtonReleased(static_cast<MouseButtonReleasedEvent&>(event));
 		break;
 	default:
 		break;
@@ -157,36 +166,26 @@ void GameplayLayer::onKeyReleased(KeyReleasedEvent& event)
 
 void GameplayLayer::onMouseMoved(MouseMovedEvent& event)
 {
-	if (m_Mouse.firstMouse)
-	{
-		m_Mouse.lastX = event.getX();
-		m_Mouse.lastY = event.getY();
-		m_Mouse.firstMouse = false;
-	}
+	float xOffset = event.getOffsetX();
+	float yOffset = event.getOffsetY();
 
-	double xoffset = event.getX() - m_Mouse.lastX;
-	double yoffset = m_Mouse.lastY - event.getY();
-	m_Mouse.lastX = event.getX();
-	m_Mouse.lastY = event.getY();
+	xOffset *= m_MouseState.sensitivity;
+	yOffset *= m_MouseState.sensitivity;
 
-	float sensitivity = 0.1f;
-	xoffset *= sensitivity;
-	yoffset *= sensitivity;
-
-	// The mouse movement offset is equal to the angle of the camera we will move
-	m_Mouse.yaw += (float)xoffset;
-	m_Mouse.pitch += (float)yoffset;
+	// The mouse movement offset * sensitivity is equal to the angle of the camera we will move
+	m_MouseState.yaw += xOffset;
+	m_MouseState.pitch += yOffset;
 
 	// Pitch limitation
-	if (m_Mouse.pitch > 89.0f)
-		m_Mouse.pitch = 89.0f;
-	if (m_Mouse.pitch < -89.0f)
-		m_Mouse.pitch = -89.0f;
+	if (m_MouseState.pitch > 89.0f)
+		m_MouseState.pitch = 89.0f;
+	if (m_MouseState.pitch < -89.0f)
+		m_MouseState.pitch = -89.0f;
 
 	glm::vec3 direction;
-	direction.x = cos(glm::radians(m_Mouse.yaw)) * cos(glm::radians(m_Mouse.pitch));
-	direction.y = sin(glm::radians(m_Mouse.pitch));
-	direction.z = sin(glm::radians(m_Mouse.yaw)) * cos(glm::radians(m_Mouse.pitch));
+	direction.x = cos(glm::radians(m_MouseState.yaw)) * cos(glm::radians(m_MouseState.pitch));
+	direction.y = sin(glm::radians(m_MouseState.pitch));
+	direction.z = sin(glm::radians(m_MouseState.yaw)) * cos(glm::radians(m_MouseState.pitch));
 	m_gameCamera.setCameraTarget(glm::normalize(direction));
 
 	event.handled = true;

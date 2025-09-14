@@ -15,6 +15,10 @@ Game::Game()
 
 	m_window.setEventCallback(std::bind_front(&Game::onEvent, this));
 
+	// Set the mouse start position at the center of the window
+	m_Mouse.lastX = (float)m_window.GetWidth() / 2;
+	m_Mouse.lastY = (float)m_window.GetHeight() / 2;
+
 	Input::Init(m_window.get());
 
 	auto gameplayLayer = new GameplayLayer();
@@ -67,6 +71,10 @@ void Game::onEvent(Event& event)
 		}
 	}
 
+	if (event.getEventType() == EventType::MouseMoved) {
+		onMouseMoved(static_cast<MouseMovedEvent&>(event));
+	}
+
 	for (auto it = m_LayerStack.rbegin(); it != m_LayerStack.rend(); ++it) {
 		if (event.handled) {
 			break;
@@ -75,10 +83,10 @@ void Game::onEvent(Event& event)
 	}
 }
 
-void Game::onWindowClosed(WindowClosedEvent& e)
+void Game::onWindowClosed(WindowClosedEvent& event)
 {
 	m_running = false;
-	e.handled = true;
+	event.handled = true;
 }
 
 void Game::onWindowResize(WindowResizeEvent& event) {
@@ -88,6 +96,28 @@ void Game::onWindowResize(WindowResizeEvent& event) {
 	m_window.setNewSize(event.GetWidth(), event.GetHeight());
 	glViewport(0, 0, event.GetWidth(), event.GetHeight());
 	event.handled = true;
+}
+
+void Game::onMouseMoved(MouseMovedEvent& event) {
+	// Calculate mouse offsets before the layers use the event
+	if (m_Mouse.firstMouse) {
+		m_Mouse.lastX = (float)m_window.GetWidth() / 2;
+		m_Mouse.lastY = (float)m_window.GetHeight() / 2;
+		event.setOffsetX(0.0f);
+		event.setOffsetY(0.0f);
+		m_Mouse.firstMouse = false;
+		event.handled = true;
+		return;
+	}
+
+	float xOffset = event.getX() - m_Mouse.lastX;
+	float yOffset = m_Mouse.lastY - event.getY();
+	m_Mouse.lastX = event.getX();
+	m_Mouse.lastY = event.getY();
+		
+	event.setOffsetX(xOffset);
+	event.setOffsetY(yOffset);
+	// The proper layer will end up handling the event completly (the logical part of the mouse movement)
 }
 
 // Toggles the layer active or inactive if exists
@@ -113,8 +143,20 @@ void Game::onToggleLayer(ToggleLayerEvent& event)
 			m_window.setMouseCursorCapture(false);
 		} else {
 			m_window.setMouseCursorCapture(true);
+			resetMouseToCenterWindow();
 		}
 	}
 	event.handled = true;
 	LOG_TRACE("[Game] ToggleLayerEvent id: {}, to active: {}", event.getLayerId(), (*it)->IsActive());
 }
+
+void Game::resetMouseToCenterWindow() {
+	float centerX = (float)m_window.GetWidth() / 2;
+	float centerY = (float)m_window.GetHeight() / 2;
+	m_window.setMousePosition(centerX, centerY);
+
+	m_Mouse.lastX = centerX;
+	m_Mouse.lastY = centerY;
+	m_Mouse.firstMouse = true;
+}
+

@@ -32,6 +32,7 @@ public:
 	void setMouseCursorCapture(bool captured);
 	void setMouseAcceleration(bool active);
 	void setNewSize(unsigned int width, unsigned int heigth);
+	void setMousePosition(float xpos, float ypos);
 
 	GLFWwindow* get();
 

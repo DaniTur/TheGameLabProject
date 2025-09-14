@@ -9,6 +9,7 @@
 #include <Core/Window.h>
 #include <Scene/Scene.h>
 #include <imgui.h>
+#include <filesystem>
 
 class ImGuiLayer : public Layer, public IEventEmitter
 {
@@ -42,5 +43,10 @@ private:
 
 	Window& m_Window;
 	Scene& m_ActiveScene;
+	std::filesystem::path m_currentFileBrowserPath;
+	std::filesystem::path m_SelectedFilePath;
+
+private:
+	void DisplayFileList();
 };
 

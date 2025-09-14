@@ -29,7 +29,7 @@ class GameObject
 public:
 	explicit GameObject(AssetManager& assetManager);
 
-	GameObject(const GameObjectData& data, Transform& transform, AssetManager& assetManager);
+	GameObject(const GameObjectData& data, const Transform& transform, AssetManager& assetManager);
 
 	GameObjectData& GetData();
 	Transform& GetTransform();

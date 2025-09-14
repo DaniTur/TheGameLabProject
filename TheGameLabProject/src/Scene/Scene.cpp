@@ -13,7 +13,7 @@ NLOHMANN_JSON_SERIALIZE_ENUM(GameObjectType, {
 
 Scene::Scene() :
 	m_SceneID("000DEFAULT"), 
-	m_FilePath("defaultScene.json"), 
+	m_SceneFilePath("defaultScene.json"), 
 	m_Shader("src/Graphics/vertex_shader.vert", "src/Graphics/fragment_shader.frag")
 {
 }
@@ -27,21 +27,21 @@ void Scene::Load()
 {
 	// 1. Open the Scene file path and check for errors
 	try {
-		std::string relPathFromProjDir = "src/Scene/" + m_FilePath;
+		std::string relPathFromProjDir = "src/Scene/" + m_SceneFilePath;
 		std::ifstream fileStream(relPathFromProjDir);
 		if (!fileStream.is_open()) {
-			LOG_ERROR("[Scene] Cannot open the input file stream of the Scene::Load() : {}", m_FilePath);
+			LOG_ERROR("[Scene] Cannot open the input file stream of the Scene::Load() : {}", m_SceneFilePath);
 			return;
 		}
 		json Jdata = json::parse(fileStream);
 		if (std::string SceneId = Jdata.at("scene_id"); SceneId.compare(m_SceneID) != 0) {
-			LOG_ERROR("[Scene] Error from Json {}: 'scene_id' inside the json does not match the 'scene_id' of the Scene instance", m_FilePath);
+			LOG_ERROR("[Scene] Error from Json {}: 'scene_id' inside the json does not match the 'scene_id' of the Scene instance", m_SceneFilePath);
 			return;
 		}
 		// Get the assets objects
 		json JAssets = Jdata.at("assets");
 		if (JAssets.empty()) {
-			LOG_ERROR("[Scene] Error reading Json {}: assets is missing or empty", m_FilePath);
+			LOG_ERROR("[Scene] Error reading Json {}: assets is missing or empty", m_SceneFilePath);
 			return;
 		}
 		// 2. Obtain every asset data and load in to the assets container
@@ -73,6 +73,24 @@ void Scene::Load()
 		LOG_ERROR("[Scene] Json Parse Error[{}]: {}", e.id, e.what());
 		throw;
 	}
+}
+
+void Scene::AddGameObjectWithModel(const std::string& modelPath)
+{
+	LOG_INFO("[Scene] AddGameObjectWithModel {}", modelPath.c_str());
+	GameObjectData data;
+	data.type = GameObjectType::Entity;
+	data.filePath = modelPath;
+	data.name = modelPath;
+	data.colissions = true;
+
+	Transform defaultTransform;
+	defaultTransform.position = glm::vec3(0.0f);
+	defaultTransform.rotation = glm::vec3(0.0f);
+	defaultTransform.scale = glm::vec3(1.0f, 1.0f, 1.0f);
+	defaultTransform.uniformScale = 1.0f;
+
+	m_GameObjectContainer.push_back(new GameObject(data, defaultTransform, m_SceneAssetManager));
 }
 
 void Scene::Render(Camera& camera)

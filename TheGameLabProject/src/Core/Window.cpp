@@ -182,6 +182,11 @@ void Window::setNewSize(unsigned int width, unsigned int height)
 	//glViewport(0, 0, m_windowData.width, m_windowData.height);
 }
 
+void Window::setMousePosition(float xpos, float ypos)
+{
+	glfwSetCursorPos(m_window, xpos, ypos);
+}
+
 void Window::setMouseInputsCallbacks() {
 	
 	// Mouse position/moved callback

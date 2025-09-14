@@ -16,6 +16,8 @@ public:
 
 	void Load();
 
+	void AddGameObjectWithModel(const std::string &modelPath);
+
 	void Render(Camera& camera);
 
 	// Make Scene more abstract to use, enabling the use of the Scene as a container of elements
@@ -25,7 +27,7 @@ public:
 private:
 
 	std::string m_SceneID = "";
-	std::string m_FilePath = "";
+	std::string m_SceneFilePath = "";
 	
 	std::vector<GameObject*> m_GameObjectContainer;
 

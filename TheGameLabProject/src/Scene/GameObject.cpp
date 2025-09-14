@@ -6,10 +6,11 @@ GameObject::GameObject(AssetManager& assetManager)
 {
 }
 
-GameObject::GameObject(const GameObjectData& data, Transform& transform, AssetManager& assetManager)
+GameObject::GameObject(const GameObjectData& data, const Transform& transform, AssetManager& assetManager)
 	: m_Data(data), m_Transform(transform), m_SceneAssetManager(assetManager)
 {
 	m_Model = m_SceneAssetManager.LoadModel(m_Data.filePath);
+	LOG_TRACE("GameObject '{}' created", m_Data.filePath.c_str());
 }
 
 GameObjectData& GameObject::GetData()

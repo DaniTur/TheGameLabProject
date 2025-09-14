@@ -31,7 +31,7 @@ void Model::loadModel(const std::string &filepath) {
 
     // Model file .obj
     std::string extension = filepath.substr(filepath.find_last_of('.'));
-    std::cout << "\nLoading model: " << filepath <<  " file extension : " << extension << "\n";
+    LOG_TRACE("Loading model '{}' file extendion '{}'", filepath.c_str(), extension.c_str());
     if (extension.compare(".obj") == STRING_EQUAL) {
         scene = importer.ReadFile(filepath, ASSIMP_IMPORTER_POSTPROCESSING_FLAGS_OBJ);
     }  else {
@@ -40,7 +40,7 @@ void Model::loadModel(const std::string &filepath) {
 
     if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
     {
-        std::cerr << "ERROR::ASSIMP::" << importer.GetErrorString() << std::endl;
+        LOG_ERROR("[Model] Assimp error: {}", importer.GetErrorString());
         return;
     }
 
