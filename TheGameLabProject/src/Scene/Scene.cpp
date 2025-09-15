@@ -13,7 +13,7 @@ NLOHMANN_JSON_SERIALIZE_ENUM(GameObjectType, {
 
 Scene::Scene() :
 	m_SceneID("000DEFAULT"), 
-	m_SceneFilePath("defaultScene.json"), 
+	m_SceneFilePath("src/Scene/defaultScene.json"), 
 	m_Shader("src/Graphics/vertex_shader.vert", "src/Graphics/fragment_shader.frag")
 {
 }
@@ -27,21 +27,20 @@ void Scene::Load()
 {
 	// 1. Open the Scene file path and check for errors
 	try {
-		std::string relPathFromProjDir = "src/Scene/" + m_SceneFilePath;
-		std::ifstream fileStream(relPathFromProjDir);
+		std::ifstream fileStream(m_SceneFilePath.generic_string());
 		if (!fileStream.is_open()) {
-			LOG_ERROR("[Scene] Cannot open the input file stream of the Scene::Load() : {}", m_SceneFilePath);
+			LOG_ERROR("[Scene] Cannot open the input file stream '{}' on the Scene::Load()", m_SceneFilePath.generic_string());
 			return;
 		}
 		json Jdata = json::parse(fileStream);
 		if (std::string SceneId = Jdata.at("scene_id"); SceneId.compare(m_SceneID) != 0) {
-			LOG_ERROR("[Scene] Error from Json {}: 'scene_id' inside the json does not match the 'scene_id' of the Scene instance", m_SceneFilePath);
+			LOG_ERROR("[Scene] Error from Json {}: 'scene_id' inside the json does not match the 'scene_id' of the Scene instance", m_SceneFilePath.generic_string());
 			return;
 		}
 		// Get the assets objects
 		json JAssets = Jdata.at("assets");
 		if (JAssets.empty()) {
-			LOG_ERROR("[Scene] Error reading Json {}: assets is missing or empty", m_SceneFilePath);
+			LOG_ERROR("[Scene] Error reading Json {}: assets is missing or empty", m_SceneFilePath.generic_string());
 			return;
 		}
 		// 2. Obtain every asset data and load in to the assets container
@@ -55,7 +54,7 @@ void Scene::Load()
 				Transform transform;
 				gameObjectData.type = type;
 				gameObjectData.name = JAssetObject.at("desc");
-				gameObjectData.filePath = JAssetObject.at("model_file_path");
+				gameObjectData.modelFilePath = std::filesystem::path(JAssetObject.at("model_file_path").get<std::string>());
 				json position = JAssetObject.at("position");
 				transform.position = glm::vec3(position[0], position[1], position[2]);
 				json rotation = JAssetObject.at("rotation");
@@ -75,13 +74,13 @@ void Scene::Load()
 	}
 }
 
-void Scene::AddGameObjectWithModel(const std::string& modelPath)
+void Scene::AddGameObjectWithModel(const std::filesystem::path& modelPath)
 {
-	LOG_INFO("[Scene] AddGameObjectWithModel {}", modelPath.c_str());
+	LOG_INFO("[Scene] AddGameObjectWithModel {}", modelPath.generic_string());
 	GameObjectData data;
 	data.type = GameObjectType::Entity;
-	data.filePath = modelPath;
-	data.name = modelPath;
+	data.modelFilePath = modelPath;
+	data.name = modelPath.filename().string();
 	data.colissions = true;
 
 	Transform defaultTransform;

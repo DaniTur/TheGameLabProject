@@ -11,8 +11,15 @@
 #define ASSIMP_IMPORTER_POSTPROCESSING_FLAGS_FBX (aiProcess_FlipUVs | aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_CalcTangentSpace)
 constexpr int STRING_EQUAL = 0;
 
-Model::Model(const char* filepath) {
-    loadModel(filepath);
+//Model::Model(const char* filepath) {
+//    loadModel();
+//}
+
+Model::Model(const std::filesystem::path& filepath) 
+    : m_FilePath(filepath)
+{
+    // TODO: Fake this method constructor able to throw exception when the model file is a wrong type (.jpg, .png)
+    loadModel();
 }
 
 void Model::Draw(Shader& shader) {
@@ -21,7 +28,7 @@ void Model::Draw(Shader& shader) {
     }
 }
 
-void Model::loadModel(const std::string &filepath) {
+void Model::loadModel() {
 
 	Assimp::Importer importer;
     importer.SetPropertyBool(AI_CONFIG_IMPORT_FBX_PRESERVE_PIVOTS, false);
@@ -29,18 +36,18 @@ void Model::loadModel(const std::string &filepath) {
 
     const aiScene* scene;
 
-    // Model file .obj
-    std::string extension = filepath.substr(filepath.find_last_of('.'));
-    LOG_TRACE("Loading model '{}' file extendion '{}'", filepath.c_str(), extension.c_str());
+    // Model file .obj and .fbx
+    LOG_DEBUG("[Model] Loading model '{}'", m_FilePath.generic_string());
+    std::string extension = m_FilePath.extension().string();
     if (extension.compare(".obj") == STRING_EQUAL) {
-        scene = importer.ReadFile(filepath, ASSIMP_IMPORTER_POSTPROCESSING_FLAGS_OBJ);
-    }  else {
-        scene = importer.ReadFile(filepath, ASSIMP_IMPORTER_POSTPROCESSING_FLAGS_FBX);
+        scene = importer.ReadFile(m_FilePath.string(), ASSIMP_IMPORTER_POSTPROCESSING_FLAGS_OBJ);
+    } else if (extension.compare(".fbx") == STRING_EQUAL) {
+        scene = importer.ReadFile(m_FilePath.string(), ASSIMP_IMPORTER_POSTPROCESSING_FLAGS_FBX);
     }
 
     if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
     {
-        LOG_ERROR("[Model] Assimp error: {}", importer.GetErrorString());
+        LOG_ERROR("[Model] Error while trying to load the model '{}', Assimp error: {}", m_FilePath.generic_string(), importer.GetErrorString());
         return;
     }
 
@@ -48,18 +55,8 @@ void Model::loadModel(const std::string &filepath) {
     //PrintMaterialInfo(scene);
     //VerifyEmbebedTextures(scene);
     //VerifyTexturesInMaterialProperties(scene);
-    // ----
-    // Fix this with std::filesystem::path
-    std::string slashDir = filepath.substr(0, filepath.find_last_of('/') +1);
-    std::string backslashDir = filepath.substr(0, filepath.find_last_of('\\') +1);
-    if (slashDir.back() == '/') {
-        m_directory = filepath.substr(0, filepath.find_last_of('/'));
-    } else if (backslashDir.back() == '\\') {
-        m_directory = filepath.substr(0, filepath.find_last_of('\\'));
-    }   
-    LOG_INFO("[Model] Loading Model with directory slash {}", slashDir);
-    LOG_INFO("[Model] Loading Model with directory backslash {}", backslashDir);
-    
+    // 
+
     processNode(scene->mRootNode, scene);
 }
 
@@ -172,20 +169,20 @@ Mesh Model::processMesh(const aiMesh *mesh, const aiScene *scene) {
     return Mesh(vertices, indices, textures);
 }
 
-std::vector<Texture> Model::loadMaterialTextures(const aiMaterial* material, aiTextureType type, std::string typeName) {
+std::vector<Texture> Model::loadMaterialTextures(const aiMaterial* material, aiTextureType type, const std::string& typeName) {
 
     std::vector<Texture> meshTextures;
     
     for (unsigned int i = 0; i < material->GetTextureCount(type); i++) {
 
-        aiString file;
-        material->GetTexture(type, i, &file);
+        aiString textureFileRelativePath;
+        material->GetTexture(type, i, &textureFileRelativePath);
         //std::cout << "Ruta de la textura obtenida por Assimp: " << file.C_Str() << std::endl;
         // check if texture was loaded before and if so, continue to next iteration: skip loading a new texture
         bool skipTextureLoading = false;
         for (unsigned int j = 0; j < m_textures_loaded.size(); j++) {
             
-            if (m_textures_loaded[j].path.compare(file.C_Str()) == 0) {
+            if (m_textures_loaded[j].path.compare(textureFileRelativePath.C_Str()) == 0) {
 
                 meshTextures.push_back(m_textures_loaded[j]);
                 skipTextureLoading = true; // a texture with the same filepath has already been loaded, continue to next one. (optimization)
@@ -194,9 +191,9 @@ std::vector<Texture> Model::loadMaterialTextures(const aiMaterial* material, aiT
         }
         if (!skipTextureLoading) {
             Texture texture;
-            texture.id = loadTextureFromFile(file.C_Str(), m_directory);
+            texture.id = loadTextureFromFile(textureFileRelativePath.C_Str());
             texture.type = typeName;
-            texture.path = file.C_Str();
+            texture.path = textureFileRelativePath.C_Str();
             meshTextures.push_back(texture);
             m_textures_loaded.push_back(texture);
         }
@@ -205,10 +202,13 @@ std::vector<Texture> Model::loadMaterialTextures(const aiMaterial* material, aiT
     return meshTextures;
 }
 
-unsigned int Model::loadTextureFromFile(const char *file, const std::string &directory) const {
+unsigned int Model::loadTextureFromFile(const char *textureFileRelativePath) const {
 
-    std::string fileName(file);
-    fileName = directory + '/' + fileName;
+    std::filesystem::path modelDir = m_FilePath.parent_path();
+    std::filesystem::path textureFilePath = modelDir /= textureFileRelativePath;
+    std::string textureFilePathStr = textureFilePath.generic_string();
+    
+    LOG_TRACE("[Model] loadTextureFromFile file : '{}'", textureFilePathStr);
 
     unsigned int textureID;
     glGenTextures(1, &textureID);
@@ -216,15 +216,14 @@ unsigned int Model::loadTextureFromFile(const char *file, const std::string &dir
     int width;
     int height;
     int colorChannels;
-    unsigned char *imageData = stbi_load(fileName.c_str(), &width, &height, &colorChannels, 0);
+    unsigned char *imageData = stbi_load(textureFilePathStr.c_str(), &width, &height, &colorChannels, 0);
 
     if (!imageData) {
-
-        std::cerr << "Texture failed to load at path: " << fileName << std::endl;
+        LOG_ERROR("[Model] Texture failed to load at path: ", textureFilePathStr);
         stbi_image_free(imageData);
 
     } else {
-        std::cout<< "Texture image loaded: " << fileName << " textureID: " << textureID << std::endl;
+        //std::cout<< "Texture image loaded: " << textureFilePathStr << " textureID: " << textureID << std::endl;
         GLenum format = GL_RGB;
         if (colorChannels == 1)
             format = GL_RED;
@@ -248,7 +247,7 @@ unsigned int Model::loadTextureFromFile(const char *file, const std::string &dir
     return textureID;
 }
 
-
+// Debug
 void Model::PrintMaterialInfo(const aiScene* scene) {
     if (!scene) return;
 
@@ -274,6 +273,7 @@ void Model::PrintMaterialInfo(const aiScene* scene) {
     }
 }
 
+// Debug
 void Model::VerifyEmbebedTextures(const aiScene* scene) {
     //  Verificar si el FBX contiene texturas embebidas
     if (scene->mNumTextures > 0) {
@@ -288,6 +288,7 @@ void Model::VerifyEmbebedTextures(const aiScene* scene) {
     }
 }
 
+// Debug
 void Model::VerifyTexturesInMaterialProperties(const aiScene* scene) {
     // Revisar si las texturas están en las propiedades del material
     for (unsigned int i = 0; i < scene->mNumMaterials; i++) {

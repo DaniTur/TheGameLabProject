@@ -5,7 +5,7 @@ class AssetManager
 {
 public:
 
-	std::shared_ptr<Model> LoadModel(const std::string& file);
+	std::shared_ptr<Model> LoadModel(const std::filesystem::path& modelFilePath);
 
 private:
 

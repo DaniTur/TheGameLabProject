@@ -16,7 +16,7 @@ public:
 
 	void Load();
 
-	void AddGameObjectWithModel(const std::string &modelPath);
+	void AddGameObjectWithModel(const std::filesystem::path& modelPath);
 
 	void Render(Camera& camera);
 
@@ -27,7 +27,7 @@ public:
 private:
 
 	std::string m_SceneID = "";
-	std::string m_SceneFilePath = "";
+	std::filesystem::path m_SceneFilePath;	// Relative to project working dir
 	
 	std::vector<GameObject*> m_GameObjectContainer;
 

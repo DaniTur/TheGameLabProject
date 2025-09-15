@@ -76,8 +76,8 @@ void ImGuiLayer::OnUpdate(double deltaTime)
 		ImGui::SetCursorPosY(windowHeight - buttonHeight);
 
 		if (ImGui::Button("Import Model", ImVec2(-FLT_MIN, 0))) {
-			LOG_INFO("Import file: {}", m_SelectedFilePath.string().c_str());
-			m_ActiveScene.AddGameObjectWithModel(m_SelectedFilePath.string());
+			LOG_INFO("[ImGuiLayer] Import model button pressed: {}", m_SelectedFilePath.generic_string());
+			m_ActiveScene.AddGameObjectWithModel(m_SelectedFilePath);
 		}
 	}
 	ImGui::End();
@@ -281,13 +281,13 @@ void ImGuiLayer::DisplayFileList()
 	bool fileSelected = false;
 	for (auto file : std::filesystem::directory_iterator(m_currentFileBrowserPath)) {
 		if (file.is_directory()) {
-			if (ImGui::Button(file.path().string().c_str())) {
+			if (ImGui::Button(file.path().generic_string().c_str())) {
 				m_currentFileBrowserPath = file.path();
 			}
 		} else {
 			fileSelected = m_SelectedFilePath == file.path() ? true : false;
 
-			if (ImGui::Selectable(file.path().string().c_str(), fileSelected)) {
+			if (ImGui::Selectable(file.path().generic_string().c_str(), fileSelected)) {
 				m_SelectedFilePath = file.path();
 			}
 		}

@@ -12,7 +12,7 @@ enum class GameObjectType {
 
 struct GameObjectData {
 	GameObjectType type = GameObjectType::Default;
-	std::string filePath;
+	std::filesystem::path modelFilePath;
 	std::string name;
 	bool colissions = false;
 };

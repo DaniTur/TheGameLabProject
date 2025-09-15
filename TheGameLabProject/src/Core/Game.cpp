@@ -147,7 +147,7 @@ void Game::onToggleLayer(ToggleLayerEvent& event)
 		}
 	}
 	event.handled = true;
-	LOG_TRACE("[Game] ToggleLayerEvent id: {}, to active: {}", event.getLayerId(), (*it)->IsActive());
+	LOG_DEBUG("[Game] ToggleLayerEvent id: {}, to active: {}", event.getLayerId(), (*it)->IsActive());
 }
 
 void Game::resetMouseToCenterWindow() {
