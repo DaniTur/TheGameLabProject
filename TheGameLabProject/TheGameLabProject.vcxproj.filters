@@ -10,11 +10,23 @@
     <Filter Include="src\Events">
       <UniqueIdentifier>{7162C20E-5D1A-045C-C621-DDB7B2F89E4C}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Gameplay">
+      <UniqueIdentifier>{CC96E562-B8F9-7407-617F-ADBD4DC1408A}</UniqueIdentifier>
+    </Filter>
     <Filter Include="src\Graphics">
       <UniqueIdentifier>{0D564864-F9B8-D708-A23E-10BF8E80A38B}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\ImGui">
+      <UniqueIdentifier>{170E22B3-8378-D629-CCB6-87CF3860B47E}</UniqueIdentifier>
+    </Filter>
     <Filter Include="src\Logging">
       <UniqueIdentifier>{C368B2F1-2F1E-2BE7-B812-25BE24C721EB}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Menus">
+      <UniqueIdentifier>{04B366B3-701D-1B2A-B95B-CCCF2505F97E}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Scene">
+      <UniqueIdentifier>{0A06D2B3-7670-862A-BFAE-37D02B58647F}</UniqueIdentifier>
     </Filter>
     <Filter Include="vendor">
       <UniqueIdentifier>{B3738122-9F15-ACF8-88D0-BF4C74113349}</UniqueIdentifier>
@@ -51,10 +63,19 @@
     <ClInclude Include="src\Core\Game.h">
       <Filter>src\Core</Filter>
     </ClInclude>
+    <ClInclude Include="src\Core\IEventEmitter.h">
+      <Filter>src\Core</Filter>
+    </ClInclude>
     <ClInclude Include="src\Core\Input.h">
       <Filter>src\Core</Filter>
     </ClInclude>
     <ClInclude Include="src\Core\KeyCodes.h">
+      <Filter>src\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Core\Layer.h">
+      <Filter>src\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Core\LayerStack.h">
       <Filter>src\Core</Filter>
     </ClInclude>
     <ClInclude Include="src\Core\MouseCodes.h">
@@ -78,6 +99,9 @@
     <ClInclude Include="src\Events\MouseEvent.h">
       <Filter>src\Events</Filter>
     </ClInclude>
+    <ClInclude Include="src\Gameplay\GameplayLayer.h">
+      <Filter>src\Gameplay</Filter>
+    </ClInclude>
     <ClInclude Include="src\Graphics\Camera.h">
       <Filter>src\Graphics</Filter>
     </ClInclude>
@@ -96,8 +120,20 @@
     <ClInclude Include="src\Graphics\shader.h">
       <Filter>src\Graphics</Filter>
     </ClInclude>
+    <ClInclude Include="src\ImGui\ImGuiLayer.h">
+      <Filter>src\ImGui</Filter>
+    </ClInclude>
     <ClInclude Include="src\Logging\Logger.h">
       <Filter>src\Logging</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Menus\MenuLayer.h">
+      <Filter>src\Menus</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Scene\GameObject.h">
+      <Filter>src\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Scene\Scene.h">
+      <Filter>src\Scene</Filter>
     </ClInclude>
     <ClInclude Include="src\pch.h">
       <Filter>src</Filter>
@@ -843,12 +879,8 @@
     <ClInclude Include="vendor\stb_image\stb_image.h">
       <Filter>vendor\stb_image</Filter>
     </ClInclude>
-    <ClInclude Include="src\Core\Layer.h" />
-    <ClInclude Include="src\Core\LayerStack.h" />
-    <ClInclude Include="src\ImGui\ImGuiLayer.h" />
-    <ClInclude Include="src\Gameplay\GameplayLayer.h" />
-    <ClInclude Include="src\Core\IEventEmitter.h" />
-    <ClInclude Include="src\Menus\MenuLayer.h" />
+    <ClInclude Include="src\Scene\AssetManager.h" />
+    <ClInclude Include="src\Core\UUID.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\CTexture.cpp">
@@ -860,11 +892,20 @@
     <ClCompile Include="src\Core\Input.cpp">
       <Filter>src\Core</Filter>
     </ClCompile>
+    <ClCompile Include="src\Core\Layer.cpp">
+      <Filter>src\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Core\LayerStack.cpp">
+      <Filter>src\Core</Filter>
+    </ClCompile>
     <ClCompile Include="src\Core\Window.cpp">
       <Filter>src\Core</Filter>
     </ClCompile>
     <ClCompile Include="src\Cube.cpp">
       <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Gameplay\GameplayLayer.cpp">
+      <Filter>src\Gameplay</Filter>
     </ClCompile>
     <ClCompile Include="src\Graphics\Camera.cpp">
       <Filter>src\Graphics</Filter>
@@ -881,11 +922,26 @@
     <ClCompile Include="src\Graphics\WorldTransform.cpp">
       <Filter>src\Graphics</Filter>
     </ClCompile>
+    <ClCompile Include="src\ImGui\ImGuiBuild.cpp">
+      <Filter>src\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ImGui\ImGuiLayer.cpp">
+      <Filter>src\ImGui</Filter>
+    </ClCompile>
     <ClCompile Include="src\Logging\Logger.cpp">
       <Filter>src\Logging</Filter>
     </ClCompile>
     <ClCompile Include="src\Main.cpp">
       <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Menus\MenuLayer.cpp">
+      <Filter>src\Menus</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Scene\GameObject.cpp">
+      <Filter>src\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Scene\Scene.cpp">
+      <Filter>src\Scene</Filter>
     </ClCompile>
     <ClCompile Include="src\pch.cpp">
       <Filter>src</Filter>
@@ -896,10 +952,7 @@
     <ClCompile Include="vendor\stb_image\stb_image.cpp">
       <Filter>vendor\stb_image</Filter>
     </ClCompile>
-    <ClCompile Include="src\Core\Layer.cpp" />
-    <ClCompile Include="src\Core\LayerStack.cpp" />
-    <ClCompile Include="src\ImGui\ImGuiLayer.cpp" />
-    <ClCompile Include="src\Gameplay\GameplayLayer.cpp" />
-    <ClCompile Include="src\Menus\MenuLayer.cpp" />
+    <ClCompile Include="src\Scene\AssetManager.cpp" />
+    <ClCompile Include="src\Core\UUID.cpp" />
   </ItemGroup>
 </Project>

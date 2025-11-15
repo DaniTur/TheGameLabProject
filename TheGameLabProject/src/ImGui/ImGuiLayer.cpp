@@ -1,6 +1,8 @@
 #include "pch.h"
 #include "ImGuiLayer.h"
 
+#include <Core/UUID.h>
+
 #include <backends/imgui_impl_opengl3.h>
 #include <backends/imgui_impl_glfw.h>
 
@@ -86,12 +88,13 @@ void ImGuiLayer::OnUpdate(double deltaTime)
 	ImGui::Begin("Inspector");
 	ImGui::SeparatorText("Transform");
 	for (auto gameObject : m_ActiveScene) {
-		GameObjectData& gameObjectData = gameObject->GetData();
+		const GameObjectData& gameObjectData = gameObject->GetData();
 		Transform& transform = gameObject->GetTransform();
 		std::string nameText = gameObjectData.name;
+		const std::string uuid = gameObject->GetUUID().ToString();
 
-		if (ImGui::CollapsingHeader(nameText.c_str())) {
-			if (ImGui::BeginTable(nameText.c_str(), 4, ImGuiTableFlags_SizingStretchProp)) {
+		if (ImGui::CollapsingHeader( (nameText + "(" + uuid + ")").c_str())) {
+			if (ImGui::BeginTable(uuid.c_str(), 4, ImGuiTableFlags_SizingStretchProp)) {
 				// Position row
 				ImGui::TableNextRow();
 				ImGui::TableSetColumnIndex(0);
@@ -99,18 +102,18 @@ void ImGuiLayer::OnUpdate(double deltaTime)
 
 				ImGui::TableSetColumnIndex(1);
 				ImGui::Text("X");
-				ImGui::SameLine();
-				ImGui::InputFloat(("##posX" + nameText).c_str(), &transform.position[X]);
+				ImGui::SameLine(); 
+				ImGui::InputFloat(("##posX_" + uuid).c_str(), &transform.position[X]);
 
 				ImGui::TableSetColumnIndex(2);
 				ImGui::Text("Y");
 				ImGui::SameLine();
-				ImGui::InputFloat(("##posY" + nameText).c_str(), &transform.position[Y]);
+				ImGui::InputFloat(("##posY" + uuid).c_str(), &transform.position[Y]);
 
 				ImGui::TableSetColumnIndex(3);
 				ImGui::Text("Z");
 				ImGui::SameLine();
-				ImGui::InputFloat(("##posZ" + nameText).c_str(), &transform.position[Z]);
+				ImGui::InputFloat(("##posZ" + uuid).c_str(), &transform.position[Z]);
 
 				// Rotation row
 				ImGui::TableNextRow();
@@ -120,17 +123,17 @@ void ImGuiLayer::OnUpdate(double deltaTime)
 				ImGui::TableSetColumnIndex(1);
 				ImGui::Text("X");
 				ImGui::SameLine();
-				ImGui::InputFloat(("##rotX" + nameText).c_str(), &transform.rotation[X]);
+				ImGui::InputFloat(("##rotX" + uuid).c_str(), &transform.rotation[X]);
 
 				ImGui::TableSetColumnIndex(2);
 				ImGui::Text("Y");
 				ImGui::SameLine();
-				ImGui::InputFloat(("##rotY" + nameText).c_str(), &transform.rotation[Y]);
+				ImGui::InputFloat(("##rotY" + uuid).c_str(), &transform.rotation[Y]);
 
 				ImGui::TableSetColumnIndex(3);
 				ImGui::Text("Z");
 				ImGui::SameLine();
-				ImGui::InputFloat(("##rotZ" + nameText).c_str(), &transform.rotation[Z]);
+				ImGui::InputFloat(("##rotZ" + uuid).c_str(), &transform.rotation[Z]);
 
 				// Scale row
 				ImGui::TableNextRow();
@@ -140,17 +143,17 @@ void ImGuiLayer::OnUpdate(double deltaTime)
 				ImGui::TableSetColumnIndex(1);
 				ImGui::Text("X");
 				ImGui::SameLine();
-				ImGui::InputFloat(("##scaX" + nameText).c_str(), &transform.scale[X]);
+				ImGui::InputFloat(("##scaX" + uuid).c_str(), &transform.scale[X]);
 
 				ImGui::TableSetColumnIndex(2);
 				ImGui::Text("Y");
 				ImGui::SameLine();
-				ImGui::InputFloat(("##scaY" + nameText).c_str(), &transform.scale[Y]);
+				ImGui::InputFloat(("##scaY" + uuid).c_str(), &transform.scale[Y]);
 
 				ImGui::TableSetColumnIndex(3);
 				ImGui::Text("Z");
 				ImGui::SameLine();
-				ImGui::InputFloat(("##scaZ" + nameText).c_str(), &transform.scale[Z]);
+				ImGui::InputFloat(("##scaZ" + uuid).c_str(), &transform.scale[Z]);
 
 				ImGui::EndTable();
 			}

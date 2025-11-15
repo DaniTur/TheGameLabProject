@@ -23,6 +23,11 @@ Transform& GameObject::GetTransform()
 	return m_Transform;
 }
 
+const Engine::UUID& GameObject::GetUUID() const
+{
+	return m_UUID;
+}
+
 void GameObject::Draw(Shader& shader)
 {
 	m_Model->Draw(shader);

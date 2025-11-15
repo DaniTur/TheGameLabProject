@@ -3,6 +3,7 @@
 #include <glm.hpp>
 #include <Graphics/Model.h>
 #include <Scene/AssetManager.h>
+#include <UUID.h>
 
 enum class GameObjectType {
 	Default,
@@ -33,11 +34,13 @@ public:
 
 	GameObjectData& GetData();
 	Transform& GetTransform();
+	const Engine::UUID& GetUUID() const;
 
 	void Draw(Shader& shader);
 
 private:
 
+	Engine::UUID m_UUID;
 	GameObjectData m_Data;
 	std::shared_ptr<Model> m_Model;
 	Transform m_Transform;
