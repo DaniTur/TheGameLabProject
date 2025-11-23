@@ -18,6 +18,15 @@ Scene::Scene() :
 {
 }
 
+Scene::~Scene()
+{
+	if (!m_GameObjects.empty()) {
+		for (auto object : m_GameObjects) {
+			delete object;
+		}
+	}
+}
+
 Scene::Scene(const std::string_view &id) : m_SceneID(id)
 {
 	// Map the SceneId to an actual scene filepath here, or do it at the Load function
@@ -64,7 +73,9 @@ void Scene::Load()
 				transform.uniformScale = JAssetObject.at("uniform_scale");
 				gameObjectData.colissions = JAssetObject.at("colissions");
 
-				m_GameObjectContainer.push_back(new GameObject(gameObjectData, transform, m_SceneAssetManager));
+				auto gameObject = new GameObject(gameObjectData, transform, m_SceneAssetManager);
+				m_GameObjects.push_back(gameObject);
+				m_GameObjectsMap[gameObject->GetUUID()] = gameObject;
 			}
 		}
 	}
@@ -89,7 +100,7 @@ void Scene::AddGameObjectWithModel(const std::filesystem::path& modelPath)
 	defaultTransform.scale = glm::vec3(1.0f, 1.0f, 1.0f);
 	defaultTransform.uniformScale = 1.0f;
 
-	m_GameObjectContainer.push_back(new GameObject(data, defaultTransform, m_SceneAssetManager));
+	m_GameObjects.push_back(new GameObject(data, defaultTransform, m_SceneAssetManager));
 }
 
 void Scene::Render(Camera& camera)
@@ -131,7 +142,7 @@ void Scene::Render(Camera& camera)
 	glm::mat4 cameraView;
 	glm::mat4 projectionTransformMatrix;
 
-	for (GameObject* gameObject : m_GameObjectContainer)
+	for (GameObject* gameObject : m_GameObjects)
 	{
 		GameObjectData& gameObjectData = gameObject->GetData();
 		Transform& transform = gameObject->GetTransform();
@@ -171,10 +182,10 @@ void Scene::Render(Camera& camera)
 
 std::vector<GameObject*>::const_iterator Scene::begin()
 {
-	return m_GameObjectContainer.begin();
+	return m_GameObjects.begin();
 }
 
 std::vector<GameObject*>::const_iterator Scene::end()
 {
-	return m_GameObjectContainer.end();
+	return m_GameObjects.end();
 }

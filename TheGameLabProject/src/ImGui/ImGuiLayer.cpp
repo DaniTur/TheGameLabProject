@@ -87,13 +87,14 @@ void ImGuiLayer::OnUpdate(double deltaTime)
 	// Inspector
 	ImGui::Begin("Inspector");
 	ImGui::SeparatorText("Transform");
-	for (auto gameObject : m_ActiveScene) {
+	for (auto& gameObject : m_ActiveScene) {
 		const GameObjectData& gameObjectData = gameObject->GetData();
 		Transform& transform = gameObject->GetTransform();
 		std::string nameText = gameObjectData.name;
 		const std::string uuid = gameObject->GetUUID().ToString();
 
 		if (ImGui::CollapsingHeader( (nameText + "(" + uuid + ")").c_str())) {
+			// TODO: Selected game object with uuid from the m_activeScene
 			if (ImGui::BeginTable(uuid.c_str(), 4, ImGuiTableFlags_SizingStretchProp)) {
 				// Position row
 				ImGui::TableNextRow();

@@ -11,6 +11,8 @@ class Scene
 public:
 
 	Scene();
+
+	~Scene();
 	
 	explicit Scene(const std::string_view &id);
 
@@ -29,7 +31,9 @@ private:
 	std::string m_SceneID = "";
 	std::filesystem::path m_SceneFilePath;	// Relative to project working dir
 	
-	std::vector<GameObject*> m_GameObjectContainer;
+	std::vector<GameObject*> m_GameObjects;
+	std::unordered_map<Engine::UUID, GameObject*> m_GameObjectsMap;
+	
 
 	AssetManager m_SceneAssetManager;
 
