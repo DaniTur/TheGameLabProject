@@ -10,3 +10,6 @@
 [submodule "TheGameLabProject/vendor/nlohmanJson"]
 	path = TheGameLabProject/vendor/nlohmanJson
 	url = https://github.com/nlohmann/json.git
+[submodule "TheGameLabProject/vendor/ImGuizmo"]
+	path = TheGameLabProject/vendor/ImGuizmo
+	url = https://github.com/CedricGuillemet/ImGuizmo.git
