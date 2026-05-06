@@ -10,3 +10,6 @@
 [submodule "TheGameLabProject/vendor/ImGuizmo"]
 	path = TheGameLabProject/vendor/ImGuizmo
 	url = https://github.com/CedricGuillemet/ImGuizmo.git
+[submodule "TheGameLabProject/vendor/imgui"]
+	path = TheGameLabProject/vendor/imgui
+	url = https://github.com/ocornut/imgui.git
